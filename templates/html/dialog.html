@@ -1,0 +1,15 @@
+{{template "header" .}}
+
+<div class="card mt-3">
+    <div class="card-header">
+        {{.dialog}}
+    </div>
+    <div class="card-body">
+        <p class="card-text">{{.msg}}</p>
+        {{if .link}}
+        <a href="{{.link}}" class="btn btn-primary">{{.btn}}</a>
+        {{end}}
+    </div>
+</div>
+
+{{template "footer"}}

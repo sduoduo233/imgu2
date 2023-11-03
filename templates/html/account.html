@@ -1,0 +1,72 @@
+{{template "header" .}}
+
+<h1>Account Settings</h1>
+
+<div class="card">
+    <div class="card-header">
+        Change Password
+    </div>
+    <div class="card-body">
+        <form action="/dashboard/change-password" method="post">
+
+            {{if .user.Password}}
+            <div class="mb-3">
+                <label class="form-label">Current Password</label>
+                <input type="password" class="form-control" name="current">
+            </div>
+            {{else}}
+            <p>You have not set a password yet.</p>
+            {{end}}
+
+            <div class="mb-3">
+                <label class="form-label">New Password</label>
+                <input type="password" class="form-control" name="password1">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" name="password2">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+{{if or .google_login .github_login}}
+<div class="card mt-3">
+    <div class="card-header">
+        Social Login
+    </div>
+    <div class="card-body">
+
+        {{if .google_login}}
+        <div class="d-flex align-items-center">
+            <p class="mb-0">Google account</p>
+            {{if .google_linked}}
+                <form method="post" action="/dashboard/unlink">
+                    <button type="submit" name="type" value="google" class="btn btn-link">Unlink</button>
+                </form>
+            {{else}}
+                <a class="btn btn-link" href="/login/google">Link</a>
+            {{end}}
+        </div>
+        {{end}}
+
+        {{if .github_login}}
+        <div class="d-flex align-items-center">
+            <p class="mb-0">Github account</p>
+            {{if .github_linked}}
+                <form method="post" action="/dashboard/unlink">
+                    <button type="submit" name="type" value="github" class="btn btn-link">Unlink</button>
+                </form>
+            {{else}}
+                <a class="btn btn-link" href="/login/github">Link</a>
+            {{end}}
+        </div>
+        {{end}}
+
+    </div>
+</div>
+{{end}}
+
+{{template "footer"}}

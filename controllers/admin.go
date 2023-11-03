@@ -1,0 +1,53 @@
+package controllers
+
+import (
+	"img2/controllers/middleware"
+	"img2/services"
+	"log/slog"
+	"net/http"
+)
+
+func adminIndex(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r.Context())
+
+	render(w, "admin", H{
+		"user": user,
+	})
+}
+
+func adminSettings(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r.Context())
+
+	m, err := services.Setting.GetAll()
+	if err != nil {
+		slog.Error("admin settings", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	render(w, "admin_settings", H{
+		"user":    user,
+		"setting": m,
+	})
+}
+
+func doAdminSettings(w http.ResponseWriter, r *http.Request) {
+
+	err := r.ParseForm()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	form := r.Form
+	for k, v := range form {
+		err := services.Setting.Set(k, v[0])
+		if err != nil {
+			slog.Error("admin settings", "err", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
+	renderDialog(w, "Info", "Settings updated", "/admin/settings", "Continue")
+}

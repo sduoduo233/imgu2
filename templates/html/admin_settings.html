@@ -1,0 +1,89 @@
+{{template "header" .}}
+
+<h1>Admin Settings</h1>
+
+<form method="post" action="/admin/settings">
+
+    <!-- captcha -->
+    <div class="mb-3">
+        <label class="form-label">CAPTCHA</label>
+        <select id="select-captcha" class="form-select" name="CAPTCHA">
+            <option value="recaptcha">reCAPTCHA</option>
+            <option value="none">Disabled</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">reCAPTCHA Client</label>
+        <input type="text" class="form-control" name="RECAPTCHA_CLIENT" value="{{.setting.RECAPTCHA_CLIENT}}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">reCAPTCHA Server</label>
+        <input type="text" class="form-control" name="RECAPTCHA_SERVER" value="{{.setting.RECAPTCHA_SERVER}}">
+    </div>
+
+    <!-- site settings -->
+    <div class="mb-3">
+        <label class="form-label">Site URL</label>
+        <input type="text" class="form-control" name="SITE_URL" value="{{.setting.SITE_URL}}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Site Name</label>
+        <input type="text" class="form-control" name="SITE_NAME" value="{{.setting.SITE_NAME}}">
+    </div>
+
+    <!-- google oauth -->
+    <div class="mb-3">
+        <label class="form-label">Google Sign In</label>
+        <select id="select-google-signin" class="form-select" name="GOOGLE_SIGNIN">
+            <option value="true">Enabled</option>
+            <option value="false">Disabled</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Google Client ID</label>
+        <input type="text" class="form-control" name="GOOGLE_CLIENT_ID" value="{{.setting.GOOGLE_CLIENT_ID}}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Google Secret</label>
+        <input type="text" class="form-control" name="GOOGLE_SECRET" value="{{.setting.GOOGLE_SECRET}}">
+    </div>
+
+    <!-- github oauth -->
+    <div class="mb-3">
+        <label class="form-label">Github Sign In</label>
+        <select id="select-github-signin" class="form-select" name="GITHUB_SIGNIN">
+            <option value="true">Enabled</option>
+            <option value="false">Disabled</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Github Client ID</label>
+        <input type="text" class="form-control" name="GITHUB_CLIENT_ID" value="{{.setting.GITHUB_CLIENT_ID}}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Github Secret</label>
+        <input type="text" class="form-control" name="GITHUB_SECRET" value="{{.setting.GITHUB_SECRET}}">
+    </div>
+
+    <script>
+        document.getElementById("select-captcha").value = "{{.setting.CAPTCHA}}";
+        document.getElementById("select-google-signin").value = "{{.setting.GOOGLE_SIGNIN}}";
+        document.getElementById("select-github-signin").value = "{{.setting.GITHUB_SIGNIN}}";
+    </script>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    
+
+</form>
+
+
+{{template "footer"}}

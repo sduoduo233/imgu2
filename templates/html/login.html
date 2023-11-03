@@ -1,0 +1,44 @@
+{{template "header" .}}
+
+<h1>Login</h1>
+
+{{ if .error }}
+<div class="alert alert-danger" role="alert">
+    {{ .error }}
+</div>
+{{ end }}
+
+{{if or .google_login .github_login}}
+<div class="d-grid gap-3">
+    {{if .google_login}}
+        <a href="/login/google" class="btn btn-outline-primary">Sign in with Google</a>
+    {{end}}
+    {{if .github_login}}
+        <button class="btn btn-outline-primary">Sign in with Github</button>
+    {{end}}
+</div>
+
+<hr>
+{{end}}
+
+
+<form method="post" action="/login">
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="text" class="form-control" name="email">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" name="password">
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+
+</form>
+
+
+{{template "footer"}}
