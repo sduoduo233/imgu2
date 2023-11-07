@@ -32,10 +32,26 @@ func accountSetting(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	githubLogin, err := services.Setting.GetGithubLogin()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("account setting", "err", err)
+		return
+	}
+
+	githubLinked, err := services.User.SocialLoginLinked(services.SocialLoginGithub, user.Id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("account setting", "err", err)
+		return
+	}
+
 	render(w, "account", H{
 		"user":          user,
 		"google_login":  googleLogin,
 		"google_linked": googleLinked,
+		"github_login":  githubLogin,
+		"github_linked": githubLinked,
 	})
 }
 

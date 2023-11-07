@@ -12,6 +12,7 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
+// email login
 func login(w http.ResponseWriter, r *http.Request) {
 	if middleware.GetUser(r.Context()) != nil {
 		http.Redirect(w, r, "/dashboard", http.StatusFound)
@@ -25,8 +26,16 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	githubLogin, err := services.Setting.GetGithubLogin()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("login", "err", err)
+		return
+	}
+
 	render(w, "login", H{
 		"google_login": googleLogin,
+		"github_login": githubLogin,
 	})
 }
 
@@ -65,6 +74,32 @@ func doLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", http.StatusFound)
 }
 
+// github login
+func githubLogin(w http.ResponseWriter, r *http.Request) {
+	githubLogin, err := services.Setting.GetGithubLogin()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("github login", "err", err)
+		return
+	}
+
+	if !githubLogin {
+		w.WriteHeader(http.StatusForbidden)
+		io.WriteString(w, "Github login is disabled")
+		return
+	}
+
+	u, err := services.User.GithubSignin()
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		slog.Error("github login", "err", err)
+		return
+	}
+
+	http.Redirect(w, r, u, http.StatusFound)
+}
+
+// google login
 func googleLogin(w http.ResponseWriter, r *http.Request) {
 	googleLogin, err := services.Setting.GetGoogleLogin()
 	if err != nil {
@@ -89,6 +124,7 @@ func googleLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, u, http.StatusFound)
 }
 
+// google login callback
 func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 	user := middleware.GetUser(r.Context())
 
@@ -124,6 +160,7 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 	if user != nil {
 
 		// already logged in
+		// link google account to an existing account
 		err = services.User.LinkSocialAccount(services.SocialLoginGoogle, user.Id, profile)
 		if err != nil {
 			slog.Error("link google", "err", err)
@@ -142,6 +179,89 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 		token, err := services.User.SigninOrRegisterWithSocial(services.SocialLoginGoogle, profile)
 		if err != nil {
 			slog.Error("signin google", "err", err)
+
+			var sqliteErr sqlite3.Error
+			if errors.As(err, &sqliteErr) {
+				if sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
+					// duplicated email
+					renderDialog(w, "Error", fmt.Sprintf("An account with this email (%s) is already created. Please sign in to your original account.", profile.Email), "/login", "Go back")
+					return
+				}
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
+			renderDialog(w, "Error", "unknown error", "/login", "Go back")
+			return
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "TOKEN",
+			Value:    token,
+			Path:     "/",
+			HttpOnly: true,
+		})
+
+		http.Redirect(w, r, "/dashboard", http.StatusFound)
+		return
+
+	}
+}
+
+// github login callback
+func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
+	user := middleware.GetUser(r.Context())
+
+	githubLogin, err := services.Setting.GetGithubLogin()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("github login", "err", err)
+		return
+	}
+
+	if !githubLogin {
+		w.WriteHeader(http.StatusForbidden)
+		io.WriteString(w, "Github login is disabled")
+		return
+	}
+
+	code := r.URL.Query().Get("code")
+
+	if code == "" {
+		renderDialog(w, "Error", "oauth error: "+r.URL.Query().Get("error"), "/login", "Go back")
+		return
+	}
+
+	// get github user profile
+	profile, err := services.User.GithubCallback(code)
+	if err != nil {
+		slog.Error("github callback", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		renderDialog(w, "Error", "oauth error", "/login", "Go back")
+		return
+	}
+
+	if user != nil {
+
+		// already logged in
+		// link github account to an existing account
+		err = services.User.LinkSocialAccount(services.SocialLoginGithub, user.Id, profile)
+		if err != nil {
+			slog.Error("link github", "err", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			renderDialog(w, "Error", "unknown error", "/dashboard/account", "Go back")
+			return
+		}
+
+		http.Redirect(w, r, "/dashboard/account", http.StatusFound)
+		return
+
+	} else {
+
+		// sign in or sign up with github
+
+		token, err := services.User.SigninOrRegisterWithSocial(services.SocialLoginGithub, profile)
+		if err != nil {
+			slog.Error("signin github", "err", err)
 
 			var sqliteErr sqlite3.Error
 			if errors.As(err, &sqliteErr) {

@@ -35,6 +35,19 @@ func (*setting) GetGoogleLogin() (bool, error) {
 	return s == "true", err
 }
 
+func (s *setting) GetGithubClientID() (string, error) {
+	return db.SettingFind("GITHUB_CLIENT_ID")
+}
+
+func (s *setting) GetGithubSecret() (string, error) {
+	return db.SettingFind("GITHUB_SECRET")
+}
+
+func (*setting) GetGithubLogin() (bool, error) {
+	s, err := db.SettingFind("GITHUB_SIGNIN")
+	return s == "true", err
+}
+
 func (s *setting) GetAll() (map[string]string, error) {
 	return db.SettingFindAll()
 }

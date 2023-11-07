@@ -39,30 +39,36 @@
     </div>
     <div class="card-body">
 
-        {{if .google_login}}
-        <div class="d-flex align-items-center">
-            <p class="mb-0">Google account</p>
-            {{if .google_linked}}
-                <form method="post" action="/dashboard/unlink">
-                    <button type="submit" name="type" value="google" class="btn btn-link">Unlink</button>
-                </form>
-            {{else}}
-                <a class="btn btn-link" href="/login/google">Link</a>
-            {{end}}
-        </div>
-        {{end}}
+        {{if eq .user.Password ""}}
+            You must set a password before managing your social accounts.
+        {{else}}
 
-        {{if .github_login}}
-        <div class="d-flex align-items-center">
-            <p class="mb-0">Github account</p>
-            {{if .github_linked}}
-                <form method="post" action="/dashboard/unlink">
-                    <button type="submit" name="type" value="github" class="btn btn-link">Unlink</button>
-                </form>
-            {{else}}
-                <a class="btn btn-link" href="/login/github">Link</a>
+            {{if .google_login}}
+            <div class="d-flex align-items-center">
+                <p class="mb-0">Google account</p>
+                {{if .google_linked}}
+                    <form method="post" action="/dashboard/unlink">
+                        <button type="submit" name="type" value="google" class="btn btn-link">Unlink</button>
+                    </form>
+                {{else}}
+                    <a class="btn btn-link" href="/login/google">Link</a>
+                {{end}}
+            </div>
             {{end}}
-        </div>
+
+            {{if .github_login}}
+            <div class="d-flex align-items-center">
+                <p class="mb-0">Github account</p>
+                {{if .github_linked}}
+                    <form method="post" action="/dashboard/unlink">
+                        <button type="submit" name="type" value="github" class="btn btn-link">Unlink</button>
+                    </form>
+                {{else}}
+                    <a class="btn btn-link" href="/login/github">Link</a>
+                {{end}}
+            </div>
+            {{end}}
+
         {{end}}
 
     </div>

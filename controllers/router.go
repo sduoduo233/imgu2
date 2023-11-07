@@ -15,6 +15,8 @@ func Route(r chi.Router) {
 	r.Post("/login", doLogin)
 	r.Get("/login/google", googleLogin)
 	r.Get("/login/google/callback", googleLoginCallback)
+	r.Get("/login/github", githubLogin)
+	r.Get("/login/github/callback", githubLoginCallback)
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireAuth)

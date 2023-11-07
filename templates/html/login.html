@@ -11,10 +11,10 @@
 {{if or .google_login .github_login}}
 <div class="d-grid gap-3">
     {{if .google_login}}
-        <a href="/login/google" class="btn btn-outline-primary">Sign in with Google</a>
+        <a href="/login/google" class="btn btn-outline-primary">Continue with Google</a>
     {{end}}
     {{if .github_login}}
-        <button class="btn btn-outline-primary">Sign in with Github</button>
+        <a href="/login/github" class="btn btn-outline-primary">Continue with Github</a>
     {{end}}
 </div>
 
