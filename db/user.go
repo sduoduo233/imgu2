@@ -71,3 +71,20 @@ func UserCreate(username, email, password string, email_verified bool, role int)
 	}
 	return int(id), nil
 }
+
+func UserChangeUsername(id int, username string) error {
+	_, err := DB.Exec("UPDATE users SET username = ? WHERE id = ?", username, id)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+	return nil
+}
+
+// update email and set email_verified to false
+func UserChangeEmail(id int, email string) error {
+	_, err := DB.Exec("UPDATE users SET email = ?, email_verified = ? WHERE id = ?", email, false, id)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+	return nil
+}

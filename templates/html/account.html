@@ -2,7 +2,7 @@
 
 <h1>Account Settings</h1>
 
-<div class="card">
+<div class="card" id="change-password">
     <div class="card-header">
         Change Password
     </div>
@@ -32,42 +32,76 @@
     </div>
 </div>
 
+<div class="card mt-3" id="change-username">
+    <div class="card-header">
+        Change Username
+    </div>
+    <div class="card-body">
+        <form action="/dashboard/change-username" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" value="{{.user.Username}}">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+<div class="card mt-3" id="change-email">
+    <div class="card-header">
+        Change Email
+    </div>
+    <div class="card-body">
+        <form action="/dashboard/change-email" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" value="{{.user.Email}}">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
 {{if or .google_login .github_login}}
-<div class="card mt-3">
+<div class="card my-3" id="social-login">
     <div class="card-header">
         Social Login
     </div>
     <div class="card-body">
 
         {{if eq .user.Password ""}}
-            You must set a password before managing your social accounts.
+        You must set a password before managing your social accounts.
         {{else}}
 
-            {{if .google_login}}
-            <div class="d-flex align-items-center">
-                <p class="mb-0">Google account</p>
-                {{if .google_linked}}
-                    <form method="post" action="/dashboard/unlink">
-                        <button type="submit" name="type" value="google" class="btn btn-link">Unlink</button>
-                    </form>
-                {{else}}
-                    <a class="btn btn-link" href="/login/google">Link</a>
-                {{end}}
-            </div>
+        {{if .google_login}}
+        <div class="d-flex align-items-center">
+            <p class="mb-0">Google account</p>
+            {{if .google_linked}}
+            <form method="post" action="/dashboard/unlink">
+                <button type="submit" name="type" value="google" class="btn btn-link">Unlink</button>
+            </form>
+            {{else}}
+            <a class="btn btn-link" href="/login/google">Link</a>
             {{end}}
+        </div>
+        {{end}}
 
-            {{if .github_login}}
-            <div class="d-flex align-items-center">
-                <p class="mb-0">Github account</p>
-                {{if .github_linked}}
-                    <form method="post" action="/dashboard/unlink">
-                        <button type="submit" name="type" value="github" class="btn btn-link">Unlink</button>
-                    </form>
-                {{else}}
-                    <a class="btn btn-link" href="/login/github">Link</a>
-                {{end}}
-            </div>
+        {{if .github_login}}
+        <div class="d-flex align-items-center">
+            <p class="mb-0">Github account</p>
+            {{if .github_linked}}
+            <form method="post" action="/dashboard/unlink">
+                <button type="submit" name="type" value="github" class="btn btn-link">Unlink</button>
+            </form>
+            {{else}}
+            <a class="btn btn-link" href="/login/github">Link</a>
             {{end}}
+        </div>
+        {{end}}
 
         {{end}}
 

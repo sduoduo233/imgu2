@@ -1,32 +1,37 @@
 package controllers
 
 import (
-	"fmt"
 	"img2/services"
 	"img2/templates"
 	"io"
+	"log/slog"
 )
 
 type H map[string]any
 
-func render(w io.Writer, name string, data H) error {
+func render(w io.Writer, name string, data H) {
 	title, err := services.Setting.GetSiteName()
 	if err != nil {
-		return fmt.Errorf("get site name: %w", err)
+		slog.Error("render template: site name", "err", err)
+		return
 	}
 	data["title"] = title
 
-	return templates.Render(w, name, data)
+	err = templates.Render(w, name, data)
+	if err != nil {
+		slog.Error("render template", "err", err, "name", name, "data", data)
+		return
+	}
 }
 
-func renderError(w io.Writer, name string, err string) error {
-	return render(w, name, H{
+func renderError(w io.Writer, name string, err string) {
+	render(w, name, H{
 		"error": err,
 	})
 }
 
-func renderDialog(w io.Writer, title, msg, link, btn string) error {
-	return render(w, "dialog", H{
+func renderDialog(w io.Writer, title, msg, link, btn string) {
+	render(w, "dialog", H{
 		"dialog": title,
 		"msg":    msg,
 		"link":   link,

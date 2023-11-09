@@ -29,6 +29,8 @@ func Route(r chi.Router) {
 		r.Get("/dashboard", dashboardIndex)
 		r.Get("/dashboard/account", accountSetting)
 		r.Post("/dashboard/change-password", changePassword)
+		r.Post("/dashboard/change-email", changeEmail)
+		r.Post("/dashboard/change-username", changeUsername)
 		r.Post("/dashboard/unlink", socialLoginUnlink)
 	})
 

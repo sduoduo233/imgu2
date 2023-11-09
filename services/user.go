@@ -435,3 +435,12 @@ func (user) GithubCallback(code string) (*OAuthProfile, error) {
 
 	return nil, fmt.Errorf("nil")
 }
+
+func (user) ChangeUsername(userId int, username string) error {
+	return db.UserChangeUsername(userId, username)
+}
+
+// update email and set email verified to false
+func (user) ChangeEmail(userId int, email string) error {
+	return db.UserChangeEmail(userId, email)
+}

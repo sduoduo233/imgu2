@@ -1,10 +1,14 @@
 package controllers
 
 import (
+	"errors"
 	"img2/controllers/middleware"
 	"img2/services"
 	"log/slog"
 	"net/http"
+	"strings"
+
+	"github.com/mattn/go-sqlite3"
 )
 
 func dashboardIndex(w http.ResponseWriter, r *http.Request) {
@@ -86,5 +90,62 @@ func changePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderDialog(w, "Info", "Password updated", "/dashboard", "Continue")
+	return
+}
+
+func changeUsername(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r.Context())
+
+	username := r.FormValue("username")
+	if len(username) < 5 || len(username) > 30 {
+		renderDialog(w, "Error", "Username must be between 5 to 30 characters", "/dashboard/account", "Go back")
+		return
+	}
+
+	err := services.User.ChangeUsername(user.Id, username)
+	if err != nil {
+		slog.Error("change username", "err", err)
+
+		var sqliteErr sqlite3.Error
+		if errors.As(err, &sqliteErr) && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
+			// duplicated username
+			renderDialog(w, "Error", "This username is already used by another user.", "/dashboard/account", "Go back")
+			return
+		}
+
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	renderDialog(w, "Error", "Username changed", "/dashboard/account", "Continue")
+	return
+}
+
+func changeEmail(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r.Context())
+
+	email := r.FormValue("email")
+
+	if len(email) == 0 || len(email) > 50 || strings.Count(email, "@") != 1 {
+		renderDialog(w, "Error", "Invalid email.", "/dashboard/account", "Go back")
+		return
+	}
+
+	err := services.User.ChangeEmail(user.Id, email)
+	if err != nil {
+		slog.Error("change email", "err", err)
+
+		var sqliteErr sqlite3.Error
+		if errors.As(err, &sqliteErr) && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
+			// duplicated email
+			renderDialog(w, "Error", "This email address is already used by another user.", "/dashboard/account", "Go back")
+			return
+		}
+
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	renderDialog(w, "Error", "Email changed. You have to re-verify your email.", "/dashboard/account", "Continue")
 	return
 }
