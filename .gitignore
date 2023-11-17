@@ -2,3 +2,4 @@
 db.sqlite
 _debug
 img2
+.env

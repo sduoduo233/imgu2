@@ -18,6 +18,8 @@ func Route(r chi.Router) {
 	r.Get("/login/github", githubLogin)
 	r.Get("/login/github/callback", githubLoginCallback)
 
+	r.Get("/verify-email", verifyEmailCallback)
+
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireAuth)
 		r.Get("/logout", logout)
@@ -32,6 +34,8 @@ func Route(r chi.Router) {
 		r.Post("/dashboard/change-email", changeEmail)
 		r.Post("/dashboard/change-username", changeUsername)
 		r.Post("/dashboard/unlink", socialLoginUnlink)
+		r.Get("/dashboard/verify-email", verifyEmail)
+		r.Post("/dashboard/verify-email", doVerifyEmail)
 	})
 
 	// admin dashboard

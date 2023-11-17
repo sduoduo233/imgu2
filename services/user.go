@@ -4,13 +4,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"img2/db"
+	"img2/services/emails"
 	"img2/utils"
 	"io"
 	"log/slog"
 	"net/http"
 	"net/url"
+	"os"
+	"time"
 
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -25,6 +30,9 @@ const (
 	SocialLoginGithub = "github"
 )
 
+// used for signing email verification & password reset links
+var jwtSecret = ""
+
 type user struct{}
 
 var User = user{}
@@ -36,8 +44,23 @@ type OAuthProfile struct {
 	AccountId string
 }
 
+func getJWTSecret() string {
+	if jwtSecret == "" {
+		jwtSecret = os.Getenv("IMG2_JWT_SECRET")
+		if jwtSecret == "" {
+			panic("IMG2_JWT_SECRET should not be empty")
+		}
+	}
+
+	return jwtSecret
+}
+
 func (user) FindByEmail(email string) (*db.User, error) {
 	return db.UserFindByEmail(email)
+}
+
+func (user) FindById(userId int) (*db.User, error) {
+	return db.UserFindById(userId)
 }
 
 func (user) ChangePassword(id int, currentPasswd string, newPasswd string) error {
@@ -443,4 +466,102 @@ func (user) ChangeUsername(userId int, username string) error {
 // update email and set email verified to false
 func (user) ChangeEmail(userId int, email string) error {
 	return db.UserChangeEmail(userId, email)
+}
+
+// send verification email
+func (user) SendVerificationEmail(userId int) error {
+	u, err := User.FindById(userId)
+	if err != nil {
+		return err
+	}
+
+	if u == nil {
+		return fmt.Errorf("user not found: %d", userId)
+	}
+
+	if u.EmailVerified {
+		return fmt.Errorf("email already verified: %d", userId)
+	}
+
+	siteName, err := Setting.GetSiteName()
+	if err != nil {
+		return err
+	}
+
+	siteUrl, err := Setting.GetSiteURL()
+	if err != nil {
+		return err
+	}
+
+	// generate verification url
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp": time.Now().Add(time.Minute * 30).Unix(), // Expiration Time
+		"nbf": time.Now().Unix(),                       // Not Before
+		"sub": u.Email,
+		"aud": "email_verification",
+	})
+
+	signedToken, err := token.SignedString([]byte(getJWTSecret()))
+	if err != nil {
+		return fmt.Errorf("jwt sign: %w", err)
+	}
+
+	// generate email content
+	tpl, err := template.New("verification").Parse(emails.VERIFICATION)
+	if err != nil {
+		return fmt.Errorf("parse template: %w", err)
+	}
+
+	buf := new(bytes.Buffer)
+
+	err = tpl.Execute(buf, map[string]string{
+		"username": u.Username,
+		"name":     siteName,
+		"link":     siteUrl + "/verify-email?token=" + signedToken,
+		"email":    u.Email,
+	})
+	if err != nil {
+		return fmt.Errorf("execute template: %w", err)
+	}
+
+	// send email
+	err = Mailer.SendMail(u.Email, "Confirm your "+siteName+" account", buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// verify email stated in the jwt token
+func (user) VerifyEmail(token string) error {
+	// parse and validate jwt token
+	parsed, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
+		return []byte(getJWTSecret()), nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("parse token: %w", err)
+	}
+
+	claims, ok := parsed.Claims.(jwt.MapClaims)
+	if !ok {
+		return fmt.Errorf("parse token: Claims is not jwt.MapClaims")
+	}
+
+	if claims["aud"] != "email_verification" {
+		return fmt.Errorf("invalid aud: %v", claims["aud"])
+	}
+
+	email, ok := claims["sub"].(string)
+	if !ok {
+		return fmt.Errorf("invalid email: %v", claims["sub"])
+	}
+
+	// mark email as verified
+	err = db.UserVerifyEmail(email)
+	return err
 }

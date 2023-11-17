@@ -88,3 +88,12 @@ func UserChangeEmail(id int, email string) error {
 	}
 	return nil
 }
+
+// mark an email address as verified
+func UserVerifyEmail(email string) error {
+	_, err := DB.Exec("UPDATE users SET email_verified = ? WHERE email = ?", true, email)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+	return nil
+}

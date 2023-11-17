@@ -4,6 +4,7 @@ import (
 	"errors"
 	"img2/controllers/middleware"
 	"img2/services"
+	"io"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -148,4 +149,52 @@ func changeEmail(w http.ResponseWriter, r *http.Request) {
 
 	renderDialog(w, "Error", "Email changed. You have to re-verify your email.", "/dashboard/account", "Continue")
 	return
+}
+
+func verifyEmail(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r.Context())
+
+	if user.EmailVerified {
+		io.WriteString(w, "Your email is already verified")
+		return
+	}
+
+	render(w, "verify_email", H{
+		"user": user,
+	})
+}
+
+func doVerifyEmail(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r.Context())
+
+	if user.EmailVerified {
+		io.WriteString(w, "Your email is already verified")
+		return
+	}
+
+	err := services.User.SendVerificationEmail(user.Id)
+	if err != nil {
+		slog.Error("send verification email", "err", err)
+		renderDialog(w, "Error", "Unknown error", "/dashboarad", "Go back")
+		return
+	}
+
+	renderDialog(w, "Info", "Verification email sent", "/dashboard", "Continue")
+}
+
+func verifyEmailCallback(w http.ResponseWriter, r *http.Request) {
+	token := r.URL.Query().Get("token")
+	if token == "" {
+		renderDialog(w, "Error", "Token is empty", "", "")
+		return
+	}
+
+	err := services.User.VerifyEmail(token)
+	if err != nil {
+		slog.Error("verify email", "err", err)
+		renderDialog(w, "Error", "Invalid token", "", "")
+		return
+	}
+
+	renderDialog(w, "Info", "Your email is verified", "/dashboard", "Continue")
 }
