@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS storages (
 CREATE TABLE IF NOT EXISTS images (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     storage INTEGER REFERENCES storages(id),
-    uploader INTEGER REFERENCES users(id),
+    uploader INTEGER,
     file_name TEXT NOT NULL UNIQUE,
     uploader_ip TEXT NOT NULL,
     time INTEGER,
