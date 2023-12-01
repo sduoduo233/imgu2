@@ -1,0 +1,78 @@
+{{template "header" .}}
+
+<h1>Storage Drivers</h1>
+
+
+<div class="alert alert-warning" role="alert">
+    Restart the server for settings on this page to take effect.
+</div>
+
+
+<table class="table" id="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Enabled</th>
+            <th scope="col">Allow Upload</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .storages}}
+        <tr>
+            <th scope="row">{{ .Id }}</th>
+            <td>{{ .Name }}</td>
+            <td>{{ .Type }}</td>
+            {{ if .Enabled }}
+            <td><span class="badge text-bg-success">TRUE</span></td>
+            {{ else }}
+            <td><span class="badge text-bg-danger">FALSE</span></td>
+            {{ end }}
+            {{ if .AllowUpload }}
+            <td><span class="badge text-bg-success">TRUE</span></td>
+            {{ else }}
+            <td><span class="badge text-bg-danger">FALSE</span></td>
+            {{ end }}
+            <td>
+                <a href="/admin/storages/{{.Id}}"><button type="button"
+                        class="btn btn-outline-primary btn-sm">Edit</button></a>
+                <form action="/admin/storages/delete/{{.Id}}" method="post">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+
+<div class="card">
+    <div class="card-header">
+        Add new storage driver
+    </div>
+
+    <div class="card-body">
+
+        <form action="/admin/storages" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Storage Type</label>
+                <select class="form-select" name="type" required>
+                    <option value="s3" selected>S3</option>
+                    <option value="local">Local</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" value="" name="name" required>
+            </div>
+
+            <button class="btn btn-primary">Submit</button>
+
+        </form>
+    </div>
+</div>
+
+{{template "footer"}}

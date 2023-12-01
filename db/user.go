@@ -9,11 +9,12 @@ type User struct {
 	Password      string
 	EmailVerified bool
 	Role          int
+	Space         int
 }
 
 func UserFindByEmail(email string) (*User, error) {
 	var u User
-	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role FROM users WHERE email = ? LIMIT 1", email)
+	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, space FROM users WHERE email = ? LIMIT 1", email)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
@@ -23,7 +24,7 @@ func UserFindByEmail(email string) (*User, error) {
 		return nil, nil
 	}
 
-	err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role)
+	err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role, &u.Space)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
@@ -33,7 +34,7 @@ func UserFindByEmail(email string) (*User, error) {
 
 func UserFindById(id int) (*User, error) {
 	var u User
-	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role FROM users WHERE id = ? LIMIT 1", id)
+	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, space FROM users WHERE id = ? LIMIT 1", id)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
@@ -43,7 +44,7 @@ func UserFindById(id int) (*User, error) {
 		return nil, nil
 	}
 
-	err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role)
+	err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role, &u.Space)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}

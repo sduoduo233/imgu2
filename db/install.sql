@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     email_verified BOOLEAN,
-    role INTEGER
+    role INTEGER,
+    space INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS social_logins (
@@ -31,7 +32,8 @@ CREATE TABLE IF NOT EXISTS images (
     uploader INTEGER REFERENCES users(id),
     file_name TEXT NOT NULL UNIQUE,
     uploader_ip TEXT NOT NULL,
-    time INTEGER
+    time INTEGER,
+    expire_time INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS settings (

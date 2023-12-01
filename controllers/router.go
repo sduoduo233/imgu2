@@ -45,5 +45,10 @@ func Route(r chi.Router) {
 		r.Get("/admin", adminIndex)
 		r.Get("/admin/settings", adminSettings)
 		r.Post("/admin/settings", doAdminSettings)
+		r.Get("/admin/storages", adminStorages)
+		r.Get("/admin/storages/{id}", adminEditStorage)
+		r.Post("/admin/storages/{id}", adminDoEditStorage)
+		r.Post("/admin/storages/delete/{id}", adminStorageDelete)
+		r.Post("/admin/storages", adminAddStorage)
 	})
 }

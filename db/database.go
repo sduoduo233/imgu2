@@ -10,18 +10,19 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var DB *sql.DB
+var DB *wrapped
 
 //go:embed install.sql
 var installSql string
 
 func init() {
-	var err error
-	DB, err = sql.Open("sqlite3", "./db.sqlite")
+	db, err := sql.Open("sqlite3", "./db.sqlite")
 	if err != nil {
 		slog.Error("open database", "err", err)
 		panic(err)
 	}
+
+	DB = newWrapped(db)
 
 	_, err = DB.Exec(installSql)
 	if err != nil {
@@ -53,5 +54,22 @@ func init() {
 		slog.Warn("admin account created", "email", "admin@example.com", "password", password)
 	}
 
+	// create a local storage driver if no driver exists
+	row = DB.QueryRow("SELECT count(id) FROM storages")
+	err = row.Scan(&count)
+	if err != nil {
+		slog.Error("insert default values", "err", err)
+		panic(err)
+	}
+
+	if count == 0 {
+		_, err = StorageCreate("local storage", "local", "{\"path\": \"./uploads\"}", true, true)
+		if err != nil {
+			slog.Error("create default storage", "err", err)
+			panic(err)
+		}
+	}
+
 	slog.Info("database initalized")
+
 }

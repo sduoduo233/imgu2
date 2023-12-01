@@ -10,6 +10,7 @@ import (
 
 	"img2/controllers"
 	_ "img2/db"
+	"img2/services"
 )
 
 func main() {
@@ -21,6 +22,12 @@ func main() {
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	})))
+
+	err = services.Storage.Init()
+	if err != nil {
+		slog.Error("failed to initialize storage drivers", "err", err)
+		panic(err)
+	}
 
 	r := chi.NewRouter()
 
