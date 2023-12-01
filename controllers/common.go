@@ -24,12 +24,6 @@ func render(w io.Writer, name string, data H) {
 	}
 }
 
-func renderError(w io.Writer, name string, err string) {
-	render(w, name, H{
-		"error": err,
-	})
-}
-
 func renderDialog(w io.Writer, title, msg, link, btn string) {
 	render(w, "dialog", H{
 		"dialog": title,

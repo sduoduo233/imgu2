@@ -91,7 +91,6 @@ func changePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderDialog(w, "Info", "Password updated", "/dashboard", "Continue")
-	return
 }
 
 func changeUsername(w http.ResponseWriter, r *http.Request) {
@@ -119,7 +118,6 @@ func changeUsername(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderDialog(w, "Error", "Username changed", "/dashboard/account", "Continue")
-	return
 }
 
 func changeEmail(w http.ResponseWriter, r *http.Request) {
@@ -148,7 +146,6 @@ func changeEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderDialog(w, "Error", "Email changed. You have to re-verify your email.", "/dashboard/account", "Continue")
-	return
 }
 
 func verifyEmail(w http.ResponseWriter, r *http.Request) {
