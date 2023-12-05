@@ -13,7 +13,7 @@ type session struct{}
 var Session = session{}
 
 func (session) Create(userId int) (string, error) {
-	token := utils.RandomString(8)
+	token := utils.RandomHexString(8)
 	expireAt := time.Now().Add(time.Hour * 24 * 30).Unix()
 
 	err := db.SessionCreate(token, userId, expireAt)

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"img2/services"
 	"img2/templates"
 	"io"
@@ -31,4 +32,17 @@ func renderDialog(w io.Writer, title, msg, link, btn string) {
 		"link":   link,
 		"btn":    btn,
 	})
+}
+
+func writeJSON(w io.Writer, m H) {
+	b, err := json.Marshal(m)
+	if err != nil {
+		slog.Error("write json", "err", err)
+		return
+	}
+
+	_, err = io.WriteString(w, string(b))
+	if err != nil {
+		slog.Error("write json", "err", err)
+	}
 }

@@ -1,15 +1,20 @@
 package services
 
 import (
+	"database/sql"
 	"fmt"
 	"img2/db"
 	"img2/services/storages"
+	"img2/utils"
 	"log/slog"
 )
 
 type storage struct {
-	// initialized storage drivers
+	// all initialized storage drivers
 	dirvers []storages.StorageDriver
+
+	// storage drivers that has upload enableds
+	uploadDrivers []storages.StorageDriver
 }
 
 var Storage = storage{}
@@ -37,7 +42,7 @@ func (s *storage) Init() error {
 
 		switch v.Type {
 		case string(StorageLocal):
-			driver, err = storages.NewLocalStorage(v.Name, v.Config)
+			driver, err = storages.NewLocalStorage(v.Name, v.Id, v.Config)
 
 		default:
 			slog.Warn("unknown storage type", "type", v.Type)
@@ -53,6 +58,9 @@ func (s *storage) Init() error {
 		}
 
 		s.dirvers = append(s.dirvers, driver)
+		if v.AllowUpload {
+			s.uploadDrivers = append(s.uploadDrivers, driver)
+		}
 	}
 
 	slog.Info("storage drivers initialized", "count", len(s.dirvers))
@@ -85,4 +93,24 @@ func (*storage) Create(name string, t string) (int, error) {
 func (*storage) Delete(id int) error {
 	// TODO: non empty storage drivers can not be deleted
 	return db.StorageDelete(id)
+}
+
+// save the file in a randomly choosen storage driver
+//
+// return the id of the storage driver
+func (s *storage) Put(fileName string, content []byte, expire sql.NullTime) (int, error) {
+
+	if len(s.uploadDrivers) == 0 {
+		return 0, fmt.Errorf("no storage driver available")
+	}
+
+	n := utils.RandomNumber(0, len(s.uploadDrivers))
+	d := s.uploadDrivers[n]
+
+	err := d.Put(fileName, content, expire)
+	if err != nil {
+		return 0, fmt.Errorf("storage put: %w", err)
+	}
+
+	return d.ID(), nil
 }

@@ -1,0 +1,128 @@
+{{template "header" .}}
+
+<div id="file-area" class="my-3 p-5 border shadow rounded bg-dark text-center">
+    <div>
+        <div>
+            <img style="display: none;" id="preview" class="mw-100">
+        </div>
+        <div id="prompt" class="p-5">Click Here or Drop Files Here to Upload</div>
+    </div>
+</div>
+
+<input type="file" id="file-input" class="d-none" accept="image/png,image/jpeg,image/gif,image/webp" multiple>
+
+<div>
+    <label class="form-label">Auto delete</label>
+    <select class="form-select" name="type" id="select">
+        <option value="0" selected>Never</option>
+        <option value="300">5 minutes</option>
+        <option value="600">10 minutes</option>
+        <option value="1800">30 minutes</option>
+        <option value="3600">1 hour</option>
+        <option value="21600">6 hours</option>
+        <option value="43200">12 hours</option>
+        <option value="86400">24 hours</option>
+        <option value="172800">2 days</option>
+        <option value="604800">1 week</option>
+        <option value="2592000">30 days</option>
+        <option value="15552000">180 days</option>
+    </select>
+</div>
+
+<div class="my-3 d-grid">
+    <button type="button" class="btn btn-primary" id="btn-upload">Upload</button>
+</div>
+
+<div class="my-3 progress" role="progress" style="display: none;" id="progress">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%" id="progressbar"></div>
+</div>
+
+<script>
+    const fileArea = document.getElementById("file-area");
+    const fileInput = document.getElementById("file-input");
+    const preview = document.getElementById("preview");
+    const prompt = document.getElementById("prompt");
+    const btn = document.getElementById("btn-upload");
+    const selectExpire = document.getElementById("select");
+    const progress = document.getElementById("progress");
+    const progressbar = document.getElementById("progressbar");
+
+    let uploading = false;
+
+    let file;
+
+    function updatePreview() {
+        // display image preview
+
+        if (file !== undefined) {
+            preview.style.display = "";
+            prompt.style.display = "none";
+        } else {
+            preview.style.display = "none";
+            prompt.style.display = "";
+        }
+
+        const reader = new FileReader();
+        reader.addEventListener("load", (e) => {
+            preview.src = e.target.result;
+        })
+        reader.readAsDataURL(file);
+    }
+
+    fileArea.addEventListener("click", () => {
+        if (uploading) return;
+
+        fileInput.click();
+    });
+
+    fileInput.addEventListener("change", (e) => {
+        file = fileInput.files[0];
+        updatePreview();
+    });
+
+    btn.addEventListener("click", () => {
+        if (!file) return;
+
+        uploading = true;
+
+        // hide button & show progress bar
+        btn.style.display = "none";
+        progress.style.display = "";
+
+        // disable selector
+        selectExpire.setAttribute("disabled", "disabled");
+
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener("progress", (e) => {
+            // progress
+            progressbar.style.width = (e.loaded / e.total * 100) + "%";
+        });
+
+        xhr.addEventListener("load", () => {
+            const resp = JSON.parse(xhr.responseText);
+            if (resp.error) {
+                alert("ERROR: " + resp.error);
+                location.reload()
+            } else {
+                location.href = "/preview/" + resp.file_name;
+            }
+        })
+
+        xhr.addEventListener("error", (e) => {
+            console.log(e)
+            alert("XMLHttpRequest error");
+            location.reload()
+        })
+
+        xhr.open("POST", "/upload");
+
+        const formData = new FormData();
+        formData.set("file", file);
+        formData.set("expire", selectExpire.value);
+
+        xhr.send(formData);
+    });
+</script>
+
+{{template "footer" .}}

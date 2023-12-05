@@ -74,6 +74,12 @@
         <input type="text" class="form-control" name="GITHUB_SECRET" value="{{.setting.GITHUB_SECRET}}">
     </div>
 
+    <!-- upload settings -->
+    <div class="mb-3">
+        <label class="form-label">Maximum Image Size (bytes)</label>
+        <input type="text" class="form-control" name="MAX_IMAGE_SIZE" value="{{.setting.MAX_IMAGE_SIZE}}">
+    </div>
+
     <script>
         document.getElementById("select-captcha").value = "{{.setting.CAPTCHA}}";
         document.getElementById("select-google-signin").value = "{{.setting.GOOGLE_SIGNIN}}";

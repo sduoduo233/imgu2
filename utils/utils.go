@@ -6,7 +6,7 @@ import (
 	"math/big"
 )
 
-func RandomString(n int) string {
+func RandomHexString(n int) string {
 	buf := make([]byte, n)
 	_, err := rand.Read(buf)
 	if err != nil {
@@ -23,4 +23,16 @@ func RandomNumber(min, max int) int {
 	}
 
 	return int(n.Int64()) + min
+}
+
+func RandomString(length int) string {
+	s := ""
+
+	chars := "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+
+	for i := 0; i < length; i++ {
+		s += string(chars[RandomNumber(0, len(chars))])
+	}
+
+	return s
 }

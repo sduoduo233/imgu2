@@ -36,9 +36,10 @@
             <td><span class="badge text-bg-danger">FALSE</span></td>
             {{ end }}
             <td>
-                <a href="/admin/storages/{{.Id}}"><button type="button"
-                        class="btn btn-outline-primary btn-sm">Edit</button></a>
                 <form action="/admin/storages/delete/{{.Id}}" method="post">
+                    <a href="/admin/storages/{{.Id}}">
+                        <button type="button" class="btn btn-outline-primary btn-sm">Edit</button>
+                    </a>
                     <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                 </form>
             </td>

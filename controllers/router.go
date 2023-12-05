@@ -11,6 +11,7 @@ func Route(r chi.Router) {
 	r.Use(cmiddleware.Logger)
 	r.Use(middleware.Auth)
 
+	// auth
 	r.Get("/login", login)
 	r.Post("/login", doLogin)
 	r.Get("/login/google", googleLogin)
@@ -51,4 +52,7 @@ func Route(r chi.Router) {
 		r.Post("/admin/storages/delete/{id}", adminStorageDelete)
 		r.Post("/admin/storages", adminAddStorage)
 	})
+
+	r.Get("/", upload)
+	r.Post("/upload", doUpload)
 }

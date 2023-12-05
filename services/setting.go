@@ -1,6 +1,10 @@
 package services
 
-import "img2/db"
+import (
+	"fmt"
+	"img2/db"
+	"strconv"
+)
 
 type setting struct{}
 
@@ -54,4 +58,22 @@ func (s *setting) GetAll() (map[string]string, error) {
 
 func (s *setting) Set(key, value string) error {
 	return db.SetttingUpdate(key, value)
+}
+
+func (*setting) GetMaxImageSize() (uint, error) {
+	s, err := db.SettingFind("MAX_IMAGE_SIZE")
+	if err != nil {
+		return 0, err
+	}
+
+	n, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, fmt.Errorf("strconv: %w", err)
+	}
+
+	if n < 0 {
+		return 0, fmt.Errorf("negative MAX_IMAGE_SIZE")
+	}
+
+	return uint(n), nil
 }

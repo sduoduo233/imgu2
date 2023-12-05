@@ -64,3 +64,5 @@ INSERT OR IGNORE INTO settings(key, value) VALUES('GOOGLE_SECRET', '');
 INSERT OR IGNORE INTO settings(key, value) VALUES('GITHUB_SIGNIN', 'false');
 INSERT OR IGNORE INTO settings(key, value) VALUES('GITHUB_CLIENT_ID', '');
 INSERT OR IGNORE INTO settings(key, value) VALUES('GITHUB_SECRET', '');
+
+INSERT OR IGNORE INTO settings(key, value) VALUES('MAX_IMAGE_SIZE', '10485760'); -- 10 MiB
