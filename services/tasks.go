@@ -1,7 +1,7 @@
 package services
 
 import (
-	"img2/db"
+	"imgu2/db"
 	"log/slog"
 	"time"
 )

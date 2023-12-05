@@ -2,7 +2,7 @@ package services
 
 import (
 	"fmt"
-	"img2/db"
+	"imgu2/db"
 	"strconv"
 )
 

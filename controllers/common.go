@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
-	"img2/services"
-	"img2/templates"
+	"imgu2/services"
+	"imgu2/templates"
 	"io"
 	"log/slog"
 )

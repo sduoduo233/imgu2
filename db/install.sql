@@ -55,7 +55,7 @@ INSERT OR IGNORE INTO settings(key, value) VALUES('RECAPTCHA_CLIENT', '');
 INSERT OR IGNORE INTO settings(key, value) VALUES('RECAPTCHA_SERVER', '');
 
 INSERT OR IGNORE INTO settings(key, value) VALUES('SITE_URL', 'http://127.0.0.1:3000');
-INSERT OR IGNORE INTO settings(key, value) VALUES('SITE_NAME', 'img2 dev');
+INSERT OR IGNORE INTO settings(key, value) VALUES('SITE_NAME', 'imgu2 dev');
 
 INSERT OR IGNORE INTO settings(key, value) VALUES('GOOGLE_SIGNIN', 'false');
 INSERT OR IGNORE INTO settings(key, value) VALUES('GOOGLE_CLIENT_ID', '');

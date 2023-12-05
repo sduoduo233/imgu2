@@ -3,9 +3,9 @@ package services
 import (
 	"database/sql"
 	"fmt"
-	"img2/db"
-	"img2/services/storages"
-	"img2/utils"
+	"imgu2/db"
+	"imgu2/services/storages"
+	"imgu2/utils"
 	"log/slog"
 )
 

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"img2/controllers/middleware"
+	"imgu2/controllers/middleware"
 
 	"github.com/go-chi/chi/v5"
 	cmiddleware "github.com/go-chi/chi/v5/middleware"

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"img2/db"
-	"img2/services/emails"
+	"imgu2/db"
+	"imgu2/services/emails"
 	"time"
 
 	"github.com/golang-jwt/jwt"

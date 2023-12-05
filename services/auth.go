@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"img2/db"
-	"img2/utils"
+	"imgu2/db"
+	"imgu2/utils"
 	"io"
 	"log/slog"
 	"net/http"
@@ -27,9 +27,9 @@ type OAuthProfile struct {
 
 func getJWTSecret() string {
 	if jwtSecret == "" {
-		jwtSecret = os.Getenv("IMG2_JWT_SECRET")
+		jwtSecret = os.Getenv("IMGU2_JWT_SECRET")
 		if jwtSecret == "" {
-			panic("IMG2_JWT_SECRET should not be empty")
+			panic("IMGU2_JWT_SECRET should not be empty")
 		}
 	}
 

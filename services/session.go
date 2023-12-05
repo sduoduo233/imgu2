@@ -3,8 +3,8 @@ package services
 import (
 	"database/sql"
 	"errors"
-	"img2/db"
-	"img2/utils"
+	"imgu2/db"
+	"imgu2/utils"
 	"time"
 )
 

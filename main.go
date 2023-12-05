@@ -8,9 +8,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 
-	"img2/controllers"
-	_ "img2/db"
-	"img2/services"
+	"imgu2/controllers"
+	_ "imgu2/db"
+	"imgu2/services"
 )
 
 func main() {

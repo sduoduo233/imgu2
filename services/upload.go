@@ -8,8 +8,8 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"img2/db"
-	"img2/utils"
+	"imgu2/db"
+	"imgu2/utils"
 	"net/http"
 )
 

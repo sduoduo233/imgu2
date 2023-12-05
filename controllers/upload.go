@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"database/sql"
-	"img2/controllers/middleware"
-	"img2/services"
+	"imgu2/controllers/middleware"
+	"imgu2/services"
 	"io"
 	"log/slog"
 	"net"

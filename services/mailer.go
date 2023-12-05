@@ -13,7 +13,7 @@ type mailer struct{}
 var Mailer = mailer{}
 
 func (mailer) SendMail(to string, subject string, content string) error {
-	sender := os.Getenv("IMG2_SMTP_SENDER")
+	sender := os.Getenv("IMGU2_SMTP_SENDER")
 	if sender == "" {
 		return fmt.Errorf("sendmail: empty sender")
 	}
@@ -31,12 +31,12 @@ func (mailer) SendMail(to string, subject string, content string) error {
 	msg.Subject(subject)
 	msg.SetBodyString(mail.TypeTextHTML, content)
 
-	username := os.Getenv("IMG2_SMTP_USERNAME")
-	password := os.Getenv("IMG2_SMTP_PASSWORD")
-	host := os.Getenv("IMG2_SMTP_HOST")
-	port, err := strconv.Atoi(os.Getenv("IMG2_SMTP_PORT"))
+	username := os.Getenv("IMGU2_SMTP_USERNAME")
+	password := os.Getenv("IMGU2_SMTP_PASSWORD")
+	host := os.Getenv("IMGU2_SMTP_HOST")
+	port, err := strconv.Atoi(os.Getenv("IMGU2_SMTP_PORT"))
 	if err != nil {
-		return fmt.Errorf("sendmail: invalid IMG2_SMTP_PORT: %s", os.Getenv("IMG2_SMTP_PORT"))
+		return fmt.Errorf("sendmail: invalid IMGU2_SMTP_PORT: %s", os.Getenv("IMGU2_SMTP_PORT"))
 	}
 
 	client, err := mail.NewClient(host, mail.WithPort(port), mail.WithSMTPAuth(mail.SMTPAuthPlain), mail.WithUsername(username), mail.WithPassword(password))

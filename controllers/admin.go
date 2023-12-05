@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"img2/controllers/middleware"
-	"img2/services"
+	"imgu2/controllers/middleware"
+	"imgu2/services"
 	"log/slog"
 	"net/http"
 )

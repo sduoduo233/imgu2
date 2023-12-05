@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
-	"img2/db"
-	"img2/services"
+	"imgu2/db"
+	"imgu2/services"
 	"io"
 	"log/slog"
 	"net/http"
