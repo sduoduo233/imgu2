@@ -172,7 +172,7 @@ func doVerifyEmail(w http.ResponseWriter, r *http.Request) {
 	err := services.User.SendVerificationEmail(user.Id)
 	if err != nil {
 		slog.Error("send verification email", "err", err)
-		renderDialog(w, "Error", "Unknown error", "/dashboarad", "Go back")
+		renderDialog(w, "Error", "Unknown error", "/dashboard", "Go back")
 		return
 	}
 
