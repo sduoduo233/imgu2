@@ -23,11 +23,15 @@ func main() {
 		Level: slog.LevelDebug,
 	})))
 
+	// initialize storage drivers
 	err = services.Storage.Init()
 	if err != nil {
 		slog.Error("failed to initialize storage drivers", "err", err)
 		panic(err)
 	}
+
+	// start scheduled tasks
+	services.TaskStart()
 
 	r := chi.NewRouter()
 

@@ -99,7 +99,6 @@ func (*storage) Delete(id int) error {
 //
 // return the id of the storage driver
 func (s *storage) Put(fileName string, content []byte, expire sql.NullTime) (int, error) {
-
 	if len(s.uploadDrivers) == 0 {
 		return 0, fmt.Errorf("no storage driver available")
 	}
@@ -112,5 +111,19 @@ func (s *storage) Put(fileName string, content []byte, expire sql.NullTime) (int
 		return 0, fmt.Errorf("storage put: %w", err)
 	}
 
+	slog.Debug("put file", "file name", fileName, "size", len(content), "expire", expire)
+
 	return d.ID(), nil
+}
+
+func (s *storage) DeleteFileFromDriver(id int, fileName string) error {
+	slog.Debug("delete from driver", "id", id, "file name", fileName)
+
+	for _, v := range s.dirvers {
+		if v.ID() == id {
+			return v.Delete(fileName)
+		}
+	}
+
+	return fmt.Errorf("storage driver %d does not exist", id)
 }

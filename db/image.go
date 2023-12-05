@@ -9,11 +9,11 @@ import (
 type Image struct {
 	Id         int
 	StorageId  int
-	Uploader   int
+	Uploader   sql.NullInt32
 	FileName   string
 	UploaderIP string
-	Time       int64
-	ExpireTime int64
+	Time       time.Time
+	ExpireTime sql.NullTime
 }
 
 // expire may be nil
@@ -40,4 +40,41 @@ func ImageCreate(storage int, uploader sql.NullInt32, fileName string, uploaderI
 	}
 
 	return int(id), nil
+}
+
+func ImageFindExpired() ([]Image, error) {
+	images := make([]Image, 0)
+
+	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time FROM images WHERE expire_time IS NOT NULL AND expire_time < unixepoch()")
+	if err != nil {
+		return nil, fmt.Errorf("db: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var i Image
+		var timeUnix int64
+		var timeExpireUnix sql.NullInt64
+		err := rows.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix)
+		if err != nil {
+			return nil, fmt.Errorf("db: %w", err)
+		}
+
+		if timeExpireUnix.Valid {
+			i.ExpireTime.Valid = true
+			i.ExpireTime.Time = time.Unix(timeExpireUnix.Int64, 0)
+		}
+
+		images = append(images, i)
+	}
+
+	return images, nil
+}
+
+func ImageDelete(id int) error {
+	_, err := DB.Exec("DELETE FROM images WHERE id = ?", id)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+	return nil
 }

@@ -24,5 +24,16 @@ func SessionFind(token string) (int, error) {
 
 func SessionDelete(token string) error {
 	_, err := DB.Exec("DELETE FROM sessions WHERE token = ?", token)
-	return err
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+	return nil
+}
+
+func SessionCleanExpired() error {
+	_, err := DB.Exec("DELETE FROM sessions WHERE expire_at < unixepoch()")
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+	return nil
 }
