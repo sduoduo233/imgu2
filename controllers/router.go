@@ -21,6 +21,7 @@ func Route(r chi.Router) {
 	r.Get("/login/github/callback", githubLoginCallback)
 
 	r.Get("/verify-email", verifyEmailCallback)
+	r.Get("/verify-email-change", changeEmailCallback)
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireAuth)

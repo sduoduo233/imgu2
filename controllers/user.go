@@ -146,7 +146,7 @@ func changeEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderDialog(w, "Error", "Email changed. You have to re-verify your email.", "/dashboard/account", "Continue")
+	renderDialog(w, "Info", "An verification email has been sent to your new email address", "/dashboard/account", "Continue")
 }
 
 func verifyEmail(w http.ResponseWriter, r *http.Request) {
@@ -196,4 +196,21 @@ func verifyEmailCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderDialog(w, "Info", "Your email is verified", "/dashboard", "Continue")
+}
+
+func changeEmailCallback(w http.ResponseWriter, r *http.Request) {
+	token := r.URL.Query().Get("token")
+	if token == "" {
+		renderDialog(w, "Error", "Token is empty", "", "")
+		return
+	}
+
+	err := services.User.ChangeEmailCallback(token)
+	if err != nil {
+		slog.Error("change email callback", "err", err)
+		renderDialog(w, "Error", "Invalid token", "", "")
+		return
+	}
+
+	renderDialog(w, "Info", "Your email is changed", "/dashboard", "Continue")
 }

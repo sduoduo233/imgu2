@@ -81,9 +81,69 @@ func (user) ChangeUsername(userId int, username string) error {
 	return db.UserChangeUsername(userId, username)
 }
 
-// update email and set email verified to false
-func (user) ChangeEmail(userId int, email string) error {
-	return db.UserChangeEmail(userId, email)
+// send a verification link to the new email address
+//
+// email address is only changed after clicking the verification link
+func (user) ChangeEmail(userId int, newEmail string) error {
+
+	u, err := User.FindById(userId)
+	if err != nil {
+		return err
+	}
+
+	if u == nil {
+		return fmt.Errorf("user not found: %d", userId)
+	}
+
+	siteName, err := Setting.GetSiteName()
+	if err != nil {
+		return err
+	}
+
+	siteUrl, err := Setting.GetSiteURL()
+	if err != nil {
+		return err
+	}
+
+	// generate verification url
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp":       time.Now().Add(time.Minute * 30).Unix(), // Expiration Time
+		"nbf":       time.Now().Unix(),                       // Not Before
+		"sub":       u.Id,
+		"new_email": newEmail,
+		"aud":       "email_change",
+	})
+
+	signedToken, err := token.SignedString([]byte(getJWTSecret()))
+	if err != nil {
+		return fmt.Errorf("jwt sign: %w", err)
+	}
+
+	// generate email content
+	tpl, err := template.New("verification").Parse(emails.VERIFICATION)
+	if err != nil {
+		return fmt.Errorf("parse template: %w", err)
+	}
+
+	buf := new(bytes.Buffer)
+
+	err = tpl.Execute(buf, map[string]string{
+		"username": u.Username,
+		"name":     siteName,
+		"link":     siteUrl + "/verify-email-change?token=" + signedToken,
+		"email":    newEmail,
+	})
+	if err != nil {
+		return fmt.Errorf("execute template: %w", err)
+	}
+
+	// send email
+	err = Mailer.SendMail(u.Email, "Confirm your "+siteName+" account", buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // send verification email
@@ -181,5 +241,43 @@ func (user) VerifyEmail(token string) error {
 
 	// mark email as verified
 	err = db.UserVerifyEmail(email)
+	return err
+}
+
+// change email address
+func (user) ChangeEmailCallback(token string) error {
+	// parse and validate jwt token
+	parsed, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
+		return []byte(getJWTSecret()), nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("parse token: %w", err)
+	}
+
+	claims, ok := parsed.Claims.(jwt.MapClaims)
+	if !ok {
+		return fmt.Errorf("parse token: Claims is not jwt.MapClaims")
+	}
+
+	if claims["aud"] != "email_change" {
+		return fmt.Errorf("invalid aud: %v", claims["aud"])
+	}
+
+	userId, ok := claims["sub"].(float64) // golang uses float64 for JSON numbers
+	if !ok {
+		return fmt.Errorf("invalid user id: %v", claims["sub"])
+	}
+
+	email, ok := claims["new_email"].(string)
+	if !ok {
+		return fmt.Errorf("invalid email: %v", claims["new_email"])
+	}
+
+	// update email address and mark as verified
+	err = db.UserChangeEmail(int(userId), email)
 	return err
 }

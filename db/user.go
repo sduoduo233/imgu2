@@ -81,9 +81,9 @@ func UserChangeUsername(id int, username string) error {
 	return nil
 }
 
-// update email and set email_verified to false
+// update email and set email_verified to true
 func UserChangeEmail(id int, email string) error {
-	_, err := DB.Exec("UPDATE users SET email = ?, email_verified = ? WHERE id = ?", email, false, id)
+	_, err := DB.Exec("UPDATE users SET email = ?, email_verified = ? WHERE id = ?", email, true, id)
 	if err != nil {
 		return fmt.Errorf("db: %w", err)
 	}
