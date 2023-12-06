@@ -37,6 +37,7 @@
             {{ end }}
             <td>
                 <form action="/admin/storages/delete/{{.Id}}" method="post">
+                    {{template "csrf" .csrf_token}}
                     <a href="/admin/storages/{{.Id}}">
                         <button type="button" class="btn btn-outline-primary btn-sm">Edit</button>
                     </a>
@@ -56,6 +57,8 @@
     <div class="card-body">
 
         <form action="/admin/storages" method="post">
+
+            {{template "csrf" .csrf_token}}
 
             <div class="mb-3">
                 <label class="form-label">Storage Type</label>

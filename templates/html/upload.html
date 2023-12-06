@@ -38,6 +38,8 @@
 </div>
 
 <script>
+    const csrf_token = "{{.csrf_token}}";
+
     const fileArea = document.getElementById("file-area");
     const fileInput = document.getElementById("file-input");
     const preview = document.getElementById("preview");
@@ -100,6 +102,11 @@
         });
 
         xhr.addEventListener("load", () => {
+            if (xhr.status !== 200) {
+                alert("ERROR: " + xhr.statusText);
+                location.reload()
+                return
+            }
             const resp = JSON.parse(xhr.responseText);
             if (resp.error) {
                 alert("ERROR: " + resp.error);
@@ -120,6 +127,7 @@
         const formData = new FormData();
         formData.set("file", file);
         formData.set("expire", selectExpire.value);
+        formData.set("csrf_token", csrf_token);
 
         xhr.send(formData);
     });

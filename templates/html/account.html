@@ -11,6 +11,8 @@
     <div class="card-body">
         <form action="/dashboard/change-password" method="post">
 
+            {{template "csrf" .csrf_token}}
+
             {{if .user.Password}}
             <div class="mb-3">
                 <label class="form-label">Current Password</label>
@@ -41,6 +43,8 @@
     <div class="card-body">
         <form action="/dashboard/change-username" method="post">
 
+            {{template "csrf" .csrf_token}}
+
             <div class="mb-3">
                 <label class="form-label">Username</label>
                 <input type="text" class="form-control" name="username" value="{{.user.Username}}">
@@ -57,6 +61,8 @@
     </div>
     <div class="card-body">
         <form action="/dashboard/change-email" method="post">
+
+            {{template "csrf" .csrf_token}}
 
             <div class="mb-3">
                 <label class="form-label">Email</label>
@@ -84,6 +90,7 @@
             <p class="mb-0">Google account</p>
             {{if .google_linked}}
             <form method="post" action="/dashboard/unlink">
+                {{template "csrf" .csrf_token}}
                 <button type="submit" name="type" value="google" class="btn btn-link">Unlink</button>
             </form>
             {{else}}
@@ -97,6 +104,7 @@
             <p class="mb-0">Github account</p>
             {{if .github_linked}}
             <form method="post" action="/dashboard/unlink">
+                {{template "csrf" .csrf_token}}
                 <button type="submit" name="type" value="github" class="btn btn-link">Unlink</button>
             </form>
             {{else}}

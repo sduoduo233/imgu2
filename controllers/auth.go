@@ -12,7 +12,6 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
-// email login
 func login(w http.ResponseWriter, r *http.Request) {
 	if middleware.GetUser(r.Context()) != nil {
 		http.Redirect(w, r, "/dashboard", http.StatusFound)
@@ -36,16 +35,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 	render(w, "login", H{
 		"google_login": googleLogin,
 		"github_login": githubLogin,
+		"csrf_token":   csrfToken(w),
 	})
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     "TOKEN",
-		Value:    "",
-		Path:     "/",
-		HttpOnly: true,
-	})
+	setCookie(w, "TOKEN", "")
 	renderDialog(w, "Info", "Logged out", "/login", "Login")
 }
 
@@ -64,12 +59,7 @@ func doLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "TOKEN",
-		Value:    token,
-		HttpOnly: true,
-		Path:     "/",
-	})
+	setCookie(w, "TOKEN", token)
 
 	http.Redirect(w, r, "/dashboard", http.StatusFound)
 }
@@ -194,12 +184,7 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.SetCookie(w, &http.Cookie{
-			Name:     "TOKEN",
-			Value:    token,
-			Path:     "/",
-			HttpOnly: true,
-		})
+		setCookie(w, "TOKEN", token)
 
 		http.Redirect(w, r, "/dashboard", http.StatusFound)
 		return

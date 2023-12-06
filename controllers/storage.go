@@ -26,8 +26,9 @@ func adminStorages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render(w, "storages", H{
-		"user":     user,
-		"storages": storages,
+		"user":       user,
+		"storages":   storages,
+		"csrf_token": csrfToken(w),
 	})
 }
 
@@ -57,10 +58,11 @@ func adminEditStorage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render(w, "storage_config", H{
-		"user":    user,
-		"storage": s,
-		"action":  "edit",
-		"config":  config,
+		"user":       user,
+		"storage":    s,
+		"action":     "edit",
+		"config":     config,
+		"csrf_token": csrfToken(w),
 	})
 }
 

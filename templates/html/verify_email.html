@@ -3,6 +3,9 @@
 <h1>Email verification</h1>
 
 <form method="post" action="/dashboard/verify-email">
+
+    {{template "csrf" .csrf_token}}
+    
     <button class="btn btn-outline-primary">Send verification email to {{.user.Email}}</button>
     <p><a href="/dashboard/account">Click here to change your email</a></p>
 </form>

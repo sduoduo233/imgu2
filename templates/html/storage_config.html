@@ -4,6 +4,9 @@
 
 
 <form method="post">
+
+    {{template "csrf" .csrf_token}}
+    
     <div class="mb-3">
         <label class="form-label">Name</label>
         <input type="text" class="form-control" value="{{.storage.Name}}" disabled name="name">

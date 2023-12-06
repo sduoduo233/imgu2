@@ -10,6 +10,7 @@ import (
 func Route(r chi.Router) {
 	r.Use(cmiddleware.Logger)
 	r.Use(middleware.Auth)
+	r.Use(middleware.CSRF)
 
 	// auth
 	r.Get("/login", login)

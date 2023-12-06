@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"imgu2/services"
 	"imgu2/templates"
+	"imgu2/utils"
 	"io"
 	"log/slog"
+	"net/http"
 )
 
 type H map[string]any
@@ -45,4 +47,20 @@ func writeJSON(w io.Writer, m H) {
 	if err != nil {
 		slog.Error("write json", "err", err)
 	}
+}
+
+func setCookie(w http.ResponseWriter, name string, value string) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     name,
+		Value:    value,
+		HttpOnly: true,
+		Secure:   true,
+	})
+}
+
+// generate a new csrf token and add it to cookies
+func csrfToken(w http.ResponseWriter) string {
+	t := utils.RandomHexString(8)
+	setCookie(w, "CSRF_TOKEN", t)
+	return t
 }

@@ -6,6 +6,8 @@
 
 <form method="post" action="/admin/settings">
 
+    {{template "csrf" .csrf_token}}
+
     <!-- captcha -->
     <div class="mb-3">
         <label class="form-label">CAPTCHA</label>

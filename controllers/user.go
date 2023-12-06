@@ -57,6 +57,7 @@ func accountSetting(w http.ResponseWriter, r *http.Request) {
 		"google_linked": googleLinked,
 		"github_login":  githubLogin,
 		"github_linked": githubLinked,
+		"csrf_token":    csrfToken(w),
 	})
 }
 
@@ -157,7 +158,8 @@ func verifyEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render(w, "verify_email", H{
-		"user": user,
+		"user":       user,
+		"csrf_token": csrfToken(w),
 	})
 }
 

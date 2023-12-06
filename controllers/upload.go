@@ -16,7 +16,8 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	user := middleware.GetUser(r.Context())
 
 	render(w, "upload", H{
-		"user": user,
+		"user":       user,
+		"csrf_token": csrfToken(w),
 	})
 }
 

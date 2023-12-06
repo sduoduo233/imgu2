@@ -26,8 +26,9 @@ func adminSettings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render(w, "admin_settings", H{
-		"user":    user,
-		"setting": m,
+		"user":       user,
+		"setting":    m,
+		"csrf_token": csrfToken(w),
 	})
 }
 
