@@ -28,6 +28,10 @@ func Route(r chi.Router) {
 		r.Get("/logout", logout)
 	})
 
+	// image
+	r.Get("/i/{fileName}", downloadImage)
+	r.Get("/preview/{fileName}", previewImage)
+
 	// user dashboard
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireAuth)

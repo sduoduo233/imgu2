@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
-	"image"
+	i "image"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
@@ -53,7 +53,7 @@ func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTim
 
 		// png & jpeg
 
-		img, format, err := image.Decode(bytes.NewReader(file))
+		img, format, err := i.Decode(bytes.NewReader(file))
 		if err != nil {
 			return "", fmt.Errorf("decode: %w", err)
 		}

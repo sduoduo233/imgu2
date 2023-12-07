@@ -127,3 +127,13 @@ func (s *storage) DeleteFileFromDriver(id int, fileName string) error {
 
 	return fmt.Errorf("storage driver %d does not exist", id)
 }
+
+func (s *storage) GetFile(id int, fileName string) (any, error) {
+	for _, v := range s.dirvers {
+		if v.ID() == id {
+			return v.Get(fileName)
+		}
+	}
+
+	return nil, fmt.Errorf("storage driver %d does not exist", id)
+}

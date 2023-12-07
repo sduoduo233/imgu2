@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -42,6 +43,33 @@ func ImageCreate(storage int, uploader sql.NullInt32, fileName string, uploaderI
 	return int(id), nil
 }
 
+// find an image by file name
+//
+// return (nil, nil) if not found
+func ImageFindByFileName(fileName string) (*Image, error) {
+	var i Image
+	var timeUnix int64
+	var timeExpireUnix sql.NullInt64
+
+	row := DB.QueryRow("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time FROM images WHERE file_name = ? AND (expire_time IS NULL OR expire_time > unixepoch()) LIMIT 1", fileName)
+	err := row.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("db: %w", err)
+	}
+
+	i.Time = time.Unix(timeUnix, 0)
+
+	if timeExpireUnix.Valid {
+		i.ExpireTime.Valid = true
+		i.ExpireTime.Time = time.Unix(timeExpireUnix.Int64, 0)
+	}
+
+	return &i, nil
+}
+
 func ImageFindExpired() ([]Image, error) {
 	images := make([]Image, 0)
 
@@ -59,6 +87,8 @@ func ImageFindExpired() ([]Image, error) {
 		if err != nil {
 			return nil, fmt.Errorf("db: %w", err)
 		}
+
+		i.Time = time.Unix(timeUnix, 0)
 
 		if timeExpireUnix.Valid {
 			i.ExpireTime.Valid = true

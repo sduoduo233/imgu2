@@ -1,0 +1,23 @@
+{{template "header" .}}
+
+<script>
+    const link = "{{.site_url}}/i/{{.file_name}}";
+    function copyLink() {
+        navigator.clipboard.writeText(link);
+    }
+    function copyMarkdown() {
+        navigator.clipboard.writeText(`![${link}](${link})`);
+    }
+</script>
+
+<div class="border p-3 m-2 rounded">
+    <div class="btn btn-outline-primary" onclick="copyLink()">Copy Link</div>
+    <div class="btn btn-outline-primary" onclick="copyMarkdown()">Copy Markdown</div>
+</div>
+
+<div class="border p-3 m-2 rounded">
+    <img src="/i/{{.file_name}}" class="w-100">
+</div>
+
+
+{{template "footer"}}
