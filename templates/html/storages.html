@@ -7,6 +7,7 @@
     Restart the server for settings on this page to take effect.
 </div>
 
+{{ $csrf_token := .csrf_token}}
 
 <table class="table" id="table">
     <thead>
@@ -37,7 +38,7 @@
             {{ end }}
             <td>
                 <form action="/admin/storages/delete/{{.Id}}" method="post">
-                    {{template "csrf" .csrf_token}}
+                    {{template "csrf" $csrf_token}}
                     <a href="/admin/storages/{{.Id}}">
                         <button type="button" class="btn btn-outline-primary btn-sm">Edit</button>
                     </a>
