@@ -12,6 +12,9 @@ import (
 )
 
 func downloadImage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Methods", "GET")
+
 	fileName := chi.URLParam(r, "fileName")
 
 	c, err := services.Image.Get(fileName)
