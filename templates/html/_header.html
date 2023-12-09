@@ -31,8 +31,21 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/">Upload</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">Dashboard</a>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Account
+                        </a>
+                        <ul class="dropdown-menu">
+                            {{if .user}}
+                                <li><div class="dropdown-item disabled">Logged in as {{.user.Username}}</div></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/dashboard/images">Images</a></li>
+                                <li><a class="dropdown-item" href="/dashboard/account">Account Settings</a></li>
+                            {{else}}
+                                <li><a class="dropdown-item" href="/login">Sign in / Sing up</a></li>
+                            {{end}}
+                        </ul>
                     </li>
 
                     {{if and .user (eq .user.Role 0)}}
