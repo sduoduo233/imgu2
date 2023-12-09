@@ -10,6 +10,31 @@
     }
 </script>
 
+{{if .own}}
+
+<div class="border p-3 m-2 rounded">
+    <p id="uploaded-at">Uploaded at:</p>
+    <p id="expire-at">Expire at:</p>
+    <form method="post" action="/dashboard/images/delete">
+        {{template "csrf" .csrf_token}}
+        <input type="hidden" name="file_name" value="{{.file_name}}">
+        <button class="btn btn-outline-danger">Delete</button>
+    </form>
+</div>
+
+<script>
+    const uploadedAt = +"{{.uploaded_at}}";
+    const expireAt = +"{{.expire}}";
+    document.getElementById("uploaded-at").innerText += " " + new Date(uploadedAt * 1000).toLocaleString();
+    if (expireAt > 0) {
+        document.getElementById("expire-at").innerText += " " + new Date(expireAt * 1000).toLocaleString();
+    } else {
+        document.getElementById("expire-at").innerText += " Never";
+    }
+</script>
+
+{{end}}
+
 <div class="border p-3 m-2 rounded">
     <div class="btn btn-outline-primary" onclick="copyLink()">Copy Link</div>
     <div class="btn btn-outline-primary" onclick="copyMarkdown()">Copy Markdown</div>

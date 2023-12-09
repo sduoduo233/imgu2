@@ -4,6 +4,7 @@ import (
 	"imgu2/controllers/middleware"
 	"imgu2/services"
 	"imgu2/services/placeholder"
+	"io"
 	"log/slog"
 	"net/http"
 	"reflect"
@@ -61,9 +62,34 @@ func previewImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	img, err := services.Image.FindByFileName(fileName)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("preview image", "err", err)
+		return
+	}
+
+	if img == nil {
+		w.WriteHeader(http.StatusNotFound)
+		io.WriteString(w, "404 not found")
+		return
+	}
+
+	// whether the current user is the owner of the image
+	own := user != nil && img.Uploader.Valid && img.Uploader.Int32 == int32(user.Id)
+
+	expire := int64(0)
+	if img.ExpireTime.Valid {
+		expire = img.ExpireTime.Time.Unix()
+	}
+
 	render(w, "preview", H{
-		"user":      user,
-		"file_name": fileName,
-		"site_url":  siteUrl,
+		"user":        user,
+		"file_name":   fileName,
+		"site_url":    siteUrl,
+		"uploaded_at": img.Time.Unix(),
+		"expire":      expire,
+		"own":         own,
+		"csrf_token":  csrfToken(w),
 	})
 }

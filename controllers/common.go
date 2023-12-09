@@ -55,6 +55,8 @@ func setCookie(w http.ResponseWriter, name string, value string) {
 		Value:    value,
 		HttpOnly: true,
 		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+		Path:     "/",
 	})
 }
 

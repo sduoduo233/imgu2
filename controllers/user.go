@@ -246,3 +246,44 @@ func myImages(w http.ResponseWriter, r *http.Request) {
 		"total_page": int(math.Ceil(float64(imageCount) / 20)), // page size = 20
 	})
 }
+
+func deleteImage(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r.Context())
+
+	fileName := r.FormValue("file_name")
+
+	if fileName == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	img, err := services.Image.FindByFileName(fileName)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("delete image", "err", err)
+		return
+	}
+
+	if img == nil {
+		w.WriteHeader(http.StatusNotFound)
+		renderDialog(w, "Error", "image not found", "/dashboard/images", "Go back")
+		return
+	}
+
+	if !img.Uploader.Valid || img.Uploader.Int32 != int32(user.Id) {
+		w.WriteHeader(http.StatusForbidden)
+		renderDialog(w, "Error", "You do not have permission to delete this image", "/dashboard/images", "Go back")
+		return
+	}
+
+	err = services.Image.Delete(img)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		renderDialog(w, "Error", "unknown error", "/dashboard/images", "Go back")
+		slog.Error("delete image", "err", err)
+		return
+	}
+
+	renderDialog(w, "Info", "Image deleted", "/dashboard/images", "Continue")
+
+}
