@@ -1,0 +1,23 @@
+{{template "header" .}}
+
+<h1>My uploads</h1>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2">
+    {{ range .images }}
+
+    <div class="col">
+        <a href="/preview/{{.FileName}}">
+            <div class="p-2 rounded border">
+                <div class="ratio ratio-4x3">
+                    <img src="/i/{{.FileName}}" class="object-fit-cover">
+                </div>
+            </div>
+        </a>
+    </div>
+
+    {{ end }}
+</div>
+
+{{template "pagination" .}}
+
+{{template "footer"}}

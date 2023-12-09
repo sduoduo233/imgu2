@@ -3,7 +3,7 @@ package controllers
 import (
 	"imgu2/controllers/middleware"
 	"imgu2/services"
-	"io"
+	"imgu2/services/placeholder"
 	"log/slog"
 	"net/http"
 	"reflect"
@@ -20,8 +20,10 @@ func downloadImage(w http.ResponseWriter, r *http.Request) {
 	c, err := services.Image.Get(fileName)
 	if err != nil {
 		slog.Error("download image", "err", err)
+
 		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, "failed to load image")
+		w.Header().Add("Content-Type", "image/png")
+		w.Write(placeholder.ERROR)
 		return
 	}
 
@@ -34,12 +36,16 @@ func downloadImage(w http.ResponseWriter, r *http.Request) {
 		w.Write(v)
 
 	case nil:
+		w.Header().Add("Content-Type", "image/png")
 		w.WriteHeader(http.StatusNotFound)
-		io.WriteString(w, "image not found")
+		w.Write(placeholder.NOT_FOUND)
 
 	default:
-		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error("download image: unexpected type", "type", reflect.TypeOf(v))
+
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Add("Content-Type", "image/png")
+		w.Write(placeholder.ERROR)
 	}
 }
 

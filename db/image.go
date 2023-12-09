@@ -108,3 +108,47 @@ func ImageDelete(id int) error {
 	}
 	return nil
 }
+
+func ImageFindByUser(userId int, skip int, limit int) ([]Image, error) {
+	images := make([]Image, 0)
+
+	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time FROM images WHERE uploader = ? AND (expire_time IS NULL OR expire_time > unixepoch()) LIMIT ? OFFSET ?", userId, limit, skip)
+	if err != nil {
+		return nil, fmt.Errorf("db: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var i Image
+		var timeUnix int64
+		var timeExpireUnix sql.NullInt64
+		err := rows.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix)
+		if err != nil {
+			return nil, fmt.Errorf("db: %w", err)
+		}
+
+		i.Time = time.Unix(timeUnix, 0)
+
+		if timeExpireUnix.Valid {
+			i.ExpireTime.Valid = true
+			i.ExpireTime.Time = time.Unix(timeExpireUnix.Int64, 0)
+		}
+
+		images = append(images, i)
+	}
+
+	return images, nil
+}
+
+// count uploaded images by a user
+func ImageCountByUser(userId int) (int, error) {
+	r := DB.QueryRow("SELECT COUNT(*) FROM images WHERE uploader = ? AND (expire_time IS NULL OR expire_time > unixepoch())", userId)
+
+	var cnt int
+	err := r.Scan(&cnt)
+	if err != nil {
+		return 0, fmt.Errorf("db: %w", err)
+	}
+
+	return cnt, nil
+}

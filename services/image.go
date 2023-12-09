@@ -23,3 +23,18 @@ func (*image) Get(fileName string) (any, error) {
 
 	return Storage.GetFile(img.StorageId, fileName)
 }
+
+// find all images uploaded by a user
+func (*image) FindByUser(userId int, page int) ([]db.Image, error) {
+	const pageSize = 20
+	i, err := db.ImageFindByUser(userId, page*pageSize, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	return i, nil
+}
+
+func (*image) CountByUser(userId int) (int, error) {
+	return db.ImageCountByUser(userId)
+}

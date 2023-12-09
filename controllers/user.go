@@ -6,7 +6,9 @@ import (
 	"imgu2/services"
 	"io"
 	"log/slog"
+	"math"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/mattn/go-sqlite3"
@@ -213,4 +215,34 @@ func changeEmailCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderDialog(w, "Info", "Your email is changed", "/dashboard", "Continue")
+}
+
+func myImages(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r.Context())
+
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil || page < 0 {
+		page = 0
+	}
+
+	imageCount, err := services.Image.CountByUser(user.Id)
+	if err != nil {
+		slog.Error("my images", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	images, err := services.Image.FindByUser(user.Id, page)
+	if err != nil {
+		slog.Error("my images", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	render(w, "images", H{
+		"user":       user,
+		"images":     images,
+		"page":       page,
+		"total_page": int(math.Ceil(float64(imageCount) / 20)), // page size = 20
+	})
 }

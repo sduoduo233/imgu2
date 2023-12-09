@@ -43,6 +43,7 @@ func Route(r chi.Router) {
 		r.Post("/dashboard/unlink", socialLoginUnlink)
 		r.Get("/dashboard/verify-email", verifyEmail)
 		r.Post("/dashboard/verify-email", doVerifyEmail)
+		r.Get("/dashboard/images", myImages)
 	})
 
 	// admin dashboard
