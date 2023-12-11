@@ -15,14 +15,45 @@ import (
 func upload(w http.ResponseWriter, r *http.Request) {
 	user := middleware.GetUser(r.Context())
 
+	maxTime, err := services.Upload.MaxUploadTime(user != nil)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("upload", "err", err)
+		return
+	}
+
+	guestUpload, err := services.Setting.GetGuestUpload()
+	if err != nil {
+		slog.Error("upload", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	render(w, "upload", H{
-		"user":       user,
-		"csrf_token": csrfToken(w),
+		"user":         user,
+		"csrf_token":   csrfToken(w),
+		"max_time":     maxTime,
+		"guest_upload": guestUpload,
 	})
 }
 
 func doUpload(w http.ResponseWriter, r *http.Request) {
 	user := middleware.GetUser(r.Context())
+
+	guestUpload, err := services.Setting.GetGuestUpload()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("do upload", "err", err)
+		return
+	}
+
+	if user == nil && !guestUpload {
+		w.WriteHeader(http.StatusForbidden)
+		writeJSON(w, H{
+			"error": "GUEST_UPLOAD_NOT_ALLOWED",
+		})
+		return
+	}
 
 	userId := sql.NullInt32{}
 	if user != nil {
@@ -39,6 +70,23 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 
 	if expire < 0 {
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// validate expire
+	maxTime, err := services.Upload.MaxUploadTime(user != nil)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("do upload", "err", err)
+		return
+	}
+
+	// limit exists && ( duration exceeds limit || never expire )
+	if maxTime != 0 && ((expire > int(maxTime)) || (expire == 0)) {
+		w.WriteHeader(http.StatusForbidden)
+		writeJSON(w, H{
+			"error": "EXPIRE_TOO_LARGE",
+		})
 		return
 	}
 

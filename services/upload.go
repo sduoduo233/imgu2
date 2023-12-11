@@ -98,3 +98,30 @@ func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTim
 	return fileName, nil
 
 }
+
+// return maximum time in seconds an image is kept for
+//
+// return 0 if no duration limit is set
+func (*upload) MaxUploadTime(login bool) (uint, error) {
+	var maxTime uint = 0
+
+	if !login {
+		t, err := Setting.GetGuestUploadTime()
+		if err != nil {
+			return 0, err
+		}
+		if t > 0 {
+			maxTime = t
+		}
+	} else {
+		t, err := Setting.GetUserUploadTime()
+		if err != nil {
+			return 0, err
+		}
+		if t > 0 {
+			maxTime = t
+		}
+	}
+
+	return maxTime, nil
+}

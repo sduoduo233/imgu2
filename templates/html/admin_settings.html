@@ -38,6 +38,15 @@
         <input type="text" class="form-control" name="SITE_NAME" value="{{.setting.SITE_NAME}}">
     </div>
 
+    <!-- auth -->
+    <div class="mb-3">
+        <label class="form-label">Sign up</label>
+        <select id="select-register" class="form-select" name="ALLOW_REGISTER">
+            <option value="true">Enabled</option>
+            <option value="false">Disabled</option>
+        </select>
+    </div>
+
     <!-- google oauth -->
     <div class="mb-3">
         <label class="form-label">Google Sign In</label>
@@ -82,7 +91,27 @@
         <input type="text" class="form-control" name="MAX_IMAGE_SIZE" value="{{.setting.MAX_IMAGE_SIZE}}">
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">Maximum Guest Upload Duration (seconds)</label>
+        <input type="text" class="form-control" name="GUEST_MAX_TIME" value="{{.setting.GUEST_MAX_TIME}}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Maximum User Upload Duration (seconds)</label>
+        <input type="text" class="form-control" name="USER_MAX_TIME" value="{{.setting.USER_MAX_TIME}}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Guest Upload</label>
+        <select id="select-guest-upload" class="form-select" name="GUEST_UPLOAD">
+            <option value="true">Enabled</option>
+            <option value="false">Disabled</option>
+        </select>
+    </div>
+
     <script>
+        document.getElementById("select-register").value = "{{.setting.ALLOW_REGISTER}}";
+        document.getElementById("select-guest-upload").value = "{{.setting.GUEST_UPLOAD}}";
         document.getElementById("select-captcha").value = "{{.setting.CAPTCHA}}";
         document.getElementById("select-google-signin").value = "{{.setting.GOOGLE_SIGNIN}}";
         document.getElementById("select-github-signin").value = "{{.setting.GITHUB_SIGNIN}}";
