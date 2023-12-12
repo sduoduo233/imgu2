@@ -49,8 +49,14 @@
                     </li>
 
                     {{if and .user (eq .user.Role 0)}}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin">Admin</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Admin
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin/storages">Storage Drivers</a></li>
+                            <li><a class="dropdown-item" href="/admin/settings">Settings</a></li>
+                        </ul>
                     </li>
                     {{end}}
 

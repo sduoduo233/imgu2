@@ -51,7 +51,6 @@ func Route(r chi.Router) {
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireAuth)
 		r.Use(middleware.RequireAdmin)
-		r.Get("/admin", adminIndex)
 		r.Get("/admin/settings", adminSettings)
 		r.Post("/admin/settings", doAdminSettings)
 		r.Get("/admin/storages", adminStorages)
