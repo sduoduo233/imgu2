@@ -40,6 +40,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 func doUpload(w http.ResponseWriter, r *http.Request) {
 	user := middleware.GetUser(r.Context())
 
+	// guest upload
 	guestUpload, err := services.Setting.GetGuestUpload()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -51,6 +52,24 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		writeJSON(w, H{
 			"error": "GUEST_UPLOAD_NOT_ALLOWED",
+		})
+		return
+	}
+
+	// user role
+	if user != nil && user.Role != services.RoleAdmin && user.Role != services.RoleUser {
+		w.WriteHeader(http.StatusForbidden)
+		writeJSON(w, H{
+			"error": "USER_BANNED",
+		})
+		return
+	}
+
+	// email verified
+	if user != nil && !user.EmailVerified {
+		w.WriteHeader(http.StatusForbidden)
+		writeJSON(w, H{
+			"error": "EMAIL_NOT_VERIFIED",
 		})
 		return
 	}
