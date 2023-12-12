@@ -150,6 +150,12 @@ func adminStorageDelete(w http.ResponseWriter, r *http.Request) {
 
 	err = services.Storage.Delete(id)
 	if err != nil {
+		if err.Error() == "non empty storage driver can not be deleted" {
+			w.WriteHeader(http.StatusBadRequest)
+			renderDialog(w, "Error", "Non empty storage driver can not be deleted", "/admin/storages", "Go back")
+			return
+		}
+
 		slog.Error("delete storage", "err", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return

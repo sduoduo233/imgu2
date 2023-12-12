@@ -152,3 +152,16 @@ func ImageCountByUser(userId int) (int, error) {
 
 	return cnt, nil
 }
+
+// count the number of images in a storage driver
+func ImageCountByStorage(id int) (int, error) {
+	r := DB.QueryRow("SELECT COUNT(*) FROM images WHERE storage = ?", id)
+
+	var cnt int
+	err := r.Scan(&cnt)
+	if err != nil {
+		return 0, fmt.Errorf("db: %w", err)
+	}
+
+	return cnt, nil
+}

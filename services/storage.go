@@ -91,7 +91,15 @@ func (*storage) Create(name string, t string) (int, error) {
 }
 
 func (*storage) Delete(id int) error {
-	// TODO: non empty storage drivers can not be deleted
+	cnt, err := db.ImageCountByStorage(id)
+	if err != nil {
+		return err
+	}
+
+	if cnt > 0 {
+		return fmt.Errorf("non empty storage driver can not be deleted")
+	}
+
 	return db.StorageDelete(id)
 }
 
