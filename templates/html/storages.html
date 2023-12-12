@@ -9,48 +9,54 @@
 
 {{ $csrf_token := .csrf_token}}
 
-<table class="table" id="table">
-    <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Name</th>
-            <th scope="col">Type</th>
-            <th scope="col">Enabled</th>
-            <th scope="col">Allow Upload</th>
-            <th scope="col">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{range .storages}}
-        <tr>
-            <th scope="row">{{ .Id }}</th>
-            <td>{{ .Name }}</td>
-            <td>{{ .Type }}</td>
-            {{ if .Enabled }}
-            <td><span class="badge text-bg-success">TRUE</span></td>
-            {{ else }}
-            <td><span class="badge text-bg-danger">FALSE</span></td>
-            {{ end }}
-            {{ if .AllowUpload }}
-            <td><span class="badge text-bg-success">TRUE</span></td>
-            {{ else }}
-            <td><span class="badge text-bg-danger">FALSE</span></td>
-            {{ end }}
-            <td>
-                <form action="/admin/storages/delete/{{.Id}}" method="post">
-                    {{template "csrf" $csrf_token}}
-                    <a href="/admin/storages/{{.Id}}">
-                        <button type="button" class="btn btn-outline-primary btn-sm">Edit</button>
-                    </a>
-                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                </form>
-            </td>
-        </tr>
-        {{end}}
-    </tbody>
-</table>
+<div class="overflow-x-scroll text-nowrap">
+    <table class="table" id="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Enabled</th>
+                <th scope="col">Allow Upload</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .storages}}
+            <tr>
+                <th scope="row">{{ .Id }}</th>
+                <td>{{ .Name }}</td>
+                <td>{{ .Type }}</td>
+                {{ if .Enabled }}
+                <td><span class="badge text-bg-success">TRUE</span></td>
+                {{ else }}
+                <td><span class="badge text-bg-danger">FALSE</span></td>
+                {{ end }}
+                {{ if .AllowUpload }}
+                <td><span class="badge text-bg-success">TRUE</span></td>
+                {{ else }}
+                <td><span class="badge text-bg-danger">FALSE</span></td>
+                {{ end }}
+                <td>
+                    <form action="/admin/storages/delete/{{.Id}}" method="post">
+                        {{template "csrf" $csrf_token}}
+                        <a href="/admin/storages/{{.Id}}" class="btn btn-outline-primary btn-sm">
+                            Edit
+                        </a>
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="6">No storage drivers available. Create a new one using the form below.</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
 
-<div class="card">
+<div class="card mt-3">
     <div class="card-header">
         Add new storage driver
     </div>
