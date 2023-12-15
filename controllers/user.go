@@ -309,6 +309,18 @@ func doRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	allowRegister, err := services.Setting.GetAllowRegister()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("register", "err", err)
+		return
+	}
+
+	if !allowRegister {
+		renderDialog(w, "Error", "Registration is currently disabled", "/login", "Go back")
+		return
+	}
+
 	username := r.FormValue("username")
 	email := r.FormValue("email")
 	password := r.FormValue("password")

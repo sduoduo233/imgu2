@@ -147,8 +147,6 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 
 		token, err := services.Auth.SigninOrRegisterWithSocial(services.SocialLoginGoogle, profile)
 		if err != nil {
-			slog.Error("signin google", "err", err)
-
 			var sqliteErr sqlite3.Error
 			if errors.As(err, &sqliteErr) {
 				if sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
@@ -158,6 +156,12 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
+			if err.Error() == "registration is disabled" {
+				renderDialog(w, "Error", "Registration is currently disabled", "/login", "Go back")
+				return
+			}
+
+			slog.Error("signin google", "err", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			renderDialog(w, "Error", "unknown error", "/login", "Go back")
 			return
@@ -218,7 +222,6 @@ func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
 
 		token, err := services.Auth.SigninOrRegisterWithSocial(services.SocialLoginGithub, profile)
 		if err != nil {
-			slog.Error("signin github", "err", err)
 
 			var sqliteErr sqlite3.Error
 			if errors.As(err, &sqliteErr) {
@@ -229,6 +232,12 @@ func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
+			if err.Error() == "registration is disabled" {
+				renderDialog(w, "Error", "Registration is currently disabled", "/login", "Go back")
+				return
+			}
+
+			slog.Error("signin github", "err", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			renderDialog(w, "Error", "unknown error", "/login", "Go back")
 			return

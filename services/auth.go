@@ -99,6 +99,15 @@ func (*auth) SigninOrRegisterWithSocial(loginType string, profile *oauth.OAuthPr
 
 	if social == nil {
 
+		allowRegister, err := Setting.GetAllowRegister()
+		if err != nil {
+			return "", err
+		}
+
+		if !allowRegister {
+			return "", fmt.Errorf("registration is disabled")
+		}
+
 		// sign up
 		randomName := fmt.Sprintf("%s #%d", profile.Name, utils.RandomNumber(100000, 999999))
 		userId, err := db.UserCreate(randomName, profile.Email, "", true, RoleUser)
