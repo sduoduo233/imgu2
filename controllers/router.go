@@ -20,6 +20,11 @@ func Route(r chi.Router) {
 	r.Get("/login/github", githubLogin)
 	r.Get("/login/github/callback", githubLoginCallback)
 
+	// register
+	r.Get("/register", register)
+	r.Post("/register", doRegister)
+
+	// email callback
 	r.Get("/verify-email", verifyEmailCallback)
 	r.Get("/verify-email-change", changeEmailCallback)
 

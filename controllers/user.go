@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"math"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -286,4 +287,84 @@ func deleteImage(w http.ResponseWriter, r *http.Request) {
 
 	renderDialog(w, "Info", "Image deleted", "/dashboard/images", "Continue")
 
+}
+
+func register(w http.ResponseWriter, r *http.Request) {
+	user := middleware.GetUser(r.Context())
+	if user != nil {
+		http.Redirect(w, r, "/dashboard", http.StatusFound)
+		return
+	}
+
+	render(w, "register", H{
+		"csrf_token": csrfToken(w),
+	})
+}
+
+func doRegister(w http.ResponseWriter, r *http.Request) {
+	user := middleware.GetUser(r.Context())
+	if user != nil {
+		http.Redirect(w, r, "/dashboard", http.StatusFound)
+		return
+	}
+
+	username := r.FormValue("username")
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	password2 := r.FormValue("password2")
+
+	if username == "" || email == "" || password == "" || password2 == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		renderDialog(w, "Error", "Missing required fields", "/register", "Go back")
+		return
+	}
+
+	if password != password2 {
+		renderDialog(w, "Error", "Passwords do not match", "/register", "Go back")
+		return
+	}
+
+	// email check
+	match, err := regexp.Match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", []byte(email))
+	if err != nil || !match {
+		renderDialog(w, "Error", "Invalid email address", "/register", "Go back")
+		return
+	}
+
+	// username check (3-30 characters, alphanumeric & underscore, #, space)
+	match, err = regexp.Match("^[\\w #]{3,30}$", []byte(username))
+	if err != nil || !match {
+		renderDialog(w, "Error", "Invalid username", "/register", "Go back")
+		return
+	}
+
+	// password check
+	if len(password) > 30 {
+		renderDialog(w, "Error", "Password too long", "/register", "Go back")
+		return
+	}
+	if len(password) < 8 {
+		renderDialog(w, "Error", "Password too short", "/register", "Go back")
+		return
+	}
+
+	token, err := services.User.Register(username, email, password)
+	if err != nil {
+		slog.Error("register", "err", err)
+
+		var sqliteErr sqlite3.Error
+
+		if errors.As(err, &sqliteErr) && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
+			// duplicated username / email
+			renderDialog(w, "Error", "Duplicated username or email.", "/register", "Go back")
+			return
+		}
+
+		w.WriteHeader(http.StatusInternalServerError)
+		renderDialog(w, "Error", "Unknown error", "/register", "Go back")
+		return
+	}
+
+	setCookie(w, "TOKEN", token)
+	http.Redirect(w, r, "/dashboard", http.StatusFound)
 }

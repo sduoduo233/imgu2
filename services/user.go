@@ -281,3 +281,20 @@ func (user) ChangeEmailCallback(token string) error {
 	err = db.UserChangeEmail(int(userId), email)
 	return err
 }
+
+// register a new account
+//
+// return a session token for the new account
+func (*user) Register(username, email, password string) (string, error) {
+	id, err := db.UserCreate(username, email, password, false, RoleUser)
+	if err != nil {
+		return "", err
+	}
+
+	token, err := Session.Create(id)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
+}

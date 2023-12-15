@@ -1,0 +1,40 @@
+{{template "header" .}}
+
+<h1>Register</h1>
+
+
+<form method="post" action="/register">
+
+    {{template "csrf" .csrf_token}}
+
+    <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" name="username" required>
+        <div class="form-text">Username must be 3-30 characters long and can include letters, numbers, underscores (_), hashtags (#), and spaces.</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" name="email" required>
+        <div class="form-text">Enter a valid email address with a format like 'example@example.com', using letters, numbers, periods (.), and hyphens (-).</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" name="password" required>
+        <div class="form-text">Password must be between 8 to 30 characters in length."</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-control" name="password2" required>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Register</button>
+    </div>
+
+</form>
+
+
+{{template "footer"}}
