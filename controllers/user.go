@@ -32,7 +32,7 @@ func accountSetting(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	googleLinked, err := services.User.SocialLoginLinked(services.SocialLoginGoogle, user.Id)
+	googleLinked, err := services.Auth.SocialLoginLinked(services.SocialLoginGoogle, user.Id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error("account setting", "err", err)
@@ -46,7 +46,7 @@ func accountSetting(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	githubLinked, err := services.User.SocialLoginLinked(services.SocialLoginGithub, user.Id)
+	githubLinked, err := services.Auth.SocialLoginLinked(services.SocialLoginGithub, user.Id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error("account setting", "err", err)

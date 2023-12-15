@@ -53,7 +53,7 @@ func doLogin(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
-	token, err := services.User.Login(email, password)
+	token, err := services.Auth.Login(email, password)
 	if err != nil {
 		renderDialog(w, "Error", "Incorrect email or password", "/login", "Go back")
 		return
@@ -66,20 +66,13 @@ func doLogin(w http.ResponseWriter, r *http.Request) {
 
 // github login
 func githubLogin(w http.ResponseWriter, r *http.Request) {
-	githubLogin, err := services.Setting.GetGithubLogin()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		slog.Error("github login", "err", err)
+	g := services.Auth.GithubOAuth()
+	if g == nil {
+		io.WriteString(w, "github login is disabled")
 		return
 	}
 
-	if !githubLogin {
-		w.WriteHeader(http.StatusForbidden)
-		io.WriteString(w, "Github login is disabled")
-		return
-	}
-
-	u, err := services.User.GithubSignin()
+	u, err := g.RedirectLink()
 	if err != nil {
 		w.WriteHeader(http.StatusForbidden)
 		slog.Error("github login", "err", err)
@@ -91,20 +84,13 @@ func githubLogin(w http.ResponseWriter, r *http.Request) {
 
 // google login
 func googleLogin(w http.ResponseWriter, r *http.Request) {
-	googleLogin, err := services.Setting.GetGoogleLogin()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		slog.Error("google login", "err", err)
+	g := services.Auth.GoogleOAuth()
+	if g == nil {
+		io.WriteString(w, "google login is disabled")
 		return
 	}
 
-	if !googleLogin {
-		w.WriteHeader(http.StatusForbidden)
-		io.WriteString(w, "Google login is disabled")
-		return
-	}
-
-	u, err := services.User.GoogleSignin()
+	u, err := g.RedirectLink()
 	if err != nil {
 		w.WriteHeader(http.StatusForbidden)
 		slog.Error("google login", "err", err)
@@ -118,16 +104,9 @@ func googleLogin(w http.ResponseWriter, r *http.Request) {
 func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 	user := middleware.GetUser(r.Context())
 
-	googleLogin, err := services.Setting.GetGoogleLogin()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		slog.Error("google login", "err", err)
-		return
-	}
-
-	if !googleLogin {
-		w.WriteHeader(http.StatusForbidden)
-		io.WriteString(w, "Google login is disabled")
+	g := services.Auth.GoogleOAuth()
+	if g == nil {
+		io.WriteString(w, "google login is disabled")
 		return
 	}
 
@@ -138,7 +117,7 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profile, err := services.User.GoogleCallback(code)
+	profile, err := g.GetProfile(code)
 
 	if err != nil {
 		slog.Error("google callback", "err", err)
@@ -151,7 +130,7 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 
 		// already logged in
 		// link google account to an existing account
-		err = services.User.LinkSocialAccount(services.SocialLoginGoogle, user.Id, profile)
+		err = services.Auth.LinkSocialAccount(services.SocialLoginGoogle, user.Id, profile)
 		if err != nil {
 			slog.Error("link google", "err", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -166,7 +145,7 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 
 		// sign in or sign up with google
 
-		token, err := services.User.SigninOrRegisterWithSocial(services.SocialLoginGoogle, profile)
+		token, err := services.Auth.SigninOrRegisterWithSocial(services.SocialLoginGoogle, profile)
 		if err != nil {
 			slog.Error("signin google", "err", err)
 
@@ -196,16 +175,9 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
 	user := middleware.GetUser(r.Context())
 
-	githubLogin, err := services.Setting.GetGithubLogin()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		slog.Error("github login", "err", err)
-		return
-	}
-
-	if !githubLogin {
-		w.WriteHeader(http.StatusForbidden)
-		io.WriteString(w, "Github login is disabled")
+	g := services.Auth.GithubOAuth()
+	if g == nil {
+		io.WriteString(w, "github login is disabled")
 		return
 	}
 
@@ -217,7 +189,7 @@ func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get github user profile
-	profile, err := services.User.GithubCallback(code)
+	profile, err := g.GetProfile(code)
 	if err != nil {
 		slog.Error("github callback", "err", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -229,7 +201,7 @@ func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
 
 		// already logged in
 		// link github account to an existing account
-		err = services.User.LinkSocialAccount(services.SocialLoginGithub, user.Id, profile)
+		err = services.Auth.LinkSocialAccount(services.SocialLoginGithub, user.Id, profile)
 		if err != nil {
 			slog.Error("link github", "err", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -244,7 +216,7 @@ func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
 
 		// sign in or sign up with github
 
-		token, err := services.User.SigninOrRegisterWithSocial(services.SocialLoginGithub, profile)
+		token, err := services.Auth.SigninOrRegisterWithSocial(services.SocialLoginGithub, profile)
 		if err != nil {
 			slog.Error("signin github", "err", err)
 
@@ -285,7 +257,7 @@ func socialLoginUnlink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := services.User.UnlinkSocialLogin(loginType, user.Id)
+	err := services.Auth.UnlinkSocialLogin(loginType, user.Id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error("unlink social account", "err", err)

@@ -33,6 +33,14 @@ func main() {
 	// start scheduled tasks
 	services.TaskStart()
 
+	// initialize login providers
+	err = services.Auth.InitOAuthProviders()
+	if err != nil {
+		slog.Error("failed to initialize oauth providers", "err", err)
+		panic(err)
+	}
+
+	// http router
 	r := chi.NewRouter()
 
 	controllers.Route(r)
