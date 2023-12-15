@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -73,13 +72,13 @@ func changePassword(w http.ResponseWriter, r *http.Request) {
 
 	if password1 != password2 {
 		w.WriteHeader(http.StatusBadRequest)
-		renderDialog(w, "Error", "Password does not match", "", "")
+		renderDialog(w, "Error", "Passwords do not match", "", "")
 		return
 	}
 
-	if len(password1) > 32 || len(password1) < 8 {
+	if len(password1) > 30 || len(password1) < 8 {
 		w.WriteHeader(http.StatusBadRequest)
-		renderDialog(w, "Error", "Password must be between 8 to 32 characters", "", "")
+		renderDialog(w, "Error", "Password must be between 8 to 30 characters in length.", "", "")
 		return
 	}
 
@@ -101,12 +100,13 @@ func changeUsername(w http.ResponseWriter, r *http.Request) {
 	user := middleware.MustGetUser(r.Context())
 
 	username := r.FormValue("username")
-	if len(username) < 5 || len(username) > 30 {
-		renderDialog(w, "Error", "Username must be between 5 to 30 characters", "/dashboard/account", "Go back")
+	match, err := regexp.Match("^[\\w #]{3,30}$", []byte(username))
+	if err != nil || !match {
+		renderDialog(w, "Error", "Invalid username. Username must be 3-30 characters long and can include letters, numbers, underscores (_), hashtags (#), and spaces.", "/register", "Go back")
 		return
 	}
 
-	err := services.User.ChangeUsername(user.Id, username)
+	err = services.User.ChangeUsername(user.Id, username)
 	if err != nil {
 		slog.Error("change username", "err", err)
 
@@ -129,12 +129,13 @@ func changeEmail(w http.ResponseWriter, r *http.Request) {
 
 	email := r.FormValue("email")
 
-	if len(email) == 0 || len(email) > 50 || strings.Count(email, "@") != 1 {
-		renderDialog(w, "Error", "Invalid email.", "/dashboard/account", "Go back")
+	match, err := regexp.Match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", []byte(email))
+	if err != nil || !match {
+		renderDialog(w, "Error", "Invalid email address", "/register", "Go back")
 		return
 	}
 
-	err := services.User.ChangeEmail(user.Id, email)
+	err = services.User.ChangeEmail(user.Id, email)
 	if err != nil {
 		slog.Error("change email", "err", err)
 
