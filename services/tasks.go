@@ -33,8 +33,7 @@ func TaskStart() {
 
 	// clean expired sessions
 	taskRegister("clean sessions", time.Hour, func() error {
-		db.SessionCleanExpired()
-		return nil
+		return db.SessionCleanExpired()
 	})
 
 }
@@ -43,12 +42,13 @@ func taskRegister(name string, d time.Duration, f func() error) {
 	go func() {
 		timer := time.NewTicker(d)
 		for {
-			<-timer.C
 			slog.Info("executing task", "name", name)
 			err := f()
 			if err != nil {
 				slog.Error("scheduled task", "name", name, "err", err)
 			}
+
+			<-timer.C
 		}
 	}()
 }
