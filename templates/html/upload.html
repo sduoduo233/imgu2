@@ -6,6 +6,8 @@
 </div>
 {{end}}
 
+{{template "unverified_email" .}}
+
 <div id="file-area" class="my-3 py-5 border shadow rounded bg-dark text-center">
     <div>
         <div>
@@ -35,6 +37,8 @@
     </select>
 </div>
 
+{{template "recaptcha" .}}
+
 <div class="my-3 d-grid">
     <button type="button" class="btn btn-primary" id="btn-upload">Upload</button>
 </div>
@@ -46,6 +50,7 @@
 <script>
     const csrf_token = "{{.csrf_token}}";
     const max_duration = +"{{.max_time}}";
+    const recaptcha = "{{.recaptcha_client}}" !== "";
 
     const fileArea = document.getElementById("file-area");
     const fileInput = document.getElementById("file-input");
@@ -99,6 +104,11 @@
     btn.addEventListener("click", () => {
         if (!file) return;
 
+        if (recaptcha && !grecaptcha.getResponse()) {
+            alert("reCAPTCHA is not completed");
+            return;
+        }
+
         uploading = true;
 
         // hide button & show progress bar
@@ -117,10 +127,15 @@
 
         xhr.addEventListener("load", () => {
             if (xhr.status !== 200) {
-                const resp = JSON.parse(xhr.responseText);
-                alert("ERROR: " + resp.error);
-                location.reload()
-                return
+                if (xhr.responseText === "recaptcha verification failed") {
+                    alert("ERROR: " + xhr.responseText);
+                } else {
+                    const resp = JSON.parse(xhr.responseText);
+                    alert("ERROR: " + resp.error);
+                }
+                
+                location.reload();
+                return;
             }
 
             const resp = JSON.parse(xhr.responseText);
@@ -139,6 +154,7 @@
         formData.set("file", file);
         formData.set("expire", selectExpire.value);
         formData.set("csrf_token", csrf_token);
+        if (recaptcha) formData.set("g-recaptcha-response", grecaptcha.getResponse());
 
         xhr.send(formData);
     });

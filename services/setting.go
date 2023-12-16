@@ -11,7 +11,8 @@ type setting struct{}
 var Setting = setting{}
 
 const (
-	CAPTCHA_NONE = "none"
+	CAPTCHA_NONE      = "none"
+	CAPTCHA_RECAPTCHA = "recaptcha"
 )
 
 func (s *setting) GetSiteName() (string, error) {
@@ -24,6 +25,14 @@ func (s *setting) GetSiteURL() (string, error) {
 
 func (s *setting) GetCAPTCHA() (string, error) {
 	return db.SettingFind("CAPTCHA")
+}
+
+func (s *setting) GetReCaptchaClient() (string, error) {
+	return db.SettingFind("RECAPTCHA_CLIENT")
+}
+
+func (s *setting) GetReCaptchaServer() (string, error) {
+	return db.SettingFind("RECAPTCHA_SERVER")
 }
 
 func (s *setting) GetGoogleClientID() (string, error) {

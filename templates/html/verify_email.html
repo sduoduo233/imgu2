@@ -5,6 +5,8 @@
 <form method="post" action="/dashboard/verify-email">
 
     {{template "csrf" .csrf_token}}
+
+    {{template "recaptcha" .}}
     
     <button class="btn btn-outline-primary">Send verification email to {{.user.Email}}</button>
     <p><a href="/dashboard/account">Click here to change your email</a></p>

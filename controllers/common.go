@@ -20,6 +20,23 @@ func render(w io.Writer, name string, data H) {
 	}
 	data["title"] = title
 
+	captcha, err := services.Setting.GetCAPTCHA()
+	if err != nil {
+		slog.Error("render template: captcha", "err", err)
+		return
+	}
+
+	if captcha == services.CAPTCHA_RECAPTCHA {
+		// recaptcha site key
+		recaptcha, err := services.Setting.GetReCaptchaClient()
+		if err != nil {
+			slog.Error("render template: captcha client", "err", err)
+			return
+		}
+
+		data["recaptcha_client"] = recaptcha
+	}
+
 	err = templates.Render(w, name, data)
 	if err != nil {
 		slog.Error("render template", "err", err, "name", name, "data", data)

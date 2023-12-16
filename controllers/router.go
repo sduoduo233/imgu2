@@ -14,7 +14,7 @@ func Route(r chi.Router) {
 
 	// auth
 	r.Get("/login", login)
-	r.Post("/login", doLogin)
+	r.With(middleware.ReCAPTCHA).Post("/login", doLogin)
 	r.Get("/login/google", googleLogin)
 	r.Get("/login/google/callback", googleLoginCallback)
 	r.Get("/login/github", githubLogin)
@@ -22,7 +22,7 @@ func Route(r chi.Router) {
 
 	// register
 	r.Get("/register", register)
-	r.Post("/register", doRegister)
+	r.With(middleware.ReCAPTCHA).Post("/register", doRegister)
 
 	// email callback
 	r.Get("/verify-email", verifyEmailCallback)
@@ -42,12 +42,12 @@ func Route(r chi.Router) {
 		r.Use(middleware.RequireAuth)
 		r.Get("/dashboard", dashboardIndex)
 		r.Get("/dashboard/account", accountSetting)
-		r.Post("/dashboard/change-password", changePassword)
-		r.Post("/dashboard/change-email", changeEmail)
+		r.With(middleware.ReCAPTCHA).Post("/dashboard/change-password", changePassword)
+		r.With(middleware.ReCAPTCHA).Post("/dashboard/change-email", changeEmail)
 		r.Post("/dashboard/change-username", changeUsername)
 		r.Post("/dashboard/unlink", socialLoginUnlink)
 		r.Get("/dashboard/verify-email", verifyEmail)
-		r.Post("/dashboard/verify-email", doVerifyEmail)
+		r.With(middleware.ReCAPTCHA).Post("/dashboard/verify-email", doVerifyEmail)
 		r.Get("/dashboard/images", myImages)
 		r.Post("/dashboard/images/delete", deleteImage)
 	})
@@ -66,5 +66,5 @@ func Route(r chi.Router) {
 	})
 
 	r.Get("/", upload)
-	r.Post("/upload", doUpload)
+	r.With(middleware.ReCAPTCHA).Post("/upload", doUpload)
 }

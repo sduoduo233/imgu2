@@ -7,6 +7,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.title}}</title>
+
+    {{if .recaptcha_client}}
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {{end}}
 </head>
 
 <body data-bs-theme="dark">

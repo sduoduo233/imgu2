@@ -1,0 +1,11 @@
+{{define "recaptcha"}}
+
+{{if .recaptcha_client}}
+<div class="py-2">
+    <div class="g-recaptcha" data-sitekey="{{.recaptcha_client}}">
+        Loading reCAPTCHA...
+    </div>
+</div>
+{{end}}
+
+{{end}}
