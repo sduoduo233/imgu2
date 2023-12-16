@@ -286,14 +286,19 @@ func (user) ChangeEmailCallback(token string) error {
 //
 // return a session token for the new account
 func (*user) Register(username, email, password string) (string, error) {
-	id, err := db.UserCreate(username, email, password, false, RoleUser)
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), 0)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("bcrypt: %w", err)
+	}
+
+	id, err := db.UserCreate(username, email, string(hashed), false, RoleUser)
+	if err != nil {
+		return "", fmt.Errorf("create user: %w", err)
 	}
 
 	token, err := Session.Create(id)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("create session: %w", err)
 	}
 
 	return token, nil
