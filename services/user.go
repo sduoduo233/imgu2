@@ -130,7 +130,7 @@ func (user) ChangeEmail(userId int, newEmail string) error {
 	err = tpl.Execute(buf, map[string]string{
 		"username": u.Username,
 		"name":     siteName,
-		"link":     siteUrl + "/verify-email-change?token=" + signedToken,
+		"link":     siteUrl + "/callback/verify-email-change?token=" + signedToken,
 		"email":    newEmail,
 	})
 	if err != nil {
@@ -195,7 +195,7 @@ func (user) SendVerificationEmail(userId int) error {
 	err = tpl.Execute(buf, map[string]string{
 		"username": u.Username,
 		"name":     siteName,
-		"link":     siteUrl + "/verify-email?token=" + signedToken,
+		"link":     siteUrl + "/callback/verify-email?token=" + signedToken,
 		"email":    u.Email,
 	})
 	if err != nil {

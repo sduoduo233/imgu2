@@ -29,8 +29,8 @@ func Route(r chi.Router) {
 	r.With(middleware.ReCAPTCHA).Post("/register", doRegister)
 
 	// email callback
-	r.Get("/verify-email", verifyEmailCallback)
-	r.Get("/verify-email-change", changeEmailCallback)
+	r.Get("/callback/verify-email", verifyEmailCallback)
+	r.Get("/callback/verify-email-change", changeEmailCallback)
 	r.Get("/callback/reset-password", resetPasswordCallback)
 	r.Post("/callback/reset-password", doResetPasswordCallback)
 
