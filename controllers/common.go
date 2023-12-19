@@ -8,6 +8,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"time"
 )
 
 type H map[string]any
@@ -74,6 +75,7 @@ func setCookie(w http.ResponseWriter, name string, value string) {
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
+		Expires:  time.Now().Add(time.Hour * 24 * 30),
 	})
 }
 
