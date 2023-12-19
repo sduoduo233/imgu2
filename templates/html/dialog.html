@@ -1,15 +1,28 @@
 {{template "header_no_navbar" .}}
 
-<div class="card mt-5">
-    <div class="card-header">
-        {{.dialog}}
-    </div>
-    <div class="card-body">
-        <p class="card-text">{{.msg}}</p>
-        {{if .link}}
-        <a href="{{.link}}" class="btn btn-primary">{{.btn}}</a>
-        {{end}}
+<div class="modal" tabindex="-1" id="modal1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{.dialog}}</h5>
+            </div>
+            <div class="modal-body">
+                <p>{{.msg}}</p>
+            </div>
+            {{if .link}}
+            <div class="modal-footer">
+                <a href="{{.link}}" class="btn btn-primary">
+                    {{.btn}}
+                </a>
+            </div>
+            {{end}}
+        </div>
     </div>
 </div>
+
+<script>
+    const m = new bootstrap.Modal('#modal1', {});
+    m.show();
+</script>
 
 {{template "footer"}}
