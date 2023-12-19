@@ -303,3 +303,111 @@ func (*user) Register(username, email, password string) (string, error) {
 
 	return token, nil
 }
+
+// ResetPassword sends a password reset email to user
+//
+// ResetPassword does not return error if email is not found
+func (*user) ResetPassword(email string) error {
+	u, err := User.FindByEmail(email)
+	if err != nil {
+		return err
+	}
+
+	if u == nil {
+		// ignore if user not found
+		return nil
+	}
+
+	if !u.EmailVerified {
+		return fmt.Errorf("email unverified")
+	}
+
+	siteName, err := Setting.GetSiteName()
+	if err != nil {
+		return err
+	}
+
+	siteUrl, err := Setting.GetSiteURL()
+	if err != nil {
+		return err
+	}
+
+	// generate verification url
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp": time.Now().Add(time.Minute * 30).Unix(), // Expiration Time
+		"nbf": time.Now().Unix(),                       // Not Before
+		"sub": u.Id,
+		"aud": "reset_password",
+	})
+
+	signedToken, err := token.SignedString([]byte(getJWTSecret()))
+	if err != nil {
+		return fmt.Errorf("jwt sign: %w", err)
+	}
+
+	// generate email content
+	tpl, err := template.New("reset_password").Parse(emails.RESET_PASSWORD)
+	if err != nil {
+		return fmt.Errorf("parse template: %w", err)
+	}
+
+	buf := new(bytes.Buffer)
+
+	err = tpl.Execute(buf, map[string]string{
+		"username": u.Username,
+		"name":     siteName,
+		"link":     siteUrl + "/callback/reset-password?token=" + signedToken,
+	})
+	if err != nil {
+		return fmt.Errorf("execute template: %w", err)
+	}
+
+	// send email
+	err = Mailer.SendMail(u.Email, "Reset password for your "+siteName+" account", buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ResetPasswordCallback verifies the JWT token and changes user's password
+func (*user) ResetPasswordCallback(token string, password string) error {
+	// parse and validate jwt token
+	parsed, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
+		return []byte(getJWTSecret()), nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("parse token: %w", err)
+	}
+
+	claims, ok := parsed.Claims.(jwt.MapClaims)
+	if !ok {
+		return fmt.Errorf("parse token: Claims is not jwt.MapClaims")
+	}
+
+	if claims["aud"] != "reset_password" {
+		return fmt.Errorf("invalid aud: %v", claims["aud"])
+	}
+
+	userId, ok := claims["sub"].(float64) // golang uses float64 for JSON numbers
+	if !ok {
+		return fmt.Errorf("invalid user id: %v", claims["sub"])
+	}
+
+	// change password
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), 0)
+	if err != nil {
+		return fmt.Errorf("bcrypt: %w", err)
+	}
+	err = db.UserChangePassword(int(userId), string(hashed))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

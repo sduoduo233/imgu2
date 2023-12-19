@@ -272,6 +272,7 @@ func deleteImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// image uploaded by guest || the user is not the uploader
 	if !img.Uploader.Valid || img.Uploader.Int32 != int32(user.Id) {
 		w.WriteHeader(http.StatusForbidden)
 		renderDialog(w, "Error", "You do not have permission to delete this image", "/dashboard/images", "Go back")
@@ -380,4 +381,70 @@ func doRegister(w http.ResponseWriter, r *http.Request) {
 
 	setCookie(w, "TOKEN", token)
 	http.Redirect(w, r, "/dashboard", http.StatusFound)
+}
+
+func resetPasswordCallback(w http.ResponseWriter, r *http.Request) {
+	token := r.URL.Query().Get("token")
+	render(w, "reset_password_callback", H{
+		"csrf_token": csrfToken(w),
+		"token":      token,
+	})
+}
+
+func doResetPasswordCallback(w http.ResponseWriter, r *http.Request) {
+	password1 := r.FormValue("password")
+	password2 := r.FormValue("password2")
+
+	if password1 != password2 {
+		renderDialog(w, "Error", "Passwords do not match", "", "")
+		return
+	}
+
+	if len(password1) > 30 {
+		renderDialog(w, "Error", "Password too long", "", "")
+		return
+	}
+	if len(password1) < 8 {
+		renderDialog(w, "Error", "Password too short", "", "")
+		return
+	}
+
+	err := services.User.ResetPasswordCallback(r.FormValue("token"), password1)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("reset password callback", "err", err)
+		renderDialog(w, "Error", "Unknown error", "", "")
+		return
+	}
+
+	renderDialog(w, "Info", "Your password is changed.", "/login", "Login")
+}
+
+func resetPassword(w http.ResponseWriter, r *http.Request) {
+	render(w, "reset_password", H{
+		"csrf_token": csrfToken(w),
+	})
+}
+
+func doResetPassword(w http.ResponseWriter, r *http.Request) {
+	email := r.FormValue("email")
+	if email == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err := services.User.ResetPassword(email)
+	if err != nil {
+		if err.Error() == "email unverified" {
+			renderDialog(w, "Error", "Your email address is unverified.", "/login", "Go back")
+			return
+		}
+
+		slog.Error("reset password", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		renderDialog(w, "Error", "An unknown error happened.", "/login", "Go back")
+		return
+	}
+
+	renderDialog(w, "Info", "An email has been sent to you. Please follow instructions in the email to reset your password.", "/login", "OK")
 }

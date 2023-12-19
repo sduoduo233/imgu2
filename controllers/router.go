@@ -12,13 +12,17 @@ func Route(r chi.Router) {
 	r.Use(middleware.Auth)
 	r.Use(middleware.CSRF)
 
-	// auth
+	// login
 	r.Get("/login", login)
 	r.With(middleware.ReCAPTCHA).Post("/login", doLogin)
 	r.Get("/login/google", googleLogin)
 	r.Get("/login/google/callback", googleLoginCallback)
 	r.Get("/login/github", githubLogin)
 	r.Get("/login/github/callback", githubLoginCallback)
+
+	// reset password
+	r.Get("/reset-password", resetPassword)
+	r.With(middleware.ReCAPTCHA).Post("/reset-password", doResetPassword)
 
 	// register
 	r.Get("/register", register)
@@ -27,6 +31,8 @@ func Route(r chi.Router) {
 	// email callback
 	r.Get("/verify-email", verifyEmailCallback)
 	r.Get("/verify-email-change", changeEmailCallback)
+	r.Get("/callback/reset-password", resetPasswordCallback)
+	r.Post("/callback/reset-password", doResetPasswordCallback)
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireAuth)
