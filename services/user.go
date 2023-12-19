@@ -138,7 +138,7 @@ func (user) ChangeEmail(userId int, newEmail string) error {
 	}
 
 	// send email
-	err = Mailer.SendMail(u.Email, "Confirm your "+siteName+" account", buf.String())
+	err = Mailer.SendMail(newEmail, "Confirm your "+siteName+" account", buf.String())
 	if err != nil {
 		return err
 	}
