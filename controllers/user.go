@@ -6,10 +6,8 @@ import (
 	"imgu2/services"
 	"io"
 	"log/slog"
-	"math"
 	"net/http"
 	"regexp"
-	"strconv"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -217,78 +215,6 @@ func changeEmailCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderDialog(w, "Info", "Your email is changed", "/dashboard", "Continue")
-}
-
-func myImages(w http.ResponseWriter, r *http.Request) {
-	user := middleware.MustGetUser(r.Context())
-
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil || page < 0 {
-		page = 0
-	}
-
-	imageCount, err := services.Image.CountByUser(user.Id)
-	if err != nil {
-		slog.Error("my images", "err", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	images, err := services.Image.FindByUser(user.Id, page)
-	if err != nil {
-		slog.Error("my images", "err", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	render(w, "images", H{
-		"user":       user,
-		"images":     images,
-		"page":       page,
-		"total_page": int(math.Ceil(float64(imageCount) / 20)), // page size = 20
-	})
-}
-
-func deleteImage(w http.ResponseWriter, r *http.Request) {
-	user := middleware.MustGetUser(r.Context())
-
-	fileName := r.FormValue("file_name")
-
-	if fileName == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	img, err := services.Image.FindByFileName(fileName)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		slog.Error("delete image", "err", err)
-		return
-	}
-
-	if img == nil {
-		w.WriteHeader(http.StatusNotFound)
-		renderDialog(w, "Error", "image not found", "/dashboard/images", "Go back")
-		return
-	}
-
-	// image uploaded by guest || the user is not the uploader
-	if !img.Uploader.Valid || img.Uploader.Int32 != int32(user.Id) {
-		w.WriteHeader(http.StatusForbidden)
-		renderDialog(w, "Error", "You do not have permission to delete this image", "/dashboard/images", "Go back")
-		return
-	}
-
-	err = services.Image.Delete(img)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		renderDialog(w, "Error", "unknown error", "/dashboard/images", "Go back")
-		slog.Error("delete image", "err", err)
-		return
-	}
-
-	renderDialog(w, "Info", "Image deleted", "/dashboard/images", "Continue")
-
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
