@@ -411,3 +411,19 @@ func (*user) ResetPasswordCallback(token string, password string) error {
 
 	return nil
 }
+
+func (*user) FindAll(page int) ([]db.User, error) {
+	const pageSize = 100
+	return db.UserFindAll(page*pageSize, pageSize)
+}
+
+func (*user) CountAll() (int, error) {
+	return db.UserCount()
+}
+
+func (*user) ChangeRole(id int, role int) error {
+	if role != RoleAdmin && role != RoleUser && role != RoleBanned {
+		return fmt.Errorf("unknown role: %d", role)
+	}
+	return db.UserChangeRole(id, role)
+}

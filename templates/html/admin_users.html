@@ -1,0 +1,45 @@
+{{template "header" .}}
+
+<h1>Users</h1>
+
+{{ $csrf_token := .csrf_token }}
+
+<div class="overflow-x-scroll text-nowrap">
+    <table class="table" id="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Images</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .users}}
+            <tr>
+                <th scope="row">{{ .Id }}</th>
+                <td><spam>{{ .Username }}</spam></td>
+                <td><span>{{ .Email }}</span></td>
+                <td>
+                    <form method="post" action="/admin/users/change-role">
+                        {{template "csrf" $csrf_token}}
+                        <input type="hidden" name="id" value="{{.Id}}">
+                        <select class="form-select form-select-sm" name="role" autocomplete="off" onchange="this.parentElement.submit()" style="min-width: 150px;">
+                            <option {{if eq .Role 0}}selected{{end}} value="0">Admin</option>
+                            <option {{if eq .Role 1}}selected{{end}} value="1">User</option>
+                            <option {{if eq .Role 2}}selected{{end}} value="2">Banned</option>
+                        </select>
+                    </form>
+                </td>
+                <td></td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+
+{{template "pagination" dict "page" .page "total_page" .total_page "prefix" "/admin/users"}}
+
+
+{{template "footer"}}

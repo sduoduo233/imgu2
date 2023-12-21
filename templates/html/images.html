@@ -18,6 +18,6 @@
     {{ end }}
 </div>
 
-{{template "pagination" .}}
+{{template "pagination" dict "page" .page "total_page" .total_page "prefix" "/dashboard/images"}}
 
 {{template "footer"}}

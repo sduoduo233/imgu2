@@ -66,7 +66,7 @@
     let file;
 
     if (max_duration !== 0) {
-        while (selectExpire.children[selectExpire.children.length - 1].value > max_duration && +selectExpire.children[selectExpire.children.length - 1].value !== 0) {
+        while (+(selectExpire.children[selectExpire.children.length - 1].value) > max_duration && +selectExpire.children[selectExpire.children.length - 1].value !== 0) {
             selectExpire.children[selectExpire.children.length - 1].remove();
         }
         selectExpire.children[0].remove(); // remove "never"

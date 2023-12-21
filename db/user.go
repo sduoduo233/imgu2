@@ -98,3 +98,43 @@ func UserVerifyEmail(email string) error {
 	}
 	return nil
 }
+
+func UserFindAll(skip int, limit int) ([]User, error) {
+	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, space FROM users LIMIT ? OFFSET ?", limit, skip)
+	if err != nil {
+		return nil, fmt.Errorf("db: %w", err)
+	}
+	defer rows.Close()
+
+	users := make([]User, 0)
+
+	for rows.Next() {
+		var u User
+		err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role, &u.Space)
+		if err != nil {
+			return nil, fmt.Errorf("db: %w", err)
+		}
+
+		users = append(users, u)
+	}
+
+	return users, nil
+}
+
+func UserCount() (int, error) {
+	row := DB.QueryRow("SELECT COUNT(*) FROM users")
+	var cnt int
+	err := row.Scan(&cnt)
+	if err != nil {
+		return 0, fmt.Errorf("db: %w", err)
+	}
+	return cnt, nil
+}
+
+func UserChangeRole(id int, role int) error {
+	_, err := DB.Exec("UPDATE users SET role = ? WHERE id = ?", role, id)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+	return nil
+}
