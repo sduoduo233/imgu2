@@ -20,17 +20,20 @@
     <div class="mb-3">
         <label class="form-label">reCAPTCHA Client</label>
         <input type="text" class="form-control" name="RECAPTCHA_CLIENT" value="{{.setting.RECAPTCHA_CLIENT}}">
+        <div class="form-text">The client key for Google's reCAPTCHA service.</div>
     </div>
 
     <div class="mb-3">
         <label class="form-label">reCAPTCHA Server</label>
         <input type="text" class="form-control" name="RECAPTCHA_SERVER" value="{{.setting.RECAPTCHA_SERVER}}">
+        <div class="form-text">The server key for Google's reCAPTCHA service.</div>
     </div>
 
     <!-- site settings -->
     <div class="mb-3">
         <label class="form-label">Site URL</label>
         <input type="text" class="form-control" name="SITE_URL" value="{{.setting.SITE_URL}}">
+        <div class="form-text">Public URL for your site, excluding the trailing slash(/)</div>
     </div>
 
     <div class="mb-3">
@@ -89,16 +92,19 @@
     <div class="mb-3">
         <label class="form-label">Maximum Image Size (bytes)</label>
         <input type="text" class="form-control" name="MAX_IMAGE_SIZE" value="{{.setting.MAX_IMAGE_SIZE}}">
+        <div class="form-text">The maximum size for uploaded images in bytes</div>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Maximum Guest Upload Duration (seconds)</label>
         <input type="text" class="form-control" name="GUEST_MAX_TIME" value="{{.setting.GUEST_MAX_TIME}}">
+        <div class="form-text">The duration in seconds that images uploaded by guests will be retained before automatic deletion. Enter '0' to disable this limit.</div>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Maximum User Upload Duration (seconds)</label>
         <input type="text" class="form-control" name="USER_MAX_TIME" value="{{.setting.USER_MAX_TIME}}">
+        <div class="form-text">The duration in seconds that images uploaded by registered users will be retained before automatic deletion. Enter '0' to disable this limit.</div>
     </div>
 
     <div class="mb-3">
