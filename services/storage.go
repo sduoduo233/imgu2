@@ -24,6 +24,7 @@ type StorageType string
 const (
 	StorageLocal StorageType = "local"
 	StorageS3    StorageType = "s3"
+	StorageFTP   StorageType = "ftp"
 )
 
 // initialize storage drivers
@@ -47,8 +48,11 @@ func (s *storage) Init() error {
 		case string(StorageS3):
 			driver, err = storages.NewS3Storage(v.Name, v.Id, v.Config)
 
+		case string(StorageFTP):
+			driver, err = storages.NewFTPStorage(v.Name, v.Id, v.Config)
+
 		default:
-			slog.Warn("unknown storage type", "type", v.Type)
+			slog.Error("unknown storage type", "type", v.Type)
 		}
 
 		if err != nil {
@@ -87,7 +91,7 @@ func (*storage) Update(id int, enabled bool, allowUpload bool, config string) er
 }
 
 func (*storage) Create(name string, t string) (int, error) {
-	if t != string(StorageS3) && t != string(StorageLocal) {
+	if t != string(StorageS3) && t != string(StorageLocal) && t != string(StorageFTP) {
 		return 0, fmt.Errorf("unknown storage type: %s", t)
 	}
 	return db.StorageCreate(name, t, "{}", false, false)
