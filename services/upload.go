@@ -86,7 +86,7 @@ func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTim
 	// upload file
 	id, err := Storage.Put(fileName, encodedImage, expire)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("upload: %w", err)
 	}
 
 	// insert to database

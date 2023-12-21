@@ -131,7 +131,16 @@
                     alert("ERROR: " + xhr.responseText);
                 } else {
                     const resp = JSON.parse(xhr.responseText);
-                    alert("ERROR: " + resp.error);
+                    const errorText = {
+                        "GUEST_UPLOAD_NOT_ALLOWED": "You have to sign in before uploading",
+                        "USER_BANNED": "Your account has been disabled",
+                        "EMAIL_NOT_VERIFIED": "Your email address has not been verified",
+                        "EXPIRE_TOO_LARGE": "The auto-delete time exceeds the maximum allowed value",
+                        "FILE_TOO_LARGE": "Your uploaded file is too large",
+                        "IMAGE_PROCESSING_ERROR": "Your uploaded file is malformatted",
+                        "INTERNAL_STORAGE_ERROR": "An unknown error occurred while saving your image"
+                    }
+                    alert("ERROR: " + errorText[resp.error] || resp.error);
                 }
                 
                 location.reload();

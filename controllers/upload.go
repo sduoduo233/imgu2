@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -159,9 +160,18 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		slog.Error("do upload: upload", "err", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		writeJSON(w, H{
-			"error": "IMAGE_PROCESSING_ERROR",
-		})
+
+		if strings.HasPrefix(err.Error(), "upload: ") {
+			// storage driver error
+			writeJSON(w, H{
+				"error": "INTERNAL_STORAGE_ERROR",
+			})
+		} else {
+			// malformated image
+			writeJSON(w, H{
+				"error": "IMAGE_PROCESSING_ERROR",
+			})
+		}
 		return
 	}
 
