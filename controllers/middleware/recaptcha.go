@@ -1,8 +1,9 @@
 package middleware
 
 import (
+	"html/template"
 	"imgu2/services"
-	"io"
+	"imgu2/templates"
 	"log/slog"
 	"net/http"
 )
@@ -30,15 +31,14 @@ func ReCAPTCHA(next http.Handler) http.Handler {
 		}
 
 		resp := r.FormValue("g-recaptcha-response")
-		if resp == "" {
+		if resp == "" || !services.ReCAPTCHA.Verify(resp) {
 			w.WriteHeader(http.StatusUnauthorized)
-			io.WriteString(w, "recaptcha verification failed")
-			return
-		}
-
-		if !services.ReCAPTCHA.Verify(resp) {
-			w.WriteHeader(http.StatusUnauthorized)
-			io.WriteString(w, "recaptcha verification failed")
+			templates.Render(w, "dialog", map[string]any{
+				"dialog": "Error",
+				"msg":    "recpatcha verification failed",
+				"link":   template.URL("javascript:history.back();"),
+				"btn":    "Go Back",
+			})
 			return
 		}
 
