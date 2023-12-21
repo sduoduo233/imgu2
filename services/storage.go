@@ -44,6 +44,9 @@ func (s *storage) Init() error {
 		case string(StorageLocal):
 			driver, err = storages.NewLocalStorage(v.Name, v.Id, v.Config)
 
+		case string(StorageS3):
+			driver, err = storages.NewS3Storage(v.Name, v.Id, v.Config)
+
 		default:
 			slog.Warn("unknown storage type", "type", v.Type)
 		}

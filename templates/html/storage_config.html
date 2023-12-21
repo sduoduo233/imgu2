@@ -32,10 +32,44 @@
 
     <hr>
 
+    <!-- Configuration for local storage-->
     {{ if eq .storage.Type "local"}}
     <div class="mb-3">
         <label class="form-label">Path</label>
         <input type="text" class="form-control" value="{{.config.path}}" name="config_path">
+    </div>
+    {{ end }}
+
+    <!-- Configuration for s3-->
+    {{ if eq .storage.Type "s3"}}
+    <div class="mb-3">
+        <label class="form-label">KeyID</label>
+        <input type="text" class="form-control" value="{{.config.key_id}}" name="config_key_id">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Secret</label>
+        <input type="text" class="form-control" value="{{.config.secret}}" name="config_secret">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Token</label>
+        <input type="text" class="form-control" value="{{.config.token}}" name="config_token">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Endpoint</label>
+        <input type="text" class="form-control" value="{{.config.endpoint}}" name="config_endpoint">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Region</label>
+        <input type="text" class="form-control" value="{{.config.region}}" name="config_region">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Bucket Name</label>
+        <input type="text" class="form-control" value="{{.config.bucket}}" name="config_bucket">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Public URL</label>
+        <input type="text" class="form-control" value="{{.config.public_url}}" name="config_public_url" placeholder="https://s3.us-west-2.amazonaws.com/YOUR_BUCKET_NAME">
+        <div class="form-text">The public accessable URL prefix for your s3 bucket.</div>
     </div>
     {{ end }}
 
