@@ -1,7 +1,7 @@
 {{template "header_no_navbar" .}}
 
-<div class="modal" tabindex="-1" id="modal1">
-    <div class="modal-dialog">
+<div class="modal fade" tabindex="-1" id="modal1">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{{.dialog}}</h5>
@@ -21,7 +21,10 @@
 </div>
 
 <script>
-    const m = new bootstrap.Modal('#modal1', {});
+    const m = new bootstrap.Modal('#modal1', {
+        "backdrop": "static",
+        "keyboard": false
+    });
     m.show();
 </script>
 
