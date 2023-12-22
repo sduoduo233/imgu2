@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log/slog"
 	"net/http"
 	"os"
@@ -19,8 +20,17 @@ func main() {
 		panic(err)
 	}
 
+	listen := flag.String("listen", "127.0.0.1:3000", "listening address")
+	debug := flag.Bool("debug", false, "debug logging")
+	flag.Parse()
+
+	// logging
+	logLevel := slog.LevelInfo
+	if *debug {
+		logLevel = slog.LevelDebug
+	}
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-		Level: slog.LevelDebug,
+		Level: logLevel,
 	})))
 
 	// initialize storage drivers
@@ -45,6 +55,6 @@ func main() {
 
 	controllers.Route(r)
 
-	slog.Info("server started", "listening", ":3000")
-	http.ListenAndServe(":3000", r)
+	slog.Info("server started", "listening", *listen)
+	http.ListenAndServe(*listen, r)
 }
