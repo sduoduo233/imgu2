@@ -32,7 +32,7 @@ func Route(r chi.Router) {
 	r.Get("/callback/verify-email", verifyEmailCallback)
 	r.Get("/callback/verify-email-change", changeEmailCallback)
 	r.Get("/callback/reset-password", resetPasswordCallback)
-	r.Post("/callback/reset-password", doResetPasswordCallback)
+	r.With(middleware.ReCAPTCHA).Post("/callback/reset-password", doResetPasswordCallback)
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireAuth)
