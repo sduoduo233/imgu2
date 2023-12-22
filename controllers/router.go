@@ -71,6 +71,8 @@ func Route(r chi.Router) {
 		r.Post("/admin/storages", adminAddStorage)
 		r.Get("/admin/users", adminUsers)
 		r.Post("/admin/users/change-role", adminChangeUserRole)
+		r.Get("/admin/images", adminImages)
+		r.Post("/admin/images/delete", adminImageDelete)
 	})
 
 	r.Get("/", upload)

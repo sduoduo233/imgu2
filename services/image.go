@@ -43,6 +43,20 @@ func (*image) FindByUser(userId int, page int) ([]db.Image, error) {
 	return i, nil
 }
 
+func (*image) FindAll(page int) ([]db.Image, error) {
+	const pageSize = 20
+	i, err := db.ImageFindAll(page*pageSize, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	return i, nil
+}
+
+func (*image) CountAll() (int, error) {
+	return db.ImageCountAll()
+}
+
 func (*image) CountByUser(userId int) (int, error) {
 	return db.ImageCountByUser(userId)
 }

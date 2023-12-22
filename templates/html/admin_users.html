@@ -19,7 +19,7 @@
             {{range .users}}
             <tr>
                 <th scope="row">{{ .Id }}</th>
-                <td><spam>{{ .Username }}</spam></td>
+                <td><span>{{ .Username }}</span></td>
                 <td><span>{{ .Email }}</span></td>
                 <td>
                     <form method="post" action="/admin/users/change-role">
@@ -32,7 +32,9 @@
                         </select>
                     </form>
                 </td>
-                <td></td>
+                <td>
+                    <a href="/admin/images?uploader={{.Id}}">Images</a>
+                </td>
             </tr>
             {{end}}
         </tbody>

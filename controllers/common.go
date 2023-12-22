@@ -45,7 +45,7 @@ func render(w io.Writer, name string, data H) {
 	}
 }
 
-func renderDialog(w io.Writer, title, msg, link, btn string) {
+func renderDialog(w io.Writer, title, msg string, link any, btn string) {
 	render(w, "dialog", H{
 		"dialog": title,
 		"msg":    msg,

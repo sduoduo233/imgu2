@@ -153,6 +153,19 @@ func ImageCountByUser(userId int) (int, error) {
 	return cnt, nil
 }
 
+// number of images
+func ImageCountAll() (int, error) {
+	r := DB.QueryRow("SELECT COUNT(*) FROM images WHERE (expire_time IS NULL OR expire_time > unixepoch())")
+
+	var cnt int
+	err := r.Scan(&cnt)
+	if err != nil {
+		return 0, fmt.Errorf("db: %w", err)
+	}
+
+	return cnt, nil
+}
+
 // count the number of images in a storage driver
 func ImageCountByStorage(id int) (int, error) {
 	r := DB.QueryRow("SELECT COUNT(*) FROM images WHERE storage = ?", id)
@@ -164,4 +177,35 @@ func ImageCountByStorage(id int) (int, error) {
 	}
 
 	return cnt, nil
+}
+
+func ImageFindAll(skip int, limit int) ([]Image, error) {
+	images := make([]Image, 0)
+
+	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time FROM images WHERE (expire_time IS NULL OR expire_time > unixepoch()) LIMIT ? OFFSET ?", limit, skip)
+	if err != nil {
+		return nil, fmt.Errorf("db: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var i Image
+		var timeUnix int64
+		var timeExpireUnix sql.NullInt64
+		err := rows.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix)
+		if err != nil {
+			return nil, fmt.Errorf("db: %w", err)
+		}
+
+		i.Time = time.Unix(timeUnix, 0)
+
+		if timeExpireUnix.Valid {
+			i.ExpireTime.Valid = true
+			i.ExpireTime.Time = time.Unix(timeExpireUnix.Int64, 0)
+		}
+
+		images = append(images, i)
+	}
+
+	return images, nil
 }

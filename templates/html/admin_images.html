@@ -1,0 +1,97 @@
+{{template "header" .}}
+
+<h1>Images</h1>
+
+{{ $csrf_token := .csrf_token}}
+
+
+<div class="card">
+    <div class="card-body">
+        <form>
+            <h6 class="card-title mb-3">Filters</h6>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Uploader</span>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="User ID"
+                    name="uploader"
+                    {{if gt .filter_uploader 0}}value="{{.filter_uploader}}"{{end}}
+                    autocomplete="off"
+                >
+            </div>
+            <div class="">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="overflow-x-scroll text-nowrap">
+    <table class="table" id="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Preview</th>
+                <th scope="col">Uploader</th>
+                <th scope="col">Time</th>
+                <th scope="col">Expire</th>
+                <th scope="col">Storage Driver</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .images}}
+            <tr>
+                <th scope="row">{{ .Id }}</th>
+                <td>
+                    <a href="/preview/{{ .FileName }}">
+                        <div class="ratio ratio-4x3" style="width: 300px;">
+                            <img src="/i/{{ .FileName }}" class="object-fit-cover">
+                        </div>
+                    </a>
+                </td>
+                <td>
+                    {{if .Uploader.Valid}}
+                    <span>{{ .Uploader.Int32 }}</span>
+                    {{else}}
+                    <span>Guest</span>
+                    {{end}}
+                </td>
+                <td>
+                    <script>document.currentScript.parentElement.innerText = new Date(+"{{timestamp .Time}}" * 1000).toLocaleString();</script>
+                </td>
+                <td>
+                    {{if .ExpireTime.Valid}}
+                    <script>document.currentScript.parentElement.innerText = new Date(+"{{timestamp .ExpireTime.Time}}" * 1000).toLocaleString();</script>
+                    {{else}}
+                    <span>Never</span>
+                    {{end}}
+                </td>
+                <td>
+                    <span># {{.StorageId}}</span>
+                </td>
+                <td>
+                    <form method="post" action="/admin/images/delete">
+                        {{template "csrf" $csrf_token}}
+                        <input type="hidden" name="file_name" value="{{.FileName}}">
+                        <button class="btn btn-outline-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {{else}}
+            <td colspan="7">Nothing found</td>
+
+            {{end}}
+        </tbody>
+    </table>
+</div>
+
+
+{{if gt .filter_uploader 0}}
+{{template "pagination" dict "page" .page "total_page" .total_page "prefix" (print "/admin/images?uploader=" .filter_uploader)}}
+{{else}}
+{{template "pagination" dict "page" .page "total_page" .total_page "prefix" "/admin/images"}}
+{{end}}
+
+{{template "footer"}}

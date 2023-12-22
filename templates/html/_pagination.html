@@ -10,14 +10,14 @@
 <nav aria-label="page navigation" class="mt-2">
     <ul class="pagination">
         {{if eq .page 0}}<li class="page-item disabled">{{else}}<li class="page-item">{{end}}
-            <a class="page-link" href="{{.prefix}}?page={{minus .page 1}}">Previous</a>
+            <a class="page-link" href="{{addParameter $prefix "page" (minus .page 1)}}">Previous</a>
         </li>
 
         {{$total_page := .total_page}}
         {{$page := .page}}
 
         {{if gt (minus .page 2) 0}}
-        <li class="page-item"><a class="page-link" href="{{.prefix}}?page=0">1</a></li>
+        <li class="page-item"><a class="page-link" href="{{addParameter $prefix "page" '0'}}">1</a></li>
         {{end}}
 
         {{if gt (minus .page 2) 1}}
@@ -29,9 +29,9 @@
             {{if ge . $total_page}} {{continue}} {{end}}
 
             {{if eq . $page}}
-                <li class="page-item active"><a class="page-link" href="{{$prefix}}?page={{.}}">{{add . 1}}</a></li>
+                <li class="page-item active"><a class="page-link" href="{{addParameter $prefix "page" .}}">{{add . 1}}</a></li>
             {{else}}
-                <li class="page-item"><a class="page-link" href="{{$prefix}}?page={{.}}">{{add . 1}}</a></li>
+                <li class="page-item"><a class="page-link" href="{{addParameter $prefix "page" .}}">{{add . 1}}</a></li>
             {{end}}
         {{end}}
 
@@ -40,12 +40,12 @@
         {{end}}
 
         {{if lt (add .page 3) .total_page}}
-        <li class="page-item"><a class="page-link" href="{{.prefix}}?page={{minus .total_page 1}}">{{.total_page}}</a></li>
+        <li class="page-item"><a class="page-link" href="{{addParameter $prefix "page" (minus .total_page 1)}}">{{.total_page}}</a></li>
         {{end}}
 
 
         {{if eq (minus .total_page 1) .page}}<li class="page-item disabled">{{else}}<li class="page-item">{{end}}
-            <a class="page-link" href="{{.prefix}}?page={{add .page 1}}">Next</a>
+            <a class="page-link" href="{{addParameter $prefix "page" (add .page 1)}}">Next</a>
         </li>
     </ul>
 </nav>

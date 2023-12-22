@@ -6,6 +6,8 @@ import (
 	"html/template"
 	"io"
 	"log/slog"
+	"net/url"
+	"time"
 )
 
 //go:embed html/*
@@ -41,6 +43,23 @@ func init() {
 				dict[key] = values[i+1]
 			}
 			return dict
+		},
+		"timestamp": func(t time.Time) int64 {
+			return t.Unix()
+		},
+		"addParameter": func(u, name string, value any) string {
+			// add a new parameter to an existing url
+
+			s, err := url.ParseRequestURI(u)
+			if err != nil {
+				panic(u + ", " + err.Error())
+			}
+
+			q := s.Query()
+			q.Set(name, fmt.Sprintf("%v", value))
+			s.RawQuery = q.Encode()
+
+			return s.RequestURI()
 		},
 	}
 
