@@ -6,15 +6,15 @@ An image sharing platform powered by Golang
 <details>
   <summary>Show screenshots</summary>
 
-![image preview page](https://raw.githubusercontent.com/sduoduo233/imgu2/master/screenshots/1.png)
+![image preview page](https://github.com/sduoduo233/imgu2/blob/master/screenshots/1.png?raw=true)
 
-![my uploads page](https://raw.githubusercontent.com/sduoduo233/imgu2/master/screenshots/2.png)
+![my uploads page](https://github.com/sduoduo233/imgu2/blob/master/screenshots/2.png?raw=true)
 
-![user list](https://raw.githubusercontent.com/sduoduo233/imgu2/master/screenshots/3.png)
+![user list](https://github.com/sduoduo233/imgu2/blob/master/screenshots/3.png?raw=true)
 
-![image list](https://raw.githubusercontent.com/sduoduo233/imgu2/master/screenshots/4.png)
+![image list](https://github.com/sduoduo233/imgu2/blob/master/screenshots/4.png?raw=true)
 
-![login page](https://raw.githubusercontent.com/sduoduo233/imgu2/master/screenshots/5.png)
+![login page](https://github.com/sduoduo233/imgu2/blob/master/screenshots/5.png?raw=true)
 
 </details>
 
@@ -68,3 +68,5 @@ server {
   }
 }
 ```
+
+6. The default admin email is `admin@example.com, and the password is admin. It is crucial to change these credentials as soon as you deploy the platform for security reasons.
