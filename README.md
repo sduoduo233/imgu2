@@ -1,4 +1,7 @@
 # imgu2
+
+[简体中文](https://github.com/sduoduo233/imgu2/blob/master/README_zh_cn.md)
+
 An image sharing platform powered by Golang
 
 # Screenshots
@@ -37,7 +40,7 @@ An image sharing platform powered by Golang
 ```
 IMGU2_SMTP_USERNAME=mailer@example.com
 IMGU2_SMTP_PASSWORD=example_password
-IMGU2_SMTP_HOST=example.xyz
+IMGU2_SMTP_HOST=example.com
 IMGU2_SMTP_PORT=25
 IMGU2_SMTP_SENDER=mailer@example.com
 IMGU2_JWT_SECRET=example_secret_string
@@ -69,4 +72,4 @@ server {
 }
 ```
 
-6. The default admin email is `admin@example.com, and the password is admin. It is crucial to change these credentials as soon as you deploy the platform for security reasons.
+6. The default admin email is `admin@example.com`, and the password is `admin`. It is crucial to change these credentials as soon as you deploy the platform for security reasons.
