@@ -19,9 +19,9 @@
 
 <input type="file" id="file-input" class="d-none" accept="image/png,image/jpeg,image/gif,image/webp" multiple>
 
-<div>
+<div class="mb-2">
     <label class="form-label">Auto delete</label>
-    <select class="form-select" name="type" id="select">
+    <select class="form-select" id="selectExpire">
         <option value="0" selected>Never</option>
         <option value="300">5 minutes</option>
         <option value="600">10 minutes</option>
@@ -34,6 +34,17 @@
         <option value="604800">1 week</option>
         <option value="2592000">30 days</option>
         <option value="15552000">180 days</option>
+    </select>
+</div>
+
+<div class="mb-2">
+    <label class="form-label">Image Format Conversion</label>
+    <select class="form-select" id="selectFormat" autocomplete="off">
+        <option value="original" selected>Original</option>
+        <option value="webp">WebP (animated)</option>
+        <option value="png">PNG</option>
+        <option value="jepg">JEPG</option>
+        <option value="gif">GIF (animated)</option>
     </select>
 </div>
 
@@ -57,7 +68,8 @@
     const preview = document.getElementById("preview");
     const prompt = document.getElementById("prompt");
     const btn = document.getElementById("btn-upload");
-    const selectExpire = document.getElementById("select");
+    const selectExpire = document.getElementById("selectExpire");
+    const selectFormat = document.getElementById("selectFormat");
     const progress = document.getElementById("progress");
     const progressbar = document.getElementById("progressbar");
 
@@ -128,7 +140,9 @@
         xhr.addEventListener("load", () => {
             if (xhr.status !== 200) {
                 if (xhr.responseText === "recaptcha verification failed") {
-                    alert("ERROR: " + xhr.responseText);
+                    alert("ERROR: ReCAPTCHA verification failed");
+                } else if (xhr.responseText === "csrf check failed") {
+                    alert("ERROR: CSRF check failed");
                 } else {
                     const resp = JSON.parse(xhr.responseText);
                     const errorText = {
@@ -162,6 +176,7 @@
         const formData = new FormData();
         formData.set("file", file);
         formData.set("expire", selectExpire.value);
+        formData.set("format", selectFormat.value);
         formData.set("csrf_token", csrf_token);
         if (recaptcha) formData.set("g-recaptcha-response", grecaptcha.getResponse());
 

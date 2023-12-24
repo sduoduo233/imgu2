@@ -116,6 +116,23 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// image format
+	targetFormat := fileHeaders.Header.Get("Content-Type")
+	switch r.FormValue("format") {
+	case "webp":
+		targetFormat = "image/webp"
+	case "jpeg":
+		targetFormat = "image/jpeg"
+	case "gif":
+		targetFormat = "image/gif"
+	case "png":
+		targetFormat = "image/png"
+	case "original":
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	// check file size
 	maxSize, err := services.Setting.GetMaxImageSize()
 	if err != nil {
@@ -151,10 +168,10 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 	// upload
 	var fileName string
 	if expire == 0 {
-		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{}, ipAddr)
+		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{}, ipAddr, targetFormat)
 	} else {
 		t := time.Now().Add(time.Second * time.Duration(expire))
-		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{Valid: true, Time: t}, ipAddr)
+		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{Valid: true, Time: t}, ipAddr, targetFormat)
 	}
 
 	if err != nil {

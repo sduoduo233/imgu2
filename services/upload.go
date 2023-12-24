@@ -1,14 +1,10 @@
 package services
 
 import (
-	"bytes"
 	"database/sql"
 	"fmt"
-	i "image"
-	"image/gif"
-	"image/jpeg"
-	"image/png"
 	"imgu2/db"
+	"imgu2/libvips"
 	"imgu2/utils"
 	"net/http"
 )
@@ -24,61 +20,42 @@ var Upload = upload{}
 // expire may be nil
 //
 // return a random generated file name
-func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTime, ipAddr string) (string, error) {
-	contentType := http.DetectContentType(file)
-
-	var encodedImage []byte // re-encoded image
+func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTime, ipAddr string, targetFormat string) (string, error) {
+	// re-encode image
 	var fileExtension string
 
-	if contentType == "image/gif" {
+	// detect whether the source image is animated
+	animated := false
+	contentType := http.DetectContentType(file)
+	switch contentType {
+	case "image/gif":
+		animated = true
+	case "image/webp":
+		animated = true
+	}
 
-		// gif
+	var vipsForamt libvips.Format
 
-		img, err := gif.DecodeAll(bytes.NewReader(file))
-		if err != nil {
-			return "", fmt.Errorf("decode gif: %w", err)
-		}
-
-		var buf bytes.Buffer
-
-		err = gif.EncodeAll(&buf, img)
-		if err != nil {
-			return "", fmt.Errorf("encode gif: %w", err)
-		}
-
-		encodedImage = buf.Bytes()
+	switch targetFormat {
+	case "image/png":
+		fileExtension = ".png"
+		vipsForamt = libvips.FORMAT_PNG
+	case "image/jpeg":
+		fileExtension = ".jpg"
+		vipsForamt = libvips.FORMAT_JEPG
+	case "image/gif":
 		fileExtension = ".gif"
+		vipsForamt = libvips.FORMAT_GIF
+	case "image/webp":
+		fileExtension = ".webp"
+		vipsForamt = libvips.FORMAT_WEBP
+	default:
+		return "", fmt.Errorf("upload: unknown format: %s", targetFormat)
+	}
 
-	} else {
-
-		// png & jpeg
-
-		img, format, err := i.Decode(bytes.NewReader(file))
-		if err != nil {
-			return "", fmt.Errorf("decode: %w", err)
-		}
-
-		var buf bytes.Buffer
-
-		switch format {
-		case "jpeg":
-			fileExtension = ".jpg"
-			err = jpeg.Encode(&buf, img, &jpeg.Options{
-				Quality: 90,
-			})
-		case "png":
-			fileExtension = ".png"
-			err = png.Encode(&buf, img)
-		default:
-			return "", fmt.Errorf("unknown format: %s", format)
-		}
-
-		if err != nil {
-			return "", fmt.Errorf("encode: %w", err)
-		}
-
-		encodedImage = buf.Bytes()
-
+	encodedImage := libvips.LibvipsEncode(file, animated, vipsForamt)
+	if encodedImage == nil {
+		return "", fmt.Errorf("upload: malformatted image")
 	}
 
 	fileName := utils.RandomString(8) + fileExtension

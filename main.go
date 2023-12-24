@@ -11,6 +11,7 @@ import (
 
 	"imgu2/controllers"
 	_ "imgu2/db"
+	"imgu2/libvips"
 	"imgu2/services"
 )
 
@@ -32,6 +33,9 @@ func main() {
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
 		Level: logLevel,
 	})))
+
+	// libvips
+	libvips.LibvipsInit()
 
 	// initialize storage drivers
 	err = services.Storage.Init()
