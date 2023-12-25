@@ -34,6 +34,8 @@ func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTim
 		animated = true
 	case "image/webp":
 		animated = true
+	case "application/pdf":
+		animated = true
 	}
 
 	var vipsForamt libvips.Format

@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<input type="file" id="file-input" class="d-none" accept="image/png,image/jpeg,image/gif,image/webp" multiple>
+<input type="file" id="file-input" class="d-none" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf" multiple>
 
 <div class="mb-2">
     <label class="form-label">Auto delete</label>
@@ -39,9 +39,8 @@
 
 <div class="mb-2">
     <label class="form-label">Image Format Conversion</label>
-    <select class="form-select" id="selectFormat" autocomplete="off">
-        <option value="original" selected>Original</option>
-        <option value="webp">WebP (animated)</option>
+    <select class="form-select" id="selectFormat">
+        <option value="webp" selected>WebP Loseless (animated)</option>
         <option value="png">PNG</option>
         <option value="jpeg">JEPG</option>
         <option value="gif">GIF (animated)</option>

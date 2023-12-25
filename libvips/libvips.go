@@ -65,7 +65,7 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 			return -2;
 		}
 	} else if (outType == 5) { // avif
-		if (vips_heifsave_buffer(img, out_buf, out_size, "compression", VIPS_FOREIGN_HEIF_COMPRESSION_AV1, "encoder", VIPS_FOREIGN_HEIF_ENCODER_AOM, NULL)) {
+		if (vips_heifsave_buffer(img, out_buf, out_size, "compression", VIPS_FOREIGN_HEIF_COMPRESSION_AV1, "encoder", VIPS_FOREIGN_HEIF_ENCODER_AOM, "lossless", TRUE, NULL)) {
 			g_object_unref(img);
 			libvips_error();
 			return -2;
