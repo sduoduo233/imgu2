@@ -19,8 +19,10 @@ var Upload = upload{}
 //
 // expire may be nil
 //
+// fileSizeLimit is the maximium file size in bytes after encoding
+//
 // return a random generated file name
-func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTime, ipAddr string, targetFormat string) (string, error) {
+func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTime, ipAddr string, targetFormat string, fileSizeLimit int) (string, error) {
 	// re-encode image
 	var fileExtension string
 
@@ -59,6 +61,10 @@ func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTim
 	encodedImage := libvips.LibvipsEncode(file, animated, vipsForamt)
 	if encodedImage == nil {
 		return "", fmt.Errorf("upload: malformatted image")
+	}
+
+	if len(encodedImage) > fileSizeLimit {
+		return "", fmt.Errorf("upload: image too large")
 	}
 
 	fileName := utils.RandomString(8) + fileExtension

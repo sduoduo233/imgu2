@@ -170,10 +170,10 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 	// upload
 	var fileName string
 	if expire == 0 {
-		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{}, ipAddr, targetFormat)
+		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{}, ipAddr, targetFormat, int(maxSize))
 	} else {
 		t := time.Now().Add(time.Second * time.Duration(expire))
-		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{Valid: true, Time: t}, ipAddr, targetFormat)
+		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{Valid: true, Time: t}, ipAddr, targetFormat, int(maxSize))
 	}
 
 	if err != nil {
