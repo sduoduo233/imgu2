@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"imgu2/controllers"
-	_ "imgu2/db"
+	"imgu2/db"
 	"imgu2/libvips"
 	"imgu2/services"
 )
@@ -23,6 +23,7 @@ func main() {
 
 	listen := flag.String("listen", "127.0.0.1:3000", "listening address")
 	debug := flag.Bool("debug", false, "debug logging")
+	sqlitePath := flag.String("sqlite", "./db.sqlite", "path to sqlite database")
 	flag.Parse()
 
 	// logging
@@ -33,6 +34,9 @@ func main() {
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
 		Level: logLevel,
 	})))
+
+	// load database
+	db.Init(*sqlitePath)
 
 	// libvips
 	libvips.LibvipsInit()

@@ -15,8 +15,8 @@ var DB *wrapped
 //go:embed install.sql
 var installSql string
 
-func init() {
-	db, err := sql.Open("sqlite3", "./db.sqlite")
+func Init(path string) {
+	db, err := sql.Open("sqlite3", path)
 	if err != nil {
 		slog.Error("open database", "err", err)
 		panic(err)
