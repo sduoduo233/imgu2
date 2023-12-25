@@ -49,6 +49,9 @@ func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTim
 	case "image/webp":
 		fileExtension = ".webp"
 		vipsForamt = libvips.FORMAT_WEBP
+	case "image/avif":
+		fileExtension = ".avif"
+		vipsForamt = libvips.FORMAT_AVIF
 	default:
 		return "", fmt.Errorf("upload: unknown format: %s", targetFormat)
 	}

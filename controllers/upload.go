@@ -127,6 +127,8 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 		targetFormat = "image/gif"
 	case "png":
 		targetFormat = "image/png"
+	case "avif":
+		targetFormat = "image/avif"
 	case "original":
 	default:
 		w.WriteHeader(http.StatusBadRequest)

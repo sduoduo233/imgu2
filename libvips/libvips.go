@@ -1,8 +1,8 @@
 package libvips
 
 /*
-#cgo pkg-config: glib-2.0 gobject-2.0
-#cgo LDFLAGS: -lvips
+#cgo pkg-config: vips libheif
+#include <libheif/heif.h>
 #include "vips/vips.h"
 #include <stdio.h>
 
@@ -64,6 +64,12 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 			libvips_error();
 			return -2;
 		}
+	} else if (outType == 5) { // avif
+		if (vips_heifsave_buffer(img, out_buf, out_size, "compression", VIPS_FOREIGN_HEIF_COMPRESSION_AV1, "encoder", VIPS_FOREIGN_HEIF_ENCODER_AOM, NULL)) {
+			g_object_unref(img);
+			libvips_error();
+			return -2;
+		}
 	} else {
 		g_object_unref(img);
 		printf("libvips: unsupported out type: %d\n", outType);
@@ -77,10 +83,21 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 void libvips_g_free(void* p) {
 	g_free(p);
 }
+
+int libvips_heif_load_plugins(char* directory) {
+	int nPlugins;
+	struct heif_error error = heif_load_plugins(directory, NULL, &nPlugins, 0);
+	if (error.code != heif_error_Ok) {
+		printf("libvips: libvips_heif_load_plugins: %s\n", error.message);
+		return -1;
+	}
+	return 0;
+}
 */
 import "C"
 import (
 	"log/slog"
+	"os"
 	"unsafe"
 )
 
@@ -91,6 +108,7 @@ const (
 	FORMAT_PNG  = Format(2)
 	FORMAT_JEPG = Format(3)
 	FORMAT_GIF  = Format(4)
+	FORMAT_AVIF = Format(5)
 )
 
 func LibvipsInit() {
@@ -98,6 +116,24 @@ func LibvipsInit() {
 		panic("libvips init")
 	}
 	slog.Debug("libvips", "version", LibvipsVersion())
+
+	// For some unknown reason, libheif plugins are not loaded automatically
+	// on Ubuntu (at least not on my Ubuntu 23.10). Loading these plugins
+	// manually is required, or AVIF encoding will not work.
+
+	// IMGU2_DEBUG_LIBHEIF_PLUGIN_PATHS is the path to the plugin directory.
+	// For example, it might be set to /usr/lib/x86_64-linux-gnu/libheif/plugins
+	// on Ubuntu 23.10
+	libheifPlugin := os.Getenv("IMGU2_DEBUG_LIBHEIF_PLUGIN_PATHS")
+	if libheifPlugin != "" {
+		slog.Info("libvips_heif_load_plugins", "path", libheifPlugin)
+		cstring := C.CString(libheifPlugin)
+		defer C.free((unsafe.Pointer(cstring)))
+
+		if C.libvips_heif_load_plugins(cstring) != 0 {
+			panic("heif_load_plugins")
+		}
+	}
 }
 
 func LibvipsShutdown() {
