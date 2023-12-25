@@ -25,9 +25,26 @@ An image sharing platform powered by Golang
 
 - Lightweight design
 - OAuth login with Google & GitHub
-- Image re-encoding
+- Image re-encoding, with support for WebP, PNG, JPEG, GIF and AVIF.
 - SQLite database integration
 - Multiple storage options supported, including S3-compatible, FTP, and local file systems
+
+# Setup development environment
+
+0. Clone this repo
+
+1. Install Golang
+
+2. Install necessary packages
+
+```bash
+# Ubuntu
+sudo apt install build-essential libglib2.0-dev libvips-dev libheif-dev libheif-plugin-* libheif1
+```
+
+3. `go build`
+
+4. You might need to set the `IMGU2_DEBUG_LIBHEIF_PLUGIN_PATHS` environment variable. Read `libvips/libvips.go` for more information.
 
 # How to install
 

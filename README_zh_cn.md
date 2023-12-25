@@ -18,13 +18,30 @@
 
 </details>
 
-# Features
+# 功能
 
 - 轻量级设计
 - Google & GitHub OAuth 登陆
-- 图片重新编码
+- 图片重新编码，支持 WebP, PNG, JPEG, GIF 和 AVIF
 - SQLite 数据库
 - 多种存储后端, 包括 S3-compatible, FTP, 和本地存储
+
+# Setup development environment
+
+0. Clone 这个库
+
+1. 安装 Golang
+
+2. 安装必要的包
+
+```bash
+# Ubuntu
+sudo apt install build-essential libglib2.0-dev libvips-dev libheif-dev libheif-plugin-* libheif1
+```
+
+3. `go build`
+
+4. 你可能需要设置 `IMGU2_DEBUG_LIBHEIF_PLUGIN_PATHS` 环境变量. 阅读 `libvips/libvips.go` 了解详细步骤.
 
 # 如何安装
 
