@@ -10,7 +10,7 @@ RUN bash build.sh
 FROM alpine:latest
 WORKDIR /app
 VOLUME [ "/app/sqlite", "/app/uploads" ]
-RUN apk add --no-cache vips libheif glib
+RUN apk add --no-cache vips libheif glib vips-poppler
 COPY --from=builder /app/imgu2 ./
 RUN touch /app/.env
 EXPOSE 3000
