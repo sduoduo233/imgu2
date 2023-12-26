@@ -13,6 +13,12 @@ void libvips_error() {
 	vips_error_clear();
 }
 
+void libipvs_malloc_trim() {
+#ifdef __GLIBC__
+    malloc_trim(0);
+#endif
+}
+
 int libvips_init() {
 	if (VIPS_INIT("")) {
 		libvips_error();
@@ -47,53 +53,53 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 	if (outType == 1) { // webp
 		if (vips_webpsave_buffer(img, out_buf, out_size, "lossless", TRUE, NULL)) {
 			g_object_unref(img);
-			malloc_trim(0);
+			libipvs_malloc_trim();
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 2) { // png
 		if (vips_pngsave_buffer(img, out_buf, out_size, NULL)) {
 			g_object_unref(img);
-			malloc_trim(0);
+			libipvs_malloc_trim();
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 3) { // jpeg
 		if (vips_jpegsave_buffer(img, out_buf, out_size, NULL)) {
 			g_object_unref(img);
-			malloc_trim(0);
+			libipvs_malloc_trim();
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 4) { // gif
 		if (vips_gifsave_buffer(img, out_buf, out_size, NULL)) {
 			g_object_unref(img);
-			malloc_trim(0);
+			libipvs_malloc_trim();
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 5) { // avif
 		if (vips_heifsave_buffer(img, out_buf, out_size, "compression", VIPS_FOREIGN_HEIF_COMPRESSION_AV1, "encoder", VIPS_FOREIGN_HEIF_ENCODER_AOM, "lossless", TRUE, NULL)) {
 			g_object_unref(img);
-			malloc_trim(0);
+			libipvs_malloc_trim();
 			libvips_error();
 			return -2;
 		}
 	} else {
 		g_object_unref(img);
-		malloc_trim(0);
+		libipvs_malloc_trim();
 		printf("libvips: unsupported out type: %d\n", outType);
 		return -2;
 	}
 
 	g_object_unref(img);
-	malloc_trim(0);
+	libipvs_malloc_trim();
 	return 0;
 }
 
 void libvips_g_free(void* p) {
 	g_free(p);
-	malloc_trim(0);
+	libipvs_malloc_trim();
 }
 
 int libvips_heif_load_plugins(char* directory) {

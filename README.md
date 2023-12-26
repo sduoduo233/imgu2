@@ -48,28 +48,44 @@ sudo apt install build-essential libglib2.0-dev libvips-dev libheif-dev libheif-
 
 # How to install
 
-1. Get the latest binary from the GitHub releases.
+1. Pull the docker image `docker push sduoduo233/imgu2:latest`
 
-2. Transfer the downloaded file to your Linux web server.
+2. Start container
 
-3. In the same directory as the executable file, create a `.env` file with the following content:
-
-```
-IMGU2_SMTP_USERNAME=mailer@example.com
-IMGU2_SMTP_PASSWORD=example_password
-IMGU2_SMTP_HOST=example.com
-IMGU2_SMTP_PORT=25
-IMGU2_SMTP_SENDER=mailer@example.com
-IMGU2_JWT_SECRET=example_secret_string
+```bash
+docker run --detach -p 3000:3000 -e IMGU2_SMTP_USERNAME="mailer@example.com"  -e IMGU2_SMTP_PASSWORD="example_password" -e IMGU2_SMTP_HOST="example.com" -e IMGU2_SMTP_PORT=25 -e IMGU2_SMTP_SENDER="mailer@example.com" -e IMGU2_JWT_SECRET="example_secret_string" -v ./db:/app/sqlite -v ./uploads:/app/uploads sduoduo233/imgu2:latest
 ```
 
 `IMGU2_JWT_SECRET` should be a hard-to-guess string, which can be generated using `openssl rand -hex 8` on Linux.
 
 `IMGU2_SMTP_*` are the SMTP configurations required for sending verification emails.
 
-4. Run the executable using `./imgu2-linux-amd64`.
+Or you may use this docker compose file:
 
-5. Configure NGINX for Reverse Proxying and SSL. Add the following configuration to NGINX:
+```yaml
+version: '3.8'
+
+services:
+  imgu2:
+    image: sduoduo233/imgu2:latest
+    ports:
+      - "3000:3000"
+    environment:
+      IMGU2_SMTP_USERNAME: "mailer@example.com"
+      IMGU2_SMTP_PASSWORD: "example_password"
+      IMGU2_SMTP_HOST: "example.com"
+      IMGU2_SMTP_PORT: "25"
+      IMGU2_SMTP_SENDER: "mailer@example.com"
+      IMGU2_JWT_SECRET: "example_secret_string"
+    volumes:
+      - ./db:/app/sqlite
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+```
+
+3. Visit `http://YOUR_IP:3000`
+
+4. Configure NGINX for Reverse Proxying and SSL. Add the following configuration to NGINX:
 
 ```nginx
 server {

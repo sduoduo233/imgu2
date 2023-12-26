@@ -1,0 +1,9 @@
+.git
+.vscode
+uploads
+.env
+db.sqlite
+imgu2
+README*
+build
+_debug

@@ -2,6 +2,8 @@
 FROM golang:alpine as builder
 WORKDIR /app
 RUN apk add --no-cache vips-dev libheif-dev glib-dev bash gcc musl-dev
+COPY ./go.mod ./go.sum ./
+RUN go mod download
 COPY ./ ./
 RUN bash build.sh
 

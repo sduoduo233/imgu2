@@ -26,7 +26,7 @@
 - SQLite 数据库
 - 多种存储后端, 包括 S3-compatible, FTP, 和本地存储
 
-# Setup development environment
+# 配置开发环境
 
 0. Clone 这个库
 
@@ -45,28 +45,45 @@ sudo apt install build-essential libglib2.0-dev libvips-dev libheif-dev libheif-
 
 # 如何安装
 
-1. 在 Release 中下载最新的二进制文件
+1. 下载 Docker 镜像 `docker push sduoduo233/imgu2:latest`
 
-2. 把二进制文件上传到 Linux VPS
+2. 启动容器
 
-3. 在相同目录创建一个 `.env` 文件，填入以下内容：
-
-```
-IMGU2_SMTP_USERNAME=mailer@example.com
-IMGU2_SMTP_PASSWORD=example_password
-IMGU2_SMTP_HOST=example.com
-IMGU2_SMTP_PORT=25
-IMGU2_SMTP_SENDER=mailer@example.com
-IMGU2_JWT_SECRET=example_secret_string
+```bash
+docker run --detach -p 3000:3000 -e IMGU2_SMTP_USERNAME="mailer@example.com"  -e IMGU2_SMTP_PASSWORD="example_password" -e IMGU2_SMTP_HOST="example.com" -e IMGU2_SMTP_PORT=25 -e IMGU2_SMTP_SENDER="mailer@example.com" -e IMGU2_JWT_SECRET="example_secret_string" -v ./db:/app/sqlite -v ./uploads:/app/uploads sduoduo233/imgu2:latest
 ```
 
 `IMGU2_JWT_SECRET` 应该是一个比较难猜到的长字符串, 在 Linux 中可以用 `openssl rand -hex 8` 生成。
 
 `IMGU2_SMTP_*` 是SMTP设置，用以发送验证邮件。
 
-4. 启动程序 `./imgu2-linux-amd64`.
 
-5. 配置 NGINX:
+或者你可以用 docker compose:
+
+```yaml
+version: '3.8'
+
+services:
+  imgu2:
+    image: sduoduo233/imgu2:latest
+    ports:
+      - "3000:3000"
+    environment:
+      IMGU2_SMTP_USERNAME: "mailer@example.com"
+      IMGU2_SMTP_PASSWORD: "example_password"
+      IMGU2_SMTP_HOST: "example.com"
+      IMGU2_SMTP_PORT: "25"
+      IMGU2_SMTP_SENDER: "mailer@example.com"
+      IMGU2_JWT_SECRET: "example_secret_string"
+    volumes:
+      - ./db:/app/sqlite
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+```
+
+3. 访问 `http://你的IP地址:3000`
+
+4. 配置 NGINX:
 
 ```nginx
 server {
