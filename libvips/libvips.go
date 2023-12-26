@@ -5,6 +5,8 @@ package libvips
 #include <libheif/heif.h>
 #include "vips/vips.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
 
 void libvips_error() {
 	printf("libvips: error: %s\n", vips_error_buffer());
@@ -16,6 +18,8 @@ int libvips_init() {
 		libvips_error();
 		return -1;
 	}
+	vips_leak_set(TRUE);
+	vips_cache_set_max(0);
 	return 0;
 }
 
@@ -30,9 +34,9 @@ void libvips_shutdown() {
 int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int outType, int animated) {
 	VipsImage* img;
 	if (animated) {
-		img = vips_image_new_from_buffer(buf, len, "", "n", -1, NULL);
+		img = vips_image_new_from_buffer(buf, len, "", "n", -1, "access", VIPS_ACCESS_SEQUENTIAL, NULL);
 	} else {
-		img = vips_image_new_from_buffer(buf, len, "", NULL);
+		img = vips_image_new_from_buffer(buf, len, "", "access", VIPS_ACCESS_SEQUENTIAL, NULL);
 	}
 
 	if (!img) {
@@ -43,45 +47,53 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 	if (outType == 1) { // webp
 		if (vips_webpsave_buffer(img, out_buf, out_size, "lossless", TRUE, NULL)) {
 			g_object_unref(img);
+			malloc_trim(0);
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 2) { // png
 		if (vips_pngsave_buffer(img, out_buf, out_size, NULL)) {
 			g_object_unref(img);
+			malloc_trim(0);
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 3) { // jpeg
 		if (vips_jpegsave_buffer(img, out_buf, out_size, NULL)) {
 			g_object_unref(img);
+			malloc_trim(0);
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 4) { // gif
 		if (vips_gifsave_buffer(img, out_buf, out_size, NULL)) {
 			g_object_unref(img);
+			malloc_trim(0);
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 5) { // avif
 		if (vips_heifsave_buffer(img, out_buf, out_size, "compression", VIPS_FOREIGN_HEIF_COMPRESSION_AV1, "encoder", VIPS_FOREIGN_HEIF_ENCODER_AOM, "lossless", TRUE, NULL)) {
 			g_object_unref(img);
+			malloc_trim(0);
 			libvips_error();
 			return -2;
 		}
 	} else {
 		g_object_unref(img);
+		malloc_trim(0);
 		printf("libvips: unsupported out type: %d\n", outType);
 		return -2;
 	}
 
 	g_object_unref(img);
+	malloc_trim(0);
 	return 0;
 }
 
 void libvips_g_free(void* p) {
 	g_free(p);
+	malloc_trim(0);
 }
 
 int libvips_heif_load_plugins(char* directory) {
