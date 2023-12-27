@@ -37,6 +37,10 @@
 ```bash
 # Ubuntu
 sudo apt install build-essential libglib2.0-dev libvips-dev libheif-dev libheif-plugin-* libheif1
+
+# Arch Linux
+sudo pacman -S libvips libheif pkg-config gcc openslide imagemagick poppler-glib
+
 ```
 
 3. `go build`
