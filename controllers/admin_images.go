@@ -13,7 +13,7 @@ import (
 func adminImages(w http.ResponseWriter, r *http.Request) {
 	user := middleware.MustGetUser(r.Context())
 
-	page, err := strconv.Atoi(r.URL.Query().Get("paeg"))
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	if err != nil || page < 0 {
 		page = 0
 	}
