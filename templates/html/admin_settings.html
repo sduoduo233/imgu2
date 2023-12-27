@@ -121,12 +121,22 @@
         </select>
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">Allow AVIF Encoding</label>
+        <select id="select-avif-encoding" class="form-select" name="AVIF_ENCODING">
+            <option value="true">Enabled</option>
+            <option value="false">Disabled</option>
+        </select>
+        <div class="form-text">Encoding AVIF images may take a large amount of system resources (CPU & memory).</div>
+    </div>
+
     <script>
         document.getElementById("select-register").value = "{{.setting.ALLOW_REGISTER}}";
         document.getElementById("select-guest-upload").value = "{{.setting.GUEST_UPLOAD}}";
         document.getElementById("select-captcha").value = "{{.setting.CAPTCHA}}";
         document.getElementById("select-google-signin").value = "{{.setting.GOOGLE_SIGNIN}}";
         document.getElementById("select-github-signin").value = "{{.setting.GITHUB_SIGNIN}}";
+        document.getElementById("select-avif-encoding").value = "{{.setting.AVIF_ENCODING}}";
     </script>
 
     <div class="mb-3">

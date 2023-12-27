@@ -44,7 +44,7 @@
         <option value="png">PNG</option>
         <option value="jpeg">JEPG</option>
         <option value="gif">GIF (animated)</option>
-        <option value="avif">AVIF</option>
+        {{ if .avif_enabled }}<option value="avif">AVIF</option>{{ end }}
     </select>
 </div>
 
@@ -152,7 +152,8 @@
                         "EXPIRE_TOO_LARGE": "The auto-delete time exceeds the maximum allowed value",
                         "FILE_TOO_LARGE": "Your uploaded file is too large",
                         "IMAGE_PROCESSING_ERROR": "Your uploaded file is malformatted",
-                        "INTERNAL_STORAGE_ERROR": "An unknown error occurred while saving your image"
+                        "INTERNAL_STORAGE_ERROR": "An unknown error occurred while saving your image",
+                        "UNSUPPORTED_ENCODING": "Your selected image format is not supported"
                     }
                     alert("ERROR: " + errorText[resp.error] || resp.error);
                 }

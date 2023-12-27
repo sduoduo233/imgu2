@@ -72,3 +72,5 @@ INSERT OR IGNORE INTO settings(key, value) VALUES('MAX_IMAGE_SIZE', '10485760');
 INSERT OR IGNORE INTO settings(key, value) VALUES('GUEST_UPLOAD', 'false');
 INSERT OR IGNORE INTO settings(key, value) VALUES('GUEST_MAX_TIME', '604800'); -- guest uploads are kept for 7 days
 INSERT OR IGNORE INTO settings(key, value) VALUES('USER_MAX_TIME', '0'); -- user uploads are kept forever
+
+INSERT OR IGNORE INTO settings(key, value) VALUES('AVIF_ENCODING', 'true');

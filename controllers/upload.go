@@ -30,11 +30,19 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	avifEnabled, err := services.Setting.IsAVIFEncodingEnabled()
+	if err != nil {
+		slog.Error("upload", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	render(w, "upload", H{
 		"user":         user,
 		"csrf_token":   csrfToken(w),
 		"max_time":     maxTime,
 		"guest_upload": guestUpload,
+		"avif_enabled": avifEnabled,
 	})
 }
 
@@ -117,7 +125,7 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// image format
-	targetFormat := fileHeaders.Header.Get("Content-Type")
+	targetFormat := ""
 	switch r.FormValue("format") {
 	case "webp":
 		targetFormat = "image/webp"
@@ -129,7 +137,20 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 		targetFormat = "image/png"
 	case "avif":
 		targetFormat = "image/avif"
-	case "original":
+
+		avifEnabled, err := services.Setting.IsAVIFEncodingEnabled()
+		if err != nil {
+			slog.Error("upload", "err", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if !avifEnabled {
+			w.WriteHeader(http.StatusBadRequest)
+			writeJSON(w, H{
+				"error": "UNSUPPORTED_ENCODING",
+			})
+			return
+		}
 	default:
 		w.WriteHeader(http.StatusBadRequest)
 		return
