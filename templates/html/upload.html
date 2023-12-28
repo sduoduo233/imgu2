@@ -8,11 +8,32 @@
 
 {{template "unverified_email" .}}
 
+<!-- Image editor -->
+{{template "image_editor"}}
+<div class="modal fade" tabindex="-1" id="modal-image-editor">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Image Editor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <imgu2-editor id="editor"></imgu2-editor>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-editor-save" data-bs-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="file-area" class="my-3 py-5 border shadow rounded bg-dark text-center">
     <div>
         <div>
             <img style="display: none;" id="preview" class="mw-100">
         </div>
+        <button id="btn-edit" type="button" class="btn btn-outline-primary my-2" style="display: none;">Quick Edit</button>
         <div id="prompt" class="py-5">Click Here or Drop Files Here to Upload</div>
     </div>
 </div>
@@ -66,17 +87,17 @@
     const fileArea = document.getElementById("file-area");
     const fileInput = document.getElementById("file-input");
     const preview = document.getElementById("preview");
-    const prompt = document.getElementById("prompt");
+    const promptElement = document.getElementById("prompt");
     const btn = document.getElementById("btn-upload");
     const selectExpire = document.getElementById("selectExpire");
     const selectFormat = document.getElementById("selectFormat");
     const progress = document.getElementById("progress");
     const progressbar = document.getElementById("progressbar");
+    const btnEdit = document.getElementById("btn-edit");
+    const editor = document.getElementById("editor");
+    const btnEditorSave = document.getElementById("btn-editor-save");
 
-    let uploading = false;
-
-    let file;
-
+    // remove unavailable auto delete options in the drop down
     if (max_duration !== 0) {
         while (+(selectExpire.children[selectExpire.children.length - 1].value) > max_duration && +selectExpire.children[selectExpire.children.length - 1].value !== 0) {
             selectExpire.children[selectExpire.children.length - 1].remove();
@@ -84,37 +105,59 @@
         selectExpire.children[0].remove(); // remove "never"
     }
 
-    function updatePreview() {
-        // display image preview
+    let arrayBuffer; // ArrayBuffer
 
-        if (file !== undefined) {
-            preview.style.display = "";
-            prompt.style.display = "none";
+    // load image preview
+    function loadPreview(mimeType) {
+        if (!arrayBuffer) return;
+        preview.style.display = "";
+        promptElement.style.display = "none";
+
+        if (mimeType.startsWith("image/")) {
+            btnEdit.style.display = "";
+            const url = URL.createObjectURL(new Blob([ arrayBuffer ], { type: mimeType }));
+            preview.src = url;
         } else {
-            preview.style.display = "none";
-            prompt.style.display = "";
+            btnEdit.style.display = "none";
+            preview.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDhweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSI0OHB4Ij48cGF0aCBkPSJNMzIwLTI0MGgzMjB2LTgwSDMyMHY4MFptMC0xNjBoMzIwdi04MEgzMjB2ODBaTTI0MC04MHEtMzMgMC01Ni41LTIzLjVUMTYwLTE2MHYtNjQwcTAtMzMgMjMuNS01Ni41VDI0MC04ODBoMzIwbDI0MCAyNDB2NDgwcTAgMzMtMjMuNSA1Ni41VDcyMC04MEgyNDBabTI4MC01MjB2LTIwMEgyNDB2NjQwaDQ4MHYtNDQwSDUyMFpNMjQwLTgwMHYyMDAtMjAwIDY0MC02NDBaIiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+Cg==";
         }
-
-        const reader = new FileReader();
-        reader.addEventListener("load", (e) => {
-            preview.src = e.target.result;
-        })
-        reader.readAsDataURL(file);
     }
 
-    fileArea.addEventListener("click", () => {
-        if (uploading) return;
-
+    fileArea.addEventListener("click", (e) => {
         fileInput.click();
     });
 
     fileInput.addEventListener("change", (e) => {
-        file = fileInput.files[0];
-        updatePreview();
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.addEventListener("load", (e) => {
+            arrayBuffer = e.target.result;
+            loadPreview(file.type);
+        });
+        reader.readAsArrayBuffer(file);
     });
 
+    // open editor
+    btnEdit.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const modal = new bootstrap.Modal(document.getElementById('modal-image-editor'), {});
+        modal.show();
+        editor.loadImage(arrayBuffer);
+    });
+
+    // editor save
+    btnEditorSave.addEventListener("click", () => {
+        editor.exportImage(async (blob) => {
+            arrayBuffer = await blob.arrayBuffer();
+            loadPreview("image/png");
+        })
+    })
+
+    // upload
     btn.addEventListener("click", () => {
-        if (!file) return;
+        if (!arrayBuffer) return;
 
         if (recaptcha && !grecaptcha.getResponse()) {
             alert("reCAPTCHA is not completed");
@@ -129,6 +172,7 @@
 
         // disable selector
         selectExpire.setAttribute("disabled", "disabled");
+        selectFormat.setAttribute("disabled", "disabled");
 
         const xhr = new XMLHttpRequest();
 
@@ -175,7 +219,7 @@
         xhr.open("POST", "/upload");
 
         const formData = new FormData();
-        formData.set("file", file);
+        formData.set("file", new Blob([arrayBuffer]));
         formData.set("expire", selectExpire.value);
         formData.set("format", selectFormat.value);
         formData.set("csrf_token", csrf_token);
@@ -183,6 +227,7 @@
 
         xhr.send(formData);
     });
+
 </script>
 
 {{template "footer" .}}

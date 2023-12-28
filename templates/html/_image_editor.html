@@ -1,0 +1,307 @@
+{{define "image_editor"}}
+
+<script>
+    class Imgu2Editor extends HTMLElement {
+        ctx; // canvas 2d context
+        canvas; // canvas element
+
+        // color pickers
+        color1;
+        color2;
+
+        mouseDown = false;
+        selectedTool = "";
+
+        previousRender = 0; // timestamp when the previous frame is rendered
+
+        scale = 1;
+
+        operations = []; // operations to render the image
+
+        constructor() {
+            super();
+
+            const shadow = this.attachShadow({ mode: 'open' });
+
+            const container = document.createElement("div");
+            shadow.appendChild(container);
+
+            const tools = document.createElement("div");
+            tools.innerHTML = `
+<style>
+    .btn {
+        background-color: #f0f0f0;
+        color: black;
+        padding: 2px 20px;
+        text-align: center;
+        font-size: 16px;
+        margin: 4px 2px;
+        border: 2px solid #d0d0d0;
+        border-radius: 6px;
+    }
+
+    .btn-selected {
+        background-color: #4CAF50;
+        color: white;
+        border: 2px solid #4CAF50;
+    }
+
+    input[type="color"] {
+        border: 0px;
+        border-radius: 6px;
+    }
+
+    input[type="number"] {
+        background-color: #f0f0f0;
+        color: black;
+        padding: 2px 20px;
+        font-size: 16px;
+        margin: 4px 2px;
+        border: 2px solid #d0d0d0;
+        border-radius: 6px;
+    }
+
+</style>
+
+<p>
+    <button type="button" class="btn" id="btn-undo">Ubdo</button>
+</p>
+
+<button type="button" class="btn" id="btn-line">Line</button>
+<button type="button" class="btn" id="btn-rect">Rect</button>
+<button type="button" class="btn" id="btn-blur">Blur</button>
+
+<p>
+    <label>Line Width</label>
+    <input type="number" id="input-line-width" value="5" min="1"/>
+</p>
+<p>
+    <label>Primary Color</label>
+    <input type="color" id="input-color1"/>
+</p>
+<p>
+    <label>Secondary Color (Filling color)</label>
+    <input type="color" id="input-color2"/>
+</p>
+            `;
+            container.appendChild(tools);
+
+            // tools
+            const updateButtonSelection = () => {
+                for (let i = 0; i < tools.children.length; i++) {
+                    const c = tools.children.item(i);
+                    c.classList.remove("btn-selected");
+                    if (c.id.endsWith(this.selectedTool) && this.selectedTool !== "" && c.tagName == "BUTTON") {
+                        c.classList.add("btn-selected");
+                    }
+                }
+            }
+            updateButtonSelection();
+            shadow.getElementById("btn-line").onclick = () => { this.selectedTool = "line"; updateButtonSelection(); };
+            shadow.getElementById("btn-rect").onclick = () => { this.selectedTool = "rect"; updateButtonSelection(); };
+            shadow.getElementById("btn-blur").onclick = () => { this.selectedTool = "blur"; updateButtonSelection(); };
+
+            // options
+            this.color1 = shadow.getElementById("input-color1"); // primary color
+            this.color2 = shadow.getElementById("input-color2"); // primary color
+            this.lineWidth = shadow.getElementById("input-line-width");
+
+            // canvas
+            this.canvas = document.createElement("canvas");
+            container.appendChild(this.canvas);
+
+            this.ctx = this.canvas.getContext("2d");
+            this.canvas.style.width = "100%";
+            this.canvas.style.height = "100%";
+
+            // offscreen canvas
+            this.offscreenCanvas = document.createElement("canvas");
+            this.offscreenCanvas.style.display = "none";
+            container.appendChild(this.offscreenCanvas);
+            this.ctx2 = this.offscreenCanvas.getContext("2d");
+
+            // mouse event
+            this.canvas.addEventListener("mousedown", (e) => {
+                this.scale = this.canvas.width / this.canvas.getBoundingClientRect().width;
+
+                if (this.mouseDown) return;
+                this.mouseDown = true;
+
+                switch (this.selectedTool) {
+                    case "line":
+                        this.operations.push({
+                            "op": "line",
+                            "x1": e.offsetX * this.scale,
+                            "y1": e.offsetY * this.scale, 
+                            "x2": e.offsetX * this.scale,
+                            "y2": e.offsetY * this.scale,
+                            "color": this.color1.value,
+                            "width": +this.lineWidth.value
+                        });
+                        break;
+                    case "rect":
+                        this.operations.push({
+                            "op": "rect",
+                            "x1": e.offsetX * this.scale,
+                            "y1": e.offsetY * this.scale, 
+                            "x2": e.offsetX * this.scale,
+                            "y2": e.offsetY * this.scale,
+                            "color": this.color1.value,
+                            "width": +this.lineWidth.value,
+                            "fill": this.color2.value
+                        });
+                        break;
+                    case "blur":
+                        this.operations.push({
+                            "op": "blur",
+                            "x1": e.offsetX * this.scale,
+                            "y1": e.offsetY * this.scale, 
+                            "x2": e.offsetX * this.scale,
+                            "y2": e.offsetY * this.scale,
+                        });
+                        break;
+                }
+
+                this.render();
+            });
+
+            // undo
+            shadow.getElementById("btn-undo").onclick = () => {
+                if (this.operations.length > 2) this.operations.pop();
+                this.render();
+            }
+
+            this.canvas.addEventListener("mouseup", (e) => {
+                this.scale = this.canvas.width / this.canvas.getBoundingClientRect().width;
+
+                if (!this.mouseDown) return;
+                this.mouseDown = false;
+                updateButtonSelection();
+
+                this.render(); 
+            });
+
+            this.canvas.addEventListener("mousemove", (e) => {
+                this.scale = this.canvas.width / this.canvas.getBoundingClientRect().width;
+
+                if (!this.mouseDown) return;
+                if (this.selectedTool === "") return;
+
+                switch (this.selectedTool) {
+                    case "line":
+                        this.operations[this.operations.length - 1].x2 = e.offsetX * this.scale;
+                        this.operations[this.operations.length - 1].y2 = e.offsetY * this.scale;
+                        break;
+                    case "rect":
+                        this.operations[this.operations.length - 1].x2 = e.offsetX * this.scale;
+                        this.operations[this.operations.length - 1].y2 = e.offsetY * this.scale;
+                        break;
+                    case "blur":
+                        this.operations[this.operations.length - 1].x2 = e.offsetX * this.scale;
+                        this.operations[this.operations.length - 1].y2 = e.offsetY * this.scale;
+                        break;
+                }
+
+                this.render(); 
+            });
+        }
+
+        loadImage(arrayBuffer) {
+            this.mouseDown = false;
+
+            const img = new Image();
+            img.src = URL.createObjectURL(new Blob([ arrayBuffer ]));
+            img.onload = () => {
+                this.operations = [
+                    {
+                        "op": "init",
+                        "w": img.width,
+                        "h": img.height,
+                    },
+                    {
+                        "op": "draw_image",
+                        "img": img,
+                    }
+                ];
+                this.render();
+            }
+        }
+
+        render() {
+            // refresh rate limit
+            if (Date.now() - this.previousRender < 50) return;
+            this.previousRender = Date.now();
+
+            console.log(JSON.stringify(this.operations));
+
+            this.operations.forEach((op) => {
+                switch (op.op) {
+                    case "init":
+                        this.ctx.clearRect(0, 0, op.w, op.h);
+                        this.canvas.width = op.w;
+                        this.canvas.height = op.h;                        
+                        break;
+                    case "draw_image":                        
+                        this.ctx.drawImage(op.img, 0, 0);
+                        break;
+                    case "line":
+                        this.ctx.beginPath();
+                        this.ctx.lineWidth = op.width;
+                        this.ctx.strokeStyle = op.color;
+                        this.ctx.moveTo(op.x1, op.y1);
+                        this.ctx.lineTo(op.x2, op.y2);
+                        this.ctx.stroke();
+                        break;
+                    case "rect":
+                        this.ctx.fillStyle = op.fill;
+                        this.ctx.fillRect(op.x1, op.y1, op.x2 - op.x1, op.y2 - op.y1);
+                        this.ctx.beginPath();
+                        this.ctx.lineWidth = op.width;
+                        this.ctx.strokeStyle = op.color;
+                        this.ctx.moveTo(op.x1, op.y1);
+                        this.ctx.lineTo(op.x1, op.y2);
+                        this.ctx.lineTo(op.x2, op.y2);
+                        this.ctx.lineTo(op.x2, op.y1);
+                        this.ctx.lineTo(op.x1, op.y1);
+                        this.ctx.stroke();
+                        break;
+                    case "blur":
+                        let w = Math.abs(op.x2 - op.x1);
+                        let h = Math.abs(op.y2 - op.y1);
+                        let x = op.x1;
+                        let y = op.y1;
+                        if (op.y2 < op.y1) {
+                            y -= h;
+                        }
+                        if (op.x2 < op.x1) {
+                            x -= w;
+                        }
+
+                        // draw to the offscreen canvas and apply blue effect
+                        this.offscreenCanvas.width = w + 100;
+                        this.offscreenCanvas.height = h + 100;
+                        this.ctx2.filter = "blur(25px)";
+                        this.ctx2.fillStyle = "white";
+                        this.ctx2.fillRect(0, 0, w + 100, h + 100);
+                        this.ctx2.drawImage(this.canvas, x - 50, y - 50, w + 100, h + 100, 0, 0, w + 100, h + 100);
+
+                        // copy to the main canvas
+                        this.ctx.clearRect(x, y, w, h);
+                        this.ctx.drawImage(this.offscreenCanvas, 50, 50, w, h, x, y, w, h);
+
+                        this.offscreenCanvas.width = 0;
+                        this.offscreenCanvas.height = 0;
+                        break;
+                }
+            });
+
+        }
+
+        exportImage(callback) {
+            this.canvas.toBlob(callback, "image/png");
+        }
+    }
+    customElements.define("imgu2-editor", Imgu2Editor);
+</script>
+
+{{end}}

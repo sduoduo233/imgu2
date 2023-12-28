@@ -120,6 +120,7 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 
 	file, fileHeaders, err := r.FormFile("file")
 	if err != nil {
+		slog.Debug("upload: read file", "err", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
