@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -65,16 +64,10 @@ func (s *s3Storage) Delete(key string) error {
 }
 
 func (s *s3Storage) Put(key string, content []byte, expire sql.NullTime) error {
-	var e *time.Time
-	if expire.Valid {
-		e = &expire.Time
-	}
-
 	_, err := s.s3Client.PutObject(&s3.PutObjectInput{
 		Body:        bytes.NewReader(content),
 		Bucket:      &s.bucket,
 		ContentType: aws.String(http.DetectContentType(content)),
-		Expires:     e,
 		Key:         &key,
 	})
 	if err != nil {
