@@ -49,7 +49,7 @@ sudo pacman -S libvips libheif pkg-config gcc openslide imagemagick poppler-glib
 
 # How to install
 
-1. Pull the docker image `docker push sduoduo233/imgu2:latest`
+1. Pull the docker image `docker pull sduoduo233/imgu2:latest`
 
 2. Start container
 
