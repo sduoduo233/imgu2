@@ -9,8 +9,8 @@
         color1;
         color2;
 
-        mouseDown = false;
-        selectedTool = "";
+        mouseDown = false; // whether the selected tool is being used
+        selectedTool = ""; // current selected tool
 
         previousRender = 0; // timestamp when the previous frame is rendered
 
@@ -88,6 +88,7 @@
 
             // tools
             const updateButtonSelection = () => {
+                // highlight the selected button
                 for (let i = 0; i < tools.children.length; i++) {
                     const c = tools.children.item(i);
                     c.classList.remove("btn-selected");
@@ -189,13 +190,7 @@
 
                 switch (this.selectedTool) {
                     case "line":
-                        this.operations[this.operations.length - 1].x2 = e.offsetX * this.scale;
-                        this.operations[this.operations.length - 1].y2 = e.offsetY * this.scale;
-                        break;
                     case "rect":
-                        this.operations[this.operations.length - 1].x2 = e.offsetX * this.scale;
-                        this.operations[this.operations.length - 1].y2 = e.offsetY * this.scale;
-                        break;
                     case "blur":
                         this.operations[this.operations.length - 1].x2 = e.offsetX * this.scale;
                         this.operations[this.operations.length - 1].y2 = e.offsetY * this.scale;
@@ -241,7 +236,7 @@
                         this.canvas.width = op.w;
                         this.canvas.height = op.h;                        
                         break;
-                    case "draw_image":                        
+                    case "draw_image":
                         this.ctx.drawImage(op.img, 0, 0);
                         break;
                     case "line":
@@ -266,6 +261,7 @@
                         this.ctx.stroke();
                         break;
                     case "blur":
+                        // fix negative width and height
                         let w = Math.abs(op.x2 - op.x1);
                         let h = Math.abs(op.y2 - op.y1);
                         let x = op.x1;
@@ -277,7 +273,7 @@
                             x -= w;
                         }
 
-                        // draw to the offscreen canvas and apply blue effect
+                        // draw to the offscreen canvas and apply blur effect
                         this.offscreenCanvas.width = w + 100;
                         this.offscreenCanvas.height = h + 100;
                         this.ctx2.filter = "blur(25px)";
