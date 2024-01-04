@@ -1,4 +1,20 @@
 {
-    "login": "Login",
-    "logout": "Logout"
+    "login": "登录",
+    "logout": "退出登录",
+    "email_verification": "邮箱验证",
+    "send_verification_email_to": "发送验证电子邮件到",
+    "click_to_change_email": "点击此处更改您的电子邮件地址",
+    "continue_with_google": "使用 Google 帐号登录",
+    "continue_with_github": "使用 Github 账号登录",
+    "email": "电子邮件",
+    "password": "密码",
+    "register_new_account": "注册新账户",
+    "reset_password": "重置密码",
+    "login_requried_before_uploading": "您需要先登录才能上传",
+    "image_editor": "图片编辑器",
+    "close": "关闭",
+    "save": "保存",
+    "auto_deletion": "自动删除",
+    "image_format_conversion": "图片格式转换",
+    "upload": "上传"
 }
