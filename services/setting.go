@@ -69,6 +69,10 @@ func (s *setting) Set(key, value string) error {
 	return db.SetttingUpdate(key, value)
 }
 
+func (s *setting) GetLanguage() (string, error) {
+	return db.SettingFind("LANGUAGE")
+}
+
 func (*setting) GetMaxImageSize() (uint, error) {
 	s, err := db.SettingFind("MAX_IMAGE_SIZE")
 	if err != nil {
