@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
+	"imgu2/i18n"
 	"io"
 	"log/slog"
 	"net/url"
@@ -60,6 +61,9 @@ func init() {
 			s.RawQuery = q.Encode()
 
 			return s.RequestURI()
+		},
+		"tr": func(key string) string {
+			return i18n.T(key)
 		},
 	}
 

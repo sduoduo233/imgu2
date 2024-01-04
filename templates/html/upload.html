@@ -2,7 +2,8 @@
 
 {{if and (not .user) (not .guest_upload)}}
 <div class="alert alert-warning my-3" role="alert">
-    You need to <a href="/login">sign in</a> before uploading
+    {{tr "login_requried_before_uploading"}}
+    <a href="/login">{{tr "login"}}</a>
 </div>
 {{end}}
 
@@ -14,15 +15,15 @@
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Image Editor</h5>
+                <h5 class="modal-title">{{tr "image_editor"}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <imgu2-editor id="editor"></imgu2-editor>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="btn-editor-save" data-bs-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{tr "close"}}</button>
+                <button type="button" class="btn btn-primary" id="btn-editor-save" data-bs-dismiss="modal">{{tr "save"}}</button>
             </div>
         </div>
     </div>
@@ -41,7 +42,7 @@
 <input type="file" id="file-input" class="d-none" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf,image/svg+xml" multiple>
 
 <div class="mb-2">
-    <label class="form-label">Auto delete</label>
+    <label class="form-label">{{tr "auto_deletion"}}</label>
     <select class="form-select" id="selectExpire">
         <option value="0" selected>Never</option>
         <option value="300">5 minutes</option>
@@ -59,7 +60,7 @@
 </div>
 
 <div class="mb-2">
-    <label class="form-label">Image Format Conversion</label>
+    <label class="form-label">{{tr "image_format_conversion"}}</label>
     <select class="form-select" id="selectFormat">
         <option value="webp" selected>WebP Loseless (animated)</option>
         <option value="png">PNG</option>
@@ -72,7 +73,7 @@
 {{template "recaptcha" .}}
 
 <div class="my-3 d-grid">
-    <button type="button" class="btn btn-primary" id="btn-upload">Upload</button>
+    <button type="button" class="btn btn-primary" id="btn-upload">{{tr "upload"}}</button>
 </div>
 
 <div class="my-3 progress" role="progress" style="display: none;" id="progress">

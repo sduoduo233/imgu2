@@ -1,6 +1,6 @@
 {{template "header" .}}
 
-<h1>Login</h1>
+<h1>{{tr "login"}}</h1>
 
 {{ if .error }}
 <div class="alert alert-danger" role="alert">
@@ -11,10 +11,10 @@
 {{if or .google_login .github_login}}
 <div class="d-grid gap-3">
     {{if .google_login}}
-        <a href="/login/google" class="btn btn-outline-primary">Continue with Google</a>
+        <a href="/login/google" class="btn btn-outline-primary">{{tr "continue_with_google"}}</a>
     {{end}}
     {{if .github_login}}
-        <a href="/login/github" class="btn btn-outline-primary">Continue with Github</a>
+        <a href="/login/github" class="btn btn-outline-primary">{{tr "continue_with_github"}}</a>
     {{end}}
 </div>
 
@@ -27,24 +27,24 @@
     {{template "csrf" .csrf_token}}
 
     <div class="mb-3">
-        <label class="form-label">Email</label>
+        <label class="form-label">{{tr "email"}}</label>
         <input type="text" class="form-control" name="email">
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Password</label>
+        <label class="form-label">{{tr "password"}}</label>
         <input type="password" class="form-control" name="password">
     </div>
 
     {{template "recaptcha" .}}
 
     <div class="mb-3">
-        <button type="submit" class="btn btn-primary">Login</button>
+        <button type="submit" class="btn btn-primary">{{tr "login"}}</button>
     </div>
 
 </form>
 
-<p><a href="/register">Register a New Account</a></p>
-<p><a href="/reset-password">Reset Password</a></p>
+<p><a href="/register">{{tr "register_new_account"}}</a></p>
+<p><a href="/reset-password">{{tr "reset_password"}}s</a></p>
 
 {{template "footer"}}
