@@ -1,4 +1,20 @@
 {
-    "login": "Login",
-    "logout": "Logout"
+    "login": "登录",
+    "logout": "退出登录",
+    "email_verification": "Email Verification",
+    "send_verification_email_to": "Send verification email to",
+    "click_to_change_email": "Click here to change your email address",
+    "continue_with_google": "Continue with Google",
+    "continue_with_github": "Continue with Github",
+    "email": "Email",
+    "password": "Password",
+    "register_new_account": "Register a New Account",
+    "reset_password": "Reset Password",
+    "login_requried_before_uploading": "You need to sign in before uploading",
+    "image_editor": "Image Editor",
+    "close": "Close",
+    "save": "Save",
+    "auto_deletion": "Auto Deletion",
+    "image_format_conversion": "Image Format Conversion",
+    "upload": "Upload"
 }
