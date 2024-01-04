@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<input type="file" id="file-input" class="d-none" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf" multiple>
+<input type="file" id="file-input" class="d-none" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf,image/svg+xml" multiple>
 
 <div class="mb-2">
     <label class="form-label">Auto delete</label>
@@ -114,7 +114,10 @@
         promptElement.style.display = "none";
 
         if (mimeType.startsWith("image/")) {
-            btnEdit.style.display = "";
+            if (mimeType !== "image/svg+xml") { // svg image is not rendered in the editor for some reason
+                btnEdit.style.display = "";
+            }
+            
             const url = URL.createObjectURL(new Blob([ arrayBuffer ], { type: mimeType }));
             preview.src = url;
         } else {
