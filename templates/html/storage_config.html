@@ -8,12 +8,12 @@
     {{template "csrf" .csrf_token}}
     
     <div class="mb-3">
-        <label class="form-label">Name</label>
+        <label class="form-label">{{tr "name"}}</label>
         <input type="text" class="form-control" value="{{.storage.Name}}" disabled name="name">
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Storage Type</label>
+        <label class="form-label">{{tr "storage_type"}}</label>
         <select class="form-select" id="select-type" disabled name="type">
             <option value="s3">S3</option>
             <option value="local">Local</option>
@@ -23,12 +23,12 @@
 
     <div class="mb-3 form-check">
         <input class="form-check-input" type="checkbox" name="enabled" id="check-enabled">
-        <label class="form-check-label">Enable</label>
+        <label class="form-check-label">{{tr "enable"}}</label>
     </div>
 
     <div class="mb-3 form-check">
         <input class="form-check-input" type="checkbox" name="allow_upload" id="check-allow-upload">
-        <label class="form-check-label">Allow Upload</label>
+        <label class="form-check-label">{{tr "allow_upload"}}</label>
     </div>
 
     <hr>
@@ -36,7 +36,7 @@
     <!-- Configuration for local storage -->
     {{ if eq .storage.Type "local"}}
     <div class="mb-3">
-        <label class="form-label">Path</label>
+        <label class="form-label">{{tr "path"}}</label>
         <input type="text" class="form-control" value="{{.config.path}}" name="config_path">
     </div>
     {{ end }}
@@ -44,7 +44,7 @@
     <!-- Configuration for s3 -->
     {{ if eq .storage.Type "s3"}}
     <div class="mb-3">
-        <label class="form-label">KeyID</label>
+        <label class="form-label">{{tr "key_id"}}</label>
         <input type="text" class="form-control" value="{{.config.key_id}}" name="config_key_id">
     </div>
     <div class="mb-3">
@@ -68,29 +68,29 @@
         <input type="text" class="form-control" value="{{.config.bucket}}" name="config_bucket">
     </div>
     <div class="mb-3">
-        <label class="form-label">Public URL</label>
+        <label class="form-label">{{tr "s3_public_url"}}</label>
         <input type="text" class="form-control" value="{{.config.public_url}}" name="config_public_url" placeholder="https://s3.us-west-2.amazonaws.com/YOUR_BUCKET_NAME">
-        <div class="form-text">The public accessable URL prefix for your s3 bucket.</div>
+        <div class="form-text">{{tr "s3_public_url_desc"}}</div>
     </div>
     {{ end }}
 
     <!-- Configuration for FTP -->
     {{ if eq .storage.Type "ftp"}}
     <div class="mb-3">
-        <label class="form-label">Address</label>
+        <label class="form-label">{{tr "address"}}</label>
         <input type="text" class="form-control" value="{{.config.address}}" name="config_address">
     </div>
     <div class="mb-3">
-        <label class="form-label">User</label>
+        <label class="form-label">{{tr "user"}}</label>
         <input type="text" class="form-control" value="{{.config.user}}" name="config_user">
     </div>
     <div class="mb-3">
-        <label class="form-label">Password</label>
+        <label class="form-label">{{tr "password"}}</label>
         <input type="text" class="form-control" value="{{.config.password}}" name="config_password">
     </div>
     {{ end }}
 
-    <button class="btn btn-primary">Save</button>
+    <button class="btn btn-primary">{{tr "save"}}</button>
 </form>
 
 <script>

@@ -21,7 +21,7 @@ func adminStorages(w http.ResponseWriter, r *http.Request) {
 	storages, err := services.Storage.FindAll()
 	if err != nil {
 		slog.Error("admin list storages", "err", err)
-		renderDialog(w, "Error", "Unknown error", "/admin", "Go back")
+		renderDialog(w, tr("error"), "Unknown error", "/admin", tr("go_back"))
 		return
 	}
 
@@ -129,7 +129,7 @@ func adminAddStorage(w http.ResponseWriter, r *http.Request) {
 		if errors.As(err, &sqliteErr) {
 			if sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
 				// duplicated name
-				renderDialog(w, "Error", "Duplicated storage name", "/admin/storages", "Go back")
+				renderDialog(w, tr("error"), "Duplicated storage name", "/admin/storages", tr("go_back"))
 				return
 			}
 		}
@@ -152,7 +152,7 @@ func adminStorageDelete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err.Error() == "non empty storage driver can not be deleted" {
 			w.WriteHeader(http.StatusBadRequest)
-			renderDialog(w, "Error", "Non empty storage driver can not be deleted", "/admin/storages", "Go back")
+			renderDialog(w, tr("error"), "Non empty storage driver can not be deleted", "/admin/storages", tr("go_back"))
 			return
 		}
 

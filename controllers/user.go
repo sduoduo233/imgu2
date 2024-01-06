@@ -70,20 +70,20 @@ func changePassword(w http.ResponseWriter, r *http.Request) {
 
 	if password1 != password2 {
 		w.WriteHeader(http.StatusBadRequest)
-		renderDialog(w, "Error", "Passwords do not match", "", "")
+		renderDialog(w, tr("error"), tr("password_do_not_match"), "", "")
 		return
 	}
 
 	if len(password1) > 30 || len(password1) < 8 {
 		w.WriteHeader(http.StatusBadRequest)
-		renderDialog(w, "Error", "Password must be between 8 to 30 characters in length.", "", "")
+		renderDialog(w, tr("error"), tr("password_wrong_length"), "", "")
 		return
 	}
 
 	err := services.User.ChangePassword(user.Id, current, password1)
 	if err != nil {
 		if err.Error() == "current password does not match" {
-			renderDialog(w, "Error", "Current password does not match", "", "")
+			renderDialog(w, tr("error"), tr("wrong_current_password"), "", "")
 			return
 		}
 		slog.Error("change password", "err", err)
@@ -91,7 +91,7 @@ func changePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderDialog(w, "Info", "Password updated", "/dashboard", "Continue")
+	renderDialog(w, tr("info"), tr("password_updated"), "/dashboard", tr("continue"))
 }
 
 func changeUsername(w http.ResponseWriter, r *http.Request) {
@@ -100,7 +100,7 @@ func changeUsername(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	match, err := regexp.Match("^[\\w #]{3,30}$", []byte(username))
 	if err != nil || !match {
-		renderDialog(w, "Error", "Invalid username. Username must be 3-30 characters long and can include letters, numbers, underscores (_), hashtags (#), and spaces.", "/register", "Go back")
+		renderDialog(w, tr("error"), tr("invalid_username"), "/register", tr("go_back"))
 		return
 	}
 
@@ -111,7 +111,7 @@ func changeUsername(w http.ResponseWriter, r *http.Request) {
 		var sqliteErr sqlite3.Error
 		if errors.As(err, &sqliteErr) && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
 			// duplicated username
-			renderDialog(w, "Error", "This username is already used by another user.", "/dashboard/account", "Go back")
+			renderDialog(w, tr("error"), tr("dup_username"), "/dashboard/account", tr("go_back"))
 			return
 		}
 
@@ -119,7 +119,7 @@ func changeUsername(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderDialog(w, "Error", "Username changed", "/dashboard/account", "Continue")
+	renderDialog(w, tr("info"), tr("username_changed"), "/dashboard/account", tr("continue"))
 }
 
 func changeEmail(w http.ResponseWriter, r *http.Request) {
@@ -129,7 +129,7 @@ func changeEmail(w http.ResponseWriter, r *http.Request) {
 
 	match, err := regexp.Match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", []byte(email))
 	if err != nil || !match {
-		renderDialog(w, "Error", "Invalid email address", "/register", "Go back")
+		renderDialog(w, tr("error"), tr("invalid_email"), "/register", tr("go_back"))
 		return
 	}
 
@@ -140,7 +140,7 @@ func changeEmail(w http.ResponseWriter, r *http.Request) {
 		var sqliteErr sqlite3.Error
 		if errors.As(err, &sqliteErr) && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
 			// duplicated email
-			renderDialog(w, "Error", "This email address is already used by another user.", "/dashboard/account", "Go back")
+			renderDialog(w, tr("error"), tr("dup_email"), "/dashboard/account", tr("go_back"))
 			return
 		}
 
@@ -148,7 +148,7 @@ func changeEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderDialog(w, "Info", "An verification email has been sent to your new email address", "/dashboard/account", "Continue")
+	renderDialog(w, tr("info"), tr("change_email_verification_email_sent"), "/dashboard/account", tr("continue"))
 }
 
 func verifyEmail(w http.ResponseWriter, r *http.Request) {
@@ -176,45 +176,45 @@ func doVerifyEmail(w http.ResponseWriter, r *http.Request) {
 	err := services.User.SendVerificationEmail(user.Id)
 	if err != nil {
 		slog.Error("send verification email", "err", err)
-		renderDialog(w, "Error", "Unknown error", "/dashboard", "Go back")
+		renderDialog(w, tr("error"), "Unknown error", "/dashboard", tr("go_back"))
 		return
 	}
 
-	renderDialog(w, "Info", "Verification email sent", "/dashboard", "Continue")
+	renderDialog(w, tr("info"), tr("verification_email_sent"), "/dashboard", tr("continue"))
 }
 
 func verifyEmailCallback(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
 	if token == "" {
-		renderDialog(w, "Error", "Token is empty", "", "")
+		renderDialog(w, tr("error"), "Token is empty", "", "")
 		return
 	}
 
 	err := services.User.VerifyEmail(token)
 	if err != nil {
 		slog.Error("verify email", "err", err)
-		renderDialog(w, "Error", "Invalid token", "", "")
+		renderDialog(w, tr("error"), "Invalid token", "", "")
 		return
 	}
 
-	renderDialog(w, "Info", "Your email is verified", "/dashboard", "Continue")
+	renderDialog(w, tr("info"), tr("email_verified"), "/dashboard", tr("continue"))
 }
 
 func changeEmailCallback(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
 	if token == "" {
-		renderDialog(w, "Error", "Token is empty", "", "")
+		renderDialog(w, tr("error"), "Token is empty", "", "")
 		return
 	}
 
 	err := services.User.ChangeEmailCallback(token)
 	if err != nil {
 		slog.Error("change email callback", "err", err)
-		renderDialog(w, "Error", "Invalid token", "", "")
+		renderDialog(w, tr("error"), "Invalid token", "", "")
 		return
 	}
 
-	renderDialog(w, "Info", "Your email is changed", "/dashboard", "Continue")
+	renderDialog(w, tr("info"), tr("email_changed"), "/dashboard", tr("continue"))
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -244,7 +244,7 @@ func doRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !allowRegister {
-		renderDialog(w, "Error", "Registration is currently disabled", "/login", "Go back")
+		renderDialog(w, tr("error"), tr("registration_disabled"), "/login", tr("go_back"))
 		return
 	}
 
@@ -255,36 +255,32 @@ func doRegister(w http.ResponseWriter, r *http.Request) {
 
 	if username == "" || email == "" || password == "" || password2 == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		renderDialog(w, "Error", "Missing required fields", "/register", "Go back")
+		renderDialog(w, tr("error"), tr("missing_required_fields"), "/register", tr("go_back"))
 		return
 	}
 
 	if password != password2 {
-		renderDialog(w, "Error", "Passwords do not match", "/register", "Go back")
+		renderDialog(w, tr("error"), tr("password_do_not_match"), "/register", tr("go_back"))
 		return
 	}
 
 	// email check
 	match, err := regexp.Match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", []byte(email))
 	if err != nil || !match {
-		renderDialog(w, "Error", "Invalid email address", "/register", "Go back")
+		renderDialog(w, tr("error"), tr("invalid_email"), "/register", tr("go_back"))
 		return
 	}
 
 	// username check (3-30 characters, alphanumeric & underscore, #, space)
 	match, err = regexp.Match("^[\\w #]{3,30}$", []byte(username))
 	if err != nil || !match {
-		renderDialog(w, "Error", "Invalid username", "/register", "Go back")
+		renderDialog(w, tr("error"), tr("invalid_username"), "/register", tr("go_back"))
 		return
 	}
 
 	// password check
-	if len(password) > 30 {
-		renderDialog(w, "Error", "Password too long", "/register", "Go back")
-		return
-	}
-	if len(password) < 8 {
-		renderDialog(w, "Error", "Password too short", "/register", "Go back")
+	if len(password) > 30 || len(password) < 8 {
+		renderDialog(w, tr("error"), tr("password_wrong_length"), "/register", tr("go_back"))
 		return
 	}
 
@@ -296,12 +292,12 @@ func doRegister(w http.ResponseWriter, r *http.Request) {
 
 		if errors.As(err, &sqliteErr) && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
 			// duplicated username / email
-			renderDialog(w, "Error", "Duplicated username or email.", "/register", "Go back")
+			renderDialog(w, tr("error"), tr("dup_username_or_email"), "/register", tr("go_back"))
 			return
 		}
 
 		w.WriteHeader(http.StatusInternalServerError)
-		renderDialog(w, "Error", "Unknown error", "/register", "Go back")
+		renderDialog(w, tr("error"), tr("unknown_error"), "/register", tr("go_back"))
 		return
 	}
 
@@ -322,16 +318,12 @@ func doResetPasswordCallback(w http.ResponseWriter, r *http.Request) {
 	password2 := r.FormValue("password2")
 
 	if password1 != password2 {
-		renderDialog(w, "Error", "Passwords do not match", "", "")
+		renderDialog(w, tr("error"), tr("password_do_not_match"), "", "")
 		return
 	}
 
-	if len(password1) > 30 {
-		renderDialog(w, "Error", "Password too long", "", "")
-		return
-	}
-	if len(password1) < 8 {
-		renderDialog(w, "Error", "Password too short", "", "")
+	if len(password1) > 30 || len(password1) < 8 {
+		renderDialog(w, tr("error"), tr("password_wrong_length"), "", "")
 		return
 	}
 
@@ -339,11 +331,11 @@ func doResetPasswordCallback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error("reset password callback", "err", err)
-		renderDialog(w, "Error", "Unknown error", "", "")
+		renderDialog(w, tr("error"), tr("unknown_error"), "", "")
 		return
 	}
 
-	renderDialog(w, "Info", "Your password is changed.", "/login", "Login")
+	renderDialog(w, tr("info"), tr("password_updated"), "/login", "Login")
 }
 
 func resetPassword(w http.ResponseWriter, r *http.Request) {
@@ -362,15 +354,15 @@ func doResetPassword(w http.ResponseWriter, r *http.Request) {
 	err := services.User.ResetPassword(email)
 	if err != nil {
 		if err.Error() == "email unverified" {
-			renderDialog(w, "Error", "Your email address is unverified.", "/login", "Go back")
+			renderDialog(w, tr("error"), tr("email_unverified"), "/login", tr("go_back"))
 			return
 		}
 
 		slog.Error("reset password", "err", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		renderDialog(w, "Error", "An unknown error happened.", "/login", "Go back")
+		renderDialog(w, tr("error"), tr("unknown_error"), "/login", tr("go_back"))
 		return
 	}
 
-	renderDialog(w, "Info", "An email has been sent to you. Please follow instructions in the email to reset your password.", "/login", "OK")
+	renderDialog(w, tr("info"), tr("reset_password_email_sent"), "/login", "OK")
 }

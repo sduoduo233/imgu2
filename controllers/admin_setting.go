@@ -42,5 +42,5 @@ func doAdminSettings(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	renderDialog(w, "Info", "Settings updated", "/admin/settings", "Continue")
+	renderDialog(w, tr("info"), "Settings updated", "/admin/settings", tr("continue"))
 }

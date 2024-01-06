@@ -33,21 +33,21 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Upload</a>
+                        <a class="nav-link" href="/">{{tr "upload"}}</a>
                     </li>
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Account
+                            {{tr "account"}}
                         </a>
                         <ul class="dropdown-menu">
                             {{if .user}}
-                                <li><div class="dropdown-item disabled">Logged in as {{.user.Username}}</div></li>
+                                <li><div class="dropdown-item disabled">{{tr "logged_in_as"}} {{.user.Username}}</div></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/dashboard/images">Images</a></li>
-                                <li><a class="dropdown-item" href="/dashboard/account">Account Settings</a></li>
+                                <li><a class="dropdown-item" href="/dashboard/images">{{tr "images"}}</a></li>
+                                <li><a class="dropdown-item" href="/dashboard/account">{{tr "account_settings"}}</a></li>
                             {{else}}
-                                <li><a class="dropdown-item" href="/login">Sign in / Sing up</a></li>
+                                <li><a class="dropdown-item" href="/login">{{tr "sign_in_sign_up"}}</a></li>
                             {{end}}
                         </ul>
                     </li>
@@ -55,20 +55,20 @@
                     {{if and .user (eq .user.Role 0)}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Admin
+                            {{tr "admin"}}
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/admin/users">Users</a></li>
-                            <li><a class="dropdown-item" href="/admin/images">Images</a></li>
-                            <li><a class="dropdown-item" href="/admin/storages">Storage Drivers</a></li>
-                            <li><a class="dropdown-item" href="/admin/settings">Settings</a></li>
+                            <li><a class="dropdown-item" href="/admin/users">{{tr "users"}}</a></li>
+                            <li><a class="dropdown-item" href="/admin/images">{{tr "images"}}</a></li>
+                            <li><a class="dropdown-item" href="/admin/storages">{{tr "storage_drivers"}}</a></li>
+                            <li><a class="dropdown-item" href="/admin/settings">{{tr "settings"}}</a></li>
                         </ul>
                     </li>
                     {{end}}
 
                     {{if .user}}
                     <li class="nav-item">
-                        <a class="nav-link" href="/logout">Logout</a>
+                        <a class="nav-link" href="/logout">{{tr "logout"}}</a>
                     </li>
                     {{end}}
                     

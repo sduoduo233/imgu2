@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"imgu2/i18n"
 	"imgu2/services"
 	"imgu2/templates"
 	"imgu2/utils"
@@ -84,4 +85,9 @@ func csrfToken(w http.ResponseWriter) string {
 	t := utils.RandomHexString(8)
 	setCookie(w, "CSRF_TOKEN", t)
 	return t
+}
+
+// shortcut for i18n.T
+func tr(key string) string {
+	return i18n.T(key)
 }

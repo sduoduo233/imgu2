@@ -41,7 +41,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 func logout(w http.ResponseWriter, r *http.Request) {
 	setCookie(w, "TOKEN", "")
-	renderDialog(w, "Info", "Logged out", "/login", "Login")
+	renderDialog(w, tr("info"), tr("logged_out"), "/login", tr("login"))
 }
 
 func doLogin(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +55,7 @@ func doLogin(w http.ResponseWriter, r *http.Request) {
 
 	token, err := services.Auth.Login(email, password)
 	if err != nil {
-		renderDialog(w, "Error", "Incorrect email or password", "/login", "Go back")
+		renderDialog(w, tr("error"), tr("incorrect_email_or_password"), "/login", tr("go_back"))
 		return
 	}
 
@@ -113,7 +113,7 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 
 	if code == "" {
-		renderDialog(w, "Error", "oauth error: "+r.URL.Query().Get("error"), "/login", "Go back")
+		renderDialog(w, tr("error"), tr("oauth_error")+": "+r.URL.Query().Get("error"), "/login", tr("go_back"))
 		return
 	}
 
@@ -122,7 +122,7 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		slog.Error("google callback", "err", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		renderDialog(w, "Error", "oauth error", "/login", "Go back")
+		renderDialog(w, tr("error"), tr("oauth_error"), "/login", tr("go_back"))
 		return
 	}
 
@@ -134,7 +134,7 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			slog.Error("link google", "err", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			renderDialog(w, "Error", "unknown error", "/dashboard/account", "Go back")
+			renderDialog(w, tr("error"), tr("unknown_error"), "/dashboard/account", tr("go_back"))
 			return
 		}
 
@@ -151,19 +151,19 @@ func googleLoginCallback(w http.ResponseWriter, r *http.Request) {
 			if errors.As(err, &sqliteErr) {
 				if sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
 					// duplicated email
-					renderDialog(w, "Error", fmt.Sprintf("An account with this email (%s) is already created. Please sign in to your original account.", profile.Email), "/login", "Go back")
+					renderDialog(w, tr("error"), fmt.Sprintf(tr("oauth_dup_email"), profile.Email), "/login", tr("go_back"))
 					return
 				}
 			}
 
 			if err.Error() == "registration is disabled" {
-				renderDialog(w, "Error", "Registration is currently disabled", "/login", "Go back")
+				renderDialog(w, tr("error"), tr("registration_disabled"), "/login", tr("go_back"))
 				return
 			}
 
 			slog.Error("signin google", "err", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			renderDialog(w, "Error", "unknown error", "/login", "Go back")
+			renderDialog(w, tr("error"), tr("unknown_error"), "/login", tr("go_back"))
 			return
 		}
 
@@ -188,7 +188,7 @@ func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 
 	if code == "" {
-		renderDialog(w, "Error", "oauth error: "+r.URL.Query().Get("error"), "/login", "Go back")
+		renderDialog(w, tr("error"), tr("oauth_error")+": "+r.URL.Query().Get("error"), "/login", tr("go_back"))
 		return
 	}
 
@@ -197,7 +197,7 @@ func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		slog.Error("github callback", "err", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		renderDialog(w, "Error", "oauth error", "/login", "Go back")
+		renderDialog(w, tr("error"), tr("oauth_error"), "/login", tr("go_back"))
 		return
 	}
 
@@ -209,7 +209,7 @@ func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			slog.Error("link github", "err", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			renderDialog(w, "Error", "unknown error", "/dashboard/account", "Go back")
+			renderDialog(w, tr("error"), tr("unknown_error"), "/dashboard/account", tr("go_back"))
 			return
 		}
 
@@ -227,19 +227,19 @@ func githubLoginCallback(w http.ResponseWriter, r *http.Request) {
 			if errors.As(err, &sqliteErr) {
 				if sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
 					// duplicated email
-					renderDialog(w, "Error", fmt.Sprintf("An account with this email (%s) is already created. Please sign in to your original account.", profile.Email), "/login", "Go back")
+					renderDialog(w, tr("error"), fmt.Sprintf(tr("oauth_dup_email"), profile.Email), "/login", tr("go_back"))
 					return
 				}
 			}
 
 			if err.Error() == "registration is disabled" {
-				renderDialog(w, "Error", "Registration is currently disabled", "/login", "Go back")
+				renderDialog(w, tr("error"), tr("registration_disabled"), "/login", tr("go_back"))
 				return
 			}
 
 			slog.Error("signin github", "err", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			renderDialog(w, "Error", "unknown error", "/login", "Go back")
+			renderDialog(w, tr("error"), "unknown error", "/login", tr("go_back"))
 			return
 		}
 
@@ -262,7 +262,7 @@ func socialLoginUnlink(w http.ResponseWriter, r *http.Request) {
 	loginType := r.FormValue("type")
 	if loginType != services.SocialLoginGoogle && loginType != services.SocialLoginGithub {
 		w.WriteHeader(http.StatusBadRequest)
-		renderDialog(w, "Error", "Bad request: invalid social login type", "", "")
+		renderDialog(w, tr("error"), "Bad request: invalid social login type", "", "")
 		return
 	}
 
@@ -273,5 +273,5 @@ func socialLoginUnlink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderDialog(w, "Info", loginType+" account unlinked", "/dashboard/account", "Continue")
+	renderDialog(w, tr("info"), loginType+tr("oauth_account_unlinked"), "/dashboard/account", tr("continue"))
 }

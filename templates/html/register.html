@@ -1,6 +1,6 @@
 {{template "header" .}}
 
-<h1>Register</h1>
+<h1>{{tr "register"}}</h1>
 
 
 <form method="post" action="/register">
@@ -8,32 +8,32 @@
     {{template "csrf" .csrf_token}}
 
     <div class="mb-3">
-        <label class="form-label">Username</label>
+        <label class="form-label">{{tr "username"}}</label>
         <input type="text" class="form-control" name="username" required>
-        <div class="form-text">Username must be 3-30 characters long and can include letters, numbers, underscores (_), hashtags (#), and spaces.</div>
+        <div class="form-text">{{tr "password_prompt"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Email</label>
+        <label class="form-label">{{tr "email"}}</label>
         <input type="email" class="form-control" name="email" required>
-        <div class="form-text">Enter a valid email address with a format like 'example@example.com', using letters, numbers, periods (.), and hyphens (-).</div>
+        <div class="form-text">{{tr "email_prompt"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Password</label>
+        <label class="form-label">{{tr "password"}}</label>
         <input type="password" class="form-control" name="password" required>
-        <div class="form-text">Password must be between 8 to 30 characters in length.</div>
+        <div class="form-text">{{tr "password_prompt"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Confirm Password</label>
+        <label class="form-label">{{tr "confirm_password"}}</label>
         <input type="password" class="form-control" name="password2" required>
     </div>
 
     {{template "recaptcha" .}}
 
     <div class="mb-3">
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary">{{tr "register"}}</button>
     </div>
 
 </form>

@@ -2,8 +2,8 @@
 
 {{if and .user (not .user.EmailVerified)}}
 <div class="alert alert-warning d-flex align-items-center mt-2" role="alert">
-    <span class="mb-0">Your email is not verified.</span>
-    <a href="/dashboard/verify-email" class="btn btn-link">Click here to send a verification email.</a>
+    <span class="mb-0">{{tr "email_unverified"}}</span>
+    <a href="/dashboard/verify-email" class="btn btn-link">{{tr "click_to_send_verification_email"}}</a>
 </div>
 {{end}}
 

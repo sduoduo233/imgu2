@@ -83,7 +83,7 @@ func adminImageDelete(w http.ResponseWriter, r *http.Request) {
 
 	if img == nil {
 		w.WriteHeader(http.StatusNotFound)
-		renderDialog(w, "Error", "Image not found", "", "")
+		renderDialog(w, tr("error"), "Image not found", "", "")
 		return
 	}
 
@@ -94,5 +94,5 @@ func adminImageDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderDialog(w, "Info", "Image deleted", "/admin/images", "Go back")
+	renderDialog(w, tr("info"), "Image deleted", "/admin/images", tr("go_back"))
 }

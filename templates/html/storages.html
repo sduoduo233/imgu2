@@ -1,10 +1,10 @@
 {{template "header" .}}
 
-<h1>Storage Drivers</h1>
+<h1>{{tr "storage_drivers"}}</h1>
 
 
 <div class="alert alert-warning" role="alert">
-    Restart the server for settings on this page to take effect.
+    {{tr "restart_for_settings_to_apply"}}
 </div>
 
 {{ $csrf_token := .csrf_token}}
@@ -14,11 +14,11 @@
         <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Type</th>
-                <th scope="col">Enabled</th>
-                <th scope="col">Allow Upload</th>
-                <th scope="col">Actions</th>
+                <th scope="col">{{tr "name"}}</th>
+                <th scope="col">{{tr "type"}}</th>
+                <th scope="col">{{tr "enabled"}}</th>
+                <th scope="col">{{tr "allow_upload"}}</th>
+                <th scope="col">{{tr "actions"}}</th>
             </tr>
         </thead>
         <tbody>
@@ -41,15 +41,15 @@
                     <form action="/admin/storages/delete/{{.Id}}" method="post">
                         {{template "csrf" $csrf_token}}
                         <a href="/admin/storages/{{.Id}}" class="btn btn-outline-primary btn-sm">
-                            Edit
+                            {{tr "edit"}}
                         </a>
-                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                        <button type="submit" class="btn btn-outline-danger btn-sm">{{tr "delete"}}</button>
                     </form>
                 </td>
             </tr>
             {{else}}
             <tr>
-                <td colspan="6">No storage drivers available. Create a new one using the form below.</td>
+                <td colspan="6">{{tr "no_storage_driver_found"}}</td>
             </tr>
             {{end}}
         </tbody>
@@ -58,7 +58,7 @@
 
 <div class="card mt-3">
     <div class="card-header">
-        Add new storage driver
+        {{tr "add_new_storage_driver"}}
     </div>
 
     <div class="card-body">
@@ -68,7 +68,7 @@
             {{template "csrf" .csrf_token}}
 
             <div class="mb-3">
-                <label class="form-label">Storage Type</label>
+                <label class="form-label">{{tr "storage_driver"}}</label>
                 <select class="form-select" name="type" required>
                     <option value="s3" selected>S3</option>
                     <option value="local">Local</option>
@@ -77,11 +77,11 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Name</label>
+                <label class="form-label">{{tr "name"}}</label>
                 <input type="text" class="form-control" value="" name="name" required>
             </div>
 
-            <button class="btn btn-primary">Submit</button>
+            <button class="btn btn-primary">{{tr "submit"}}</button>
 
         </form>
     </div>

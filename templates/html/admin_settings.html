@@ -10,39 +10,39 @@
 
     <!-- captcha -->
     <div class="mb-3">
-        <label class="form-label">CAPTCHA</label>
+        <label class="form-label">{{tr "captcha"}}</label>
         <select id="select-captcha" class="form-select" name="CAPTCHA">
             <option value="recaptcha">reCAPTCHA</option>
-            <option value="none">Disabled</option>
+            <option value="none">{{tr "disabled"}}</option>
         </select>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">reCAPTCHA Client</label>
+        <label class="form-label">{{tr "recaptcha_site_key"}}</label>
         <input type="text" class="form-control" name="RECAPTCHA_CLIENT" value="{{.setting.RECAPTCHA_CLIENT}}">
-        <div class="form-text">The client key for Google's reCAPTCHA service.</div>
+        <div class="form-text">{{tr "recaptcha_site_key_desc"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">reCAPTCHA Server</label>
+        <label class="form-label">{{tr "recaptcha_secret_key"}}</label>
         <input type="text" class="form-control" name="RECAPTCHA_SERVER" value="{{.setting.RECAPTCHA_SERVER}}">
-        <div class="form-text">The server key for Google's reCAPTCHA service.</div>
+        <div class="form-text">{{tr "recaptcha_secret_key_desc"}}</div>
     </div>
 
     <!-- site settings -->
     <div class="mb-3">
-        <label class="form-label">Site URL</label>
+        <label class="form-label">{{tr "site_url"}}</label>
         <input type="text" class="form-control" name="SITE_URL" value="{{.setting.SITE_URL}}">
-        <div class="form-text">Public URL for your site, excluding the trailing slash(/)</div>
+        <div class="form-text">{{tr "site_url_desc"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Site Name</label>
+        <label class="form-label">{{tr "site_key"}}</label>
         <input type="text" class="form-control" name="SITE_NAME" value="{{.setting.SITE_NAME}}">
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Language</label>
+        <label class="form-label">{{tr "language"}}</label>
         <select id="select-language" class="form-select" name="LANGUAGE">
             <option value="zh_cn">Chinese Simplified</option>
             <option value="en_us">English</option>
@@ -53,89 +53,89 @@
     <div class="mb-3">
         <label class="form-label">Sign up</label>
         <select id="select-register" class="form-select" name="ALLOW_REGISTER">
-            <option value="true">Enabled</option>
-            <option value="false">Disabled</option>
+            <option value="true">{{tr "enabled"}}</option>
+            <option value="false">{{tr "disabled"}}</option>
         </select>
     </div>
 
     <!-- google oauth -->
     <div class="mb-3">
-        <label class="form-label">Google Sign In</label>
+        <label class="form-label">{{tr "google_sign_in"}}</label>
         <select id="select-google-signin" class="form-select" name="GOOGLE_SIGNIN">
-            <option value="true">Enabled</option>
-            <option value="false">Disabled</option>
+            <option value="true">{{tr "enabled"}}</option>
+            <option value="false">{{tr "disabled"}}</option>
         </select>
-        <div class="form-text">Restart the server for this setting to take effect.</div>
+        <div class="form-text">{{tr "restart_take_effect"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Google Client ID</label>
+        <label class="form-label">{{tr "google_client_id"}}</label>
         <input type="text" class="form-control" name="GOOGLE_CLIENT_ID" value="{{.setting.GOOGLE_CLIENT_ID}}">
-        <div class="form-text">Restart the server for this setting to take effect.</div>
+        <div class="form-text">{{tr "restart_take_effect"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Google Secret</label>
+        <label class="form-label">{{tr "google_secret"}}</label>
         <input type="text" class="form-control" name="GOOGLE_SECRET" value="{{.setting.GOOGLE_SECRET}}">
-        <div class="form-text">Restart the server for this setting to take effect.</div>
+        <div class="form-text">{{tr "restart_take_effect"}}</div>
     </div>
 
     <!-- github oauth -->
     <div class="mb-3">
-        <label class="form-label">Github Sign In</label>
+        <label class="form-label">{{tr "github_sign_in"}}</label>
         <select id="select-github-signin" class="form-select" name="GITHUB_SIGNIN">
-            <option value="true">Enabled</option>
-            <option value="false">Disabled</option>
+            <option value="true">{{tr "enabled"}}</option>
+            <option value="false">{{tr "disabled"}}</option>
         </select>
-        <div class="form-text">Restart the server for this setting to take effect.</div>
+        <div class="form-text">{{tr "restart_take_effect"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Github Client ID</label>
+        <label class="form-label">{{tr "github_client_id"}}</label>
         <input type="text" class="form-control" name="GITHUB_CLIENT_ID" value="{{.setting.GITHUB_CLIENT_ID}}">
-        <div class="form-text">Restart the server for this setting to take effect.</div>
+        <div class="form-text">{{tr "restart_take_effect"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Github Secret</label>
+        <label class="form-label">{{tr "github_secret"}}</label>
         <input type="text" class="form-control" name="GITHUB_SECRET" value="{{.setting.GITHUB_SECRET}}">
-        <div class="form-text">Restart the server for this setting to take effect.</div>
+        <div class="form-text">{{tr "restart_take_effect"}}</div>
     </div>
 
     <!-- upload settings -->
     <div class="mb-3">
-        <label class="form-label">Maximum Image Size (bytes)</label>
+        <label class="form-label">{{tr "max_image_size"}}</label>
         <input type="text" class="form-control" name="MAX_IMAGE_SIZE" value="{{.setting.MAX_IMAGE_SIZE}}">
-        <div class="form-text">The maximum size for uploaded images in bytes</div>
+        <div class="form-text">{{tr "max_image_size_desc"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Maximum Guest Upload Duration (seconds)</label>
+        <label class="form-label">{{tr "max_guest_duration"}}</label>
         <input type="text" class="form-control" name="GUEST_MAX_TIME" value="{{.setting.GUEST_MAX_TIME}}">
-        <div class="form-text">The duration in seconds that images uploaded by guests will be retained before automatic deletion. Enter '0' to disable this limit.</div>
+        <div class="form-text">{{tr "max_guest_duration_desc"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Maximum User Upload Duration (seconds)</label>
+        <label class="form-label">{{tr "max_user_duration"}}</label>
         <input type="text" class="form-control" name="USER_MAX_TIME" value="{{.setting.USER_MAX_TIME}}">
-        <div class="form-text">The duration in seconds that images uploaded by registered users will be retained before automatic deletion. Enter '0' to disable this limit.</div>
+        <div class="form-text">{{tr "max_user_duration_desc"}}</div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Guest Upload</label>
+        <label class="form-label">{{tr "guest_upload"}}</label>
         <select id="select-guest-upload" class="form-select" name="GUEST_UPLOAD">
-            <option value="true">Enabled</option>
-            <option value="false">Disabled</option>
+            <option value="true">{{tr "enabled"}}</option>
+            <option value="false">{{tr "disabled"}}</option>
         </select>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Allow AVIF Encoding</label>
+        <label class="form-label">{{tr "allow_avif_encoding"}}</label>
         <select id="select-avif-encoding" class="form-select" name="AVIF_ENCODING">
-            <option value="true">Enabled</option>
-            <option value="false">Disabled</option>
+            <option value="true">{{tr "enabled"}}</option>
+            <option value="false">{{tr "disabled"}}</option>
         </select>
-        <div class="form-text">Encoding AVIF images may take a large amount of system resources (CPU & memory).</div>
+        <div class="form-text">{{tr "allow_avif_encoding_desc"}}</div>
     </div>
 
     <script>
@@ -149,7 +149,7 @@
     </script>
 
     <div class="mb-3">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">{{tr "submit"}}</button>
     </div>
     
 

@@ -9,10 +9,10 @@
         <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Username</th>
-                <th scope="col">Email</th>
-                <th scope="col">Role</th>
-                <th scope="col">Images</th>
+                <th scope="col">{{tr "username"}}</th>
+                <th scope="col">{{tr "email"}}</th>
+                <th scope="col">{{tr "role"}}</th>
+                <th scope="col">{{tr "images"}}</th>
             </tr>
         </thead>
         <tbody>
@@ -33,7 +33,7 @@
                     </form>
                 </td>
                 <td>
-                    <a href="/admin/images?uploader={{.Id}}">Images</a>
+                    <a href="/admin/images?uploader={{.Id}}">{{tr "images"}}</a>
                 </td>
             </tr>
             {{end}}

@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"imgu2/services"
+	"log/slog"
 )
 
 //go:embed en_us.json
@@ -45,7 +46,8 @@ func T(key string) string {
 	}
 
 	if !ok {
-		panic("translation not found: " + key)
+		slog.Error("missing translation", "key", key, "lang", lang)
+		return key
 	}
 	return value
 }

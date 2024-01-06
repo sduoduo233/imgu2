@@ -145,25 +145,25 @@ func deleteImage(w http.ResponseWriter, r *http.Request) {
 
 	if img == nil {
 		w.WriteHeader(http.StatusNotFound)
-		renderDialog(w, "Error", "image not found", "/dashboard/images", "Go back")
+		renderDialog(w, tr("error"), tr("image_not_found"), "/dashboard/images", tr("go_back"))
 		return
 	}
 
 	// image uploaded by guest || the user is not the uploader
 	if !img.Uploader.Valid || img.Uploader.Int32 != int32(user.Id) {
 		w.WriteHeader(http.StatusForbidden)
-		renderDialog(w, "Error", "You do not have permission to delete this image", "/dashboard/images", "Go back")
+		renderDialog(w, tr("error"), tr("no_permission_to_delete"), "/dashboard/images", tr("go_back"))
 		return
 	}
 
 	err = services.Image.Delete(img)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		renderDialog(w, "Error", "unknown error", "/dashboard/images", "Go back")
+		renderDialog(w, tr("error"), tr("unknown_error"), "/dashboard/images", tr("go_back"))
 		slog.Error("delete image", "err", err)
 		return
 	}
 
-	renderDialog(w, "Info", "Image deleted", "/dashboard/images", "Continue")
+	renderDialog(w, tr("info"), tr("image_deleted"), "/dashboard/images", tr("continue"))
 
 }

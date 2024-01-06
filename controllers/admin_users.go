@@ -57,7 +57,7 @@ func adminChangeUserRole(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error("admin change role", "err", err)
-		renderDialog(w, "Error", "An unknown error happened", "/admin/users", "Go back")
+		renderDialog(w, tr("error"), "An unknown error happened", "/admin/users", tr("go_back"))
 		return
 	}
 

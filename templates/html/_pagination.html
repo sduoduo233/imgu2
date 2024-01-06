@@ -12,7 +12,7 @@
     <nav aria-label="page navigation" class="mt-2">
         <ul class="pagination">
             {{if eq .page 0}}<li class="page-item disabled">{{else}}<li class="page-item">{{end}}
-                <a class="page-link" href="{{addParameter $prefix "page" (minus .page 1)}}">Previous</a>
+                <a class="page-link" href="{{addParameter $prefix "page" (minus .page 1)}}">{{tr "previous_page"}}</a>
             </li>
 
             {{$total_page := .total_page}}
@@ -47,7 +47,7 @@
 
 
             {{if eq (minus .total_page 1) .page}}<li class="page-item disabled">{{else}}<li class="page-item">{{end}}
-                <a class="page-link" href="{{addParameter $prefix "page" (add .page 1)}}">Next</a>
+                <a class="page-link" href="{{addParameter $prefix "page" (add .page 1)}}">{{tr "next_page"}}</a>
             </li>
         </ul>
     </nav>

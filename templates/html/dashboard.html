@@ -2,17 +2,17 @@
 
 {{template "unverified_email" .}}
 
-<h1>Dashboard</h1>
+<h1>{{tr "dashboard"}}</h1>
 
-<p>Logged in as {{.user.Username}}</p>
+<p>{{tr "logged_in_as"}} {{.user.Username}}</p>
 
 <div class="card">
     <div class="card-header">
-        Actions
+        {{tr "actions"}}
     </div>
     <ul class="list-group list-group-flush">
-        <li class="list-group-item"><a href="/dashboard/images">My Uploads</a></li>
-        <li class="list-group-item"><a href="/dashboard/account">Account Settings</a></li>
+        <li class="list-group-item"><a href="/dashboard/images">{{tr "my_uploads"}}</a></li>
+        <li class="list-group-item"><a href="/dashboard/account">{{tr "account_settings"}}</a></li>
     </ul>
 </div>
 

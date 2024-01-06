@@ -2,11 +2,11 @@
 
 {{template "unverified_email" .}}
 
-<h1>Account Settings</h1>
+<h1>{{tr "account_settings"}}</h1>
 
 <div class="card" id="change-password">
     <div class="card-header">
-        Change Password
+        {{tr "change_password"}}
     </div>
     <div class="card-body">
         <form action="/dashboard/change-password" method="post">
@@ -15,32 +15,33 @@
 
             {{if .user.Password}}
             <div class="mb-3">
-                <label class="form-label">Current Password</label>
+                <label class="form-label">{{tr "current_password"}}</label>
                 <input type="password" class="form-control" name="current">
             </div>
             {{else}}
-            <p>You have not set a password yet.</p>
+            <p>{{tr "no_password_set"}}</p>
             {{end}}
 
             <div class="mb-3">
-                <label class="form-label">New Password</label>
+                <label class="form-label">{{tr "new_password"}}</label>
                 <input type="password" class="form-control" name="password1">
+                <div class="form-text">{{tr "password_prompt"}}</div>
             </div>
             <div class="mb-3">
-                <label class="form-label">Confirm Password</label>
+                <label class="form-label">{{tr "confirm_password"}}</label>
                 <input type="password" class="form-control" name="password2">
             </div>
 
             {{template "recaptcha" .}}
 
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">{{tr "submit"}}</button>
         </form>
     </div>
 </div>
 
 <div class="card mt-3" id="change-username">
     <div class="card-header">
-        Change Username
+        {{tr "change_username"}}
     </div>
     <div class="card-body">
         <form action="/dashboard/change-username" method="post">
@@ -48,18 +49,18 @@
             {{template "csrf" .csrf_token}}
 
             <div class="mb-3">
-                <label class="form-label">Username</label>
+                <label class="form-label">{{tr "username"}}</label>
                 <input type="text" class="form-control" name="username" value="{{.user.Username}}">
             </div>
 
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">{{tr "submit"}}</button>
         </form>
     </div>
 </div>
 
 <div class="card mt-3" id="change-email">
     <div class="card-header">
-        Change Email
+        {{tr "change_email"}}
     </div>
     <div class="card-body">
         <form action="/dashboard/change-email" method="post">
@@ -67,13 +68,13 @@
             {{template "csrf" .csrf_token}}
 
             <div class="mb-3">
-                <label class="form-label">Email</label>
+                <label class="form-label">{{tr "email"}}</label>
                 <input type="email" class="form-control" name="email" value="{{.user.Email}}">
             </div>
 
             {{template "recaptcha" .}}
 
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">{{tr "submit"}}</button>
         </form>
     </div>
 </div>
@@ -81,12 +82,12 @@
 {{if or .google_login .github_login}}
 <div class="card my-3" id="social-login">
     <div class="card-header">
-        Social Login
+        {{tr "social_logins"}}
     </div>
     <div class="card-body">
 
         {{if eq .user.Password ""}}
-        You must set a password before managing your social accounts.
+        {{tr "password_must_be_set"}}
         {{else}}
 
         {{if .google_login}}
@@ -95,10 +96,10 @@
             {{if .google_linked}}
             <form method="post" action="/dashboard/unlink">
                 {{template "csrf" .csrf_token}}
-                <button type="submit" name="type" value="google" class="btn btn-link">Unlink</button>
+                <button type="submit" name="type" value="google" class="btn btn-link">{{tr "unlink"}}</button>
             </form>
             {{else}}
-            <a class="btn btn-link" href="/login/google">Link</a>
+            <a class="btn btn-link" href="/login/google">{{tr "link"}}</a>
             {{end}}
         </div>
         {{end}}
@@ -109,10 +110,10 @@
             {{if .github_linked}}
             <form method="post" action="/dashboard/unlink">
                 {{template "csrf" .csrf_token}}
-                <button type="submit" name="type" value="github" class="btn btn-link">Unlink</button>
+                <button type="submit" name="type" value="github" class="btn btn-link">{{tr "unlink"}}</button>
             </form>
             {{else}}
-            <a class="btn btn-link" href="/login/github">Link</a>
+            <a class="btn btn-link" href="/login/github">{{tr "link"}}</a>
             {{end}}
         </div>
         {{end}}

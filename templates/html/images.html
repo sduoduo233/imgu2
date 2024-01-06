@@ -1,6 +1,6 @@
 {{template "header" .}}
 
-<h1>My uploads</h1>
+<h1>{{tr "my_uploads"}}</h1>
 
 <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2">
     {{ range .images }}
@@ -16,7 +16,7 @@
     </div>
 
     {{ else }}
-    <p>Nothing found. Start <a href="/">uploading</a>.</p>
+    <p>{{tr "prompt_no_upload"}} <a href="/">{{tr "click_here"}}</a></p>
     {{ end }}
 </div>
 

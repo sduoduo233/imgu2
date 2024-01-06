@@ -13,12 +13,12 @@
 {{if .own}}
 
 <div class="border p-3 m-2 rounded">
-    <p id="uploaded-at">Uploaded at:</p>
-    <p id="expire-at">Expire at:</p>
+    <p id="uploaded-at">{{tr "uploaded_at"}}:</p>
+    <p id="expire-at">{{tr "expire_at"}}</p>
     <form method="post" action="/dashboard/images/delete">
         {{template "csrf" .csrf_token}}
         <input type="hidden" name="file_name" value="{{.file_name}}">
-        <button class="btn btn-outline-danger">Delete</button>
+        <button class="btn btn-outline-danger">{{tr "delete"}}</button>
     </form>
 </div>
 
@@ -36,8 +36,8 @@
 {{end}}
 
 <div class="border p-3 m-2 rounded">
-    <div class="btn btn-outline-primary" onclick="copyLink()">Copy Link</div>
-    <div class="btn btn-outline-primary" onclick="copyMarkdown()">Copy Markdown</div>
+    <div class="btn btn-outline-primary" onclick="copyLink()">{{tr "copy_link"}}</div>
+    <div class="btn btn-outline-primary" onclick="copyMarkdown()">{{tr "copy_markdown"}}</div>
 </div>
 
 <div class="border p-3 m-2 rounded">

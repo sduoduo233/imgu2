@@ -8,9 +8,9 @@
 <div class="card">
     <div class="card-body">
         <form>
-            <h6 class="card-title mb-3">Filters</h6>
+            <h6 class="card-title mb-3">{{tr "filters"}}</h6>
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">Uploader</span>
+                <span class="input-group-text" id="basic-addon1">{{tr "uploader"}}</span>
                 <input
                     type="text"
                     class="form-control"
@@ -21,7 +21,7 @@
                 >
             </div>
             <div class="">
-                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="submit" class="btn btn-primary">{{tr "search"}}</button>
             </div>
         </form>
     </div>
@@ -32,12 +32,12 @@
         <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Preview</th>
-                <th scope="col">Uploader</th>
-                <th scope="col">Time</th>
-                <th scope="col">Expire</th>
-                <th scope="col">Storage Driver</th>
-                <th scope="col">Actions</th>
+                <th scope="col">{{tr "preview"}}</th>
+                <th scope="col">{{tr "uploader"}}</th>
+                <th scope="col">{{tr "time"}}</th>
+                <th scope="col">{{tr "expire"}}</th>
+                <th scope="col">{{tr "storage_driver"}}</th>
+                <th scope="col">{{tr "actions"}}</th>
             </tr>
         </thead>
         <tbody>
@@ -75,12 +75,12 @@
                     <form method="post" action="/admin/images/delete">
                         {{template "csrf" $csrf_token}}
                         <input type="hidden" name="file_name" value="{{.FileName}}">
-                        <button class="btn btn-outline-danger">Delete</button>
+                        <button class="btn btn-outline-danger">{{tr "delete"}}</button>
                     </form>
                 </td>
             </tr>
             {{else}}
-            <td colspan="7">Nothing found</td>
+            <td colspan="7">{{tr "nothing_found"}}</td>
 
             {{end}}
         </tbody>

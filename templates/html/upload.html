@@ -35,7 +35,7 @@
             <img style="display: none;" id="preview" class="mw-100">
         </div>
         <button id="btn-edit" type="button" class="btn btn-outline-primary my-2" style="display: none;">Quick Edit</button>
-        <div id="prompt" class="py-5">Click Here or Drop Files Here to Upload</div>
+        <div id="prompt" class="py-5">{{tr "upload_prompt"}}</div>
     </div>
 </div>
 
@@ -64,7 +64,7 @@
     <select class="form-select" id="selectFormat">
         <option value="webp" selected>WebP Loseless (animated)</option>
         <option value="png">PNG</option>
-        <option value="jpeg">JEPG</option>
+        <option value="jpeg">JPEG</option>
         <option value="gif">GIF (animated)</option>
         {{ if .avif_enabled }}<option value="avif">AVIF</option>{{ end }}
     </select>
@@ -194,14 +194,14 @@
                 } else {
                     const resp = JSON.parse(xhr.responseText);
                     const errorText = {
-                        "GUEST_UPLOAD_NOT_ALLOWED": "You have to sign in before uploading",
-                        "USER_BANNED": "Your account has been disabled",
-                        "EMAIL_NOT_VERIFIED": "Your email address has not been verified",
-                        "EXPIRE_TOO_LARGE": "The auto-delete time exceeds the maximum allowed value",
-                        "FILE_TOO_LARGE": "Your uploaded file is too large",
-                        "IMAGE_PROCESSING_ERROR": "Your uploaded file is malformatted",
-                        "INTERNAL_STORAGE_ERROR": "An unknown error occurred while saving your image",
-                        "UNSUPPORTED_ENCODING": "Your selected image format is not supported"
+                        "GUEST_UPLOAD_NOT_ALLOWED": '{{tr "error_login_required"}}',
+                        "USER_BANNED": '{{tr "error_account_disabled"}}',
+                        "EMAIL_NOT_VERIFIED": '{{tr "error_email_unverified"}}',
+                        "EXPIRE_TOO_LARGE": '{{tr "error_expire_too_large"}}',
+                        "FILE_TOO_LARGE": '{{tr "error_file_too_large"}}',
+                        "IMAGE_PROCESSING_ERROR": '{{tr "error_image_processing"}}',
+                        "INTERNAL_STORAGE_ERROR": '{{tr "error_storage"}}',
+                        "UNSUPPORTED_ENCODING": '{{tr "error_unsupported_format"}}'
                     }
                     alert("ERROR: " + errorText[resp.error] || resp.error);
                 }
