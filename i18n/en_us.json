@@ -146,5 +146,6 @@
   "type": "Type",
   "edit": "Edit",
   "no_storage_driver_found": "No storage drivers available. Create a new one using the form below.",
-  "add_new_storage_driver": "Add new storage driver"
+  "add_new_storage_driver": "Add new storage driver",
+  "admin_settings": "Admin Settings"
 }
