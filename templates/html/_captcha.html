@@ -1,9 +1,16 @@
-{{define "recaptcha"}}
+{{define "captcha"}}
 
 {{if .recaptcha_client}}
 <div class="py-2">
     <div class="g-recaptcha" data-sitekey="{{.recaptcha_client}}">
         Loading reCAPTCHA...
+    </div>
+</div>
+{{end}}
+
+{{if .hcaptcha_client}}
+<div class="py-2">
+    <div class="h-captcha" data-sitekey="{{.hcaptcha_client}}" data-theme="dark">
     </div>
 </div>
 {{end}}

@@ -11,6 +11,10 @@
     {{if .recaptcha_client}}
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     {{end}}
+
+    {{if .hcaptcha_client}}
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    {{end}}
 </head>
 
 <body data-bs-theme="dark">

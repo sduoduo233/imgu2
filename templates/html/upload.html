@@ -70,7 +70,7 @@
     </select>
 </div>
 
-{{template "recaptcha" .}}
+{{template "captcha" .}}
 
 <div class="my-3 d-grid">
     <button type="button" class="btn btn-primary" id="btn-upload">{{tr "upload"}}</button>
@@ -81,157 +81,161 @@
 </div>
 
 <script>
-    const csrf_token = "{{.csrf_token}}";
-    const max_duration = +"{{.max_time}}";
-    const recaptcha = "{{.recaptcha_client}}" !== "";
+    (function() {
+        const csrf_token = "{{.csrf_token}}";
+        const max_duration = +"{{.max_time}}";
+        const recaptcha = "{{.recaptcha_client}}" !== "";
+        const hCaptcha = "{{.hcaptcha_client}}" !== "";
 
-    const fileArea = document.getElementById("file-area");
-    const fileInput = document.getElementById("file-input");
-    const preview = document.getElementById("preview");
-    const promptElement = document.getElementById("prompt");
-    const btn = document.getElementById("btn-upload");
-    const selectExpire = document.getElementById("selectExpire");
-    const selectFormat = document.getElementById("selectFormat");
-    const progress = document.getElementById("progress");
-    const progressbar = document.getElementById("progressbar");
-    const btnEdit = document.getElementById("btn-edit");
-    const editor = document.getElementById("editor");
-    const btnEditorSave = document.getElementById("btn-editor-save");
+        const fileArea = document.getElementById("file-area");
+        const fileInput = document.getElementById("file-input");
+        const preview = document.getElementById("preview");
+        const promptElement = document.getElementById("prompt");
+        const btn = document.getElementById("btn-upload");
+        const selectExpire = document.getElementById("selectExpire");
+        const selectFormat = document.getElementById("selectFormat");
+        const progress = document.getElementById("progress");
+        const progressbar = document.getElementById("progressbar");
+        const btnEdit = document.getElementById("btn-edit");
+        const editor = document.getElementById("editor");
+        const btnEditorSave = document.getElementById("btn-editor-save");
 
-    // remove unavailable auto delete options in the drop down
-    if (max_duration !== 0) {
-        while (+(selectExpire.children[selectExpire.children.length - 1].value) > max_duration && +selectExpire.children[selectExpire.children.length - 1].value !== 0) {
-            selectExpire.children[selectExpire.children.length - 1].remove();
-        }
-        selectExpire.children[0].remove(); // remove "never"
-    }
-
-    let arrayBuffer; // ArrayBuffer
-
-    // load image preview
-    function loadPreview(mimeType) {
-        if (!arrayBuffer) return;
-        preview.style.display = "";
-        promptElement.style.display = "none";
-
-        if (mimeType.startsWith("image/")) {
-            if (mimeType !== "image/svg+xml") { // svg image is not rendered in the editor for some reason
-                btnEdit.style.display = "";
+        // remove unavailable auto delete options in the drop down
+        if (max_duration !== 0) {
+            while (+(selectExpire.children[selectExpire.children.length - 1].value) > max_duration && +selectExpire.children[selectExpire.children.length - 1].value !== 0) {
+                selectExpire.children[selectExpire.children.length - 1].remove();
             }
-            
-            const url = URL.createObjectURL(new Blob([ arrayBuffer ], { type: mimeType }));
-            preview.src = url;
-        } else {
-            btnEdit.style.display = "none";
-            preview.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDhweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSI0OHB4Ij48cGF0aCBkPSJNMzIwLTI0MGgzMjB2LTgwSDMyMHY4MFptMC0xNjBoMzIwdi04MEgzMjB2ODBaTTI0MC04MHEtMzMgMC01Ni41LTIzLjVUMTYwLTE2MHYtNjQwcTAtMzMgMjMuNS01Ni41VDI0MC04ODBoMzIwbDI0MCAyNDB2NDgwcTAgMzMtMjMuNSA1Ni41VDcyMC04MEgyNDBabTI4MC01MjB2LTIwMEgyNDB2NjQwaDQ4MHYtNDQwSDUyMFpNMjQwLTgwMHYyMDAtMjAwIDY0MC02NDBaIiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+Cg==";
-        }
-    }
-
-    fileArea.addEventListener("click", (e) => {
-        fileInput.click();
-    });
-
-    fileInput.addEventListener("change", (e) => {
-        const file = fileInput.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.addEventListener("load", (e) => {
-            arrayBuffer = e.target.result;
-            loadPreview(file.type);
-        });
-        reader.readAsArrayBuffer(file);
-    });
-
-    // open editor
-    btnEdit.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const modal = new bootstrap.Modal(document.getElementById('modal-image-editor'), {});
-        modal.show();
-        editor.loadImage(arrayBuffer);
-    });
-
-    // editor save
-    btnEditorSave.addEventListener("click", () => {
-        editor.exportImage(async (blob) => {
-            arrayBuffer = await blob.arrayBuffer();
-            loadPreview("image/png");
-        })
-    })
-
-    // upload
-    btn.addEventListener("click", () => {
-        if (!arrayBuffer) return;
-
-        if (recaptcha && !grecaptcha.getResponse()) {
-            alert("reCAPTCHA is not completed");
-            return;
+            selectExpire.children[0].remove(); // remove "never"
         }
 
-        uploading = true;
+        let arrayBuffer; // ArrayBuffer
 
-        // hide button & show progress bar
-        btn.style.display = "none";
-        progress.style.display = "";
+        // load image preview
+        function loadPreview(mimeType) {
+            if (!arrayBuffer) return;
+            preview.style.display = "";
+            promptElement.style.display = "none";
 
-        // disable selector
-        selectExpire.setAttribute("disabled", "disabled");
-        selectFormat.setAttribute("disabled", "disabled");
-
-        const xhr = new XMLHttpRequest();
-
-        xhr.upload.addEventListener("progress", (e) => {
-            // progress
-            progressbar.style.width = (e.loaded / e.total * 100) + "%";
-        });
-
-        xhr.addEventListener("load", () => {
-            if (xhr.status !== 200) {
-                if (xhr.responseText === "recaptcha verification failed") {
-                    alert("ERROR: ReCAPTCHA verification failed");
-                } else if (xhr.responseText === "csrf check failed") {
-                    alert("ERROR: CSRF check failed");
-                } else {
-                    const resp = JSON.parse(xhr.responseText);
-                    const errorText = {
-                        "GUEST_UPLOAD_NOT_ALLOWED": '{{tr "error_login_required"}}',
-                        "USER_BANNED": '{{tr "error_account_disabled"}}',
-                        "EMAIL_NOT_VERIFIED": '{{tr "error_email_unverified"}}',
-                        "EXPIRE_TOO_LARGE": '{{tr "error_expire_too_large"}}',
-                        "FILE_TOO_LARGE": '{{tr "error_file_too_large"}}',
-                        "IMAGE_PROCESSING_ERROR": '{{tr "error_image_processing"}}',
-                        "INTERNAL_STORAGE_ERROR": '{{tr "error_storage"}}',
-                        "UNSUPPORTED_ENCODING": '{{tr "error_unsupported_format"}}'
-                    }
-                    alert("ERROR: " + errorText[resp.error] || resp.error);
+            if (mimeType.startsWith("image/")) {
+                if (mimeType !== "image/svg+xml") { // svg image is not rendered in the editor for some reason
+                    btnEdit.style.display = "";
                 }
                 
-                location.reload();
+                const url = URL.createObjectURL(new Blob([ arrayBuffer ], { type: mimeType }));
+                preview.src = url;
+            } else {
+                btnEdit.style.display = "none";
+                preview.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDhweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSI0OHB4Ij48cGF0aCBkPSJNMzIwLTI0MGgzMjB2LTgwSDMyMHY4MFptMC0xNjBoMzIwdi04MEgzMjB2ODBaTTI0MC04MHEtMzMgMC01Ni41LTIzLjVUMTYwLTE2MHYtNjQwcTAtMzMgMjMuNS01Ni41VDI0MC04ODBoMzIwbDI0MCAyNDB2NDgwcTAgMzMtMjMuNSA1Ni41VDcyMC04MEgyNDBabTI4MC01MjB2LTIwMEgyNDB2NjQwaDQ4MHYtNDQwSDUyMFpNMjQwLTgwMHYyMDAtMjAwIDY0MC02NDBaIiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+Cg==";
+            }
+        }
+
+        fileArea.addEventListener("click", (e) => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener("change", (e) => {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.addEventListener("load", (e) => {
+                arrayBuffer = e.target.result;
+                loadPreview(file.type);
+            });
+            reader.readAsArrayBuffer(file);
+        });
+
+        // open editor
+        btnEdit.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const modal = new bootstrap.Modal(document.getElementById('modal-image-editor'), {});
+            modal.show();
+            editor.loadImage(arrayBuffer);
+        });
+
+        // editor save
+        btnEditorSave.addEventListener("click", () => {
+            editor.exportImage(async (blob) => {
+                arrayBuffer = await blob.arrayBuffer();
+                loadPreview("image/png");
+            })
+        })
+
+        // upload
+        btn.addEventListener("click", () => {
+            if (!arrayBuffer) return;
+
+            if ((recaptcha && !grecaptcha.getResponse()) || hcaptcha && !hcaptcha.getResponse()) {
+                alert("CAPTCHA is not completed");
                 return;
             }
 
-            const resp = JSON.parse(xhr.responseText);
-            location.href = "/preview/" + resp.file_name;
-        })
+            uploading = true;
 
-        xhr.addEventListener("error", (e) => {
-            console.log(e)
-            alert("XMLHttpRequest error");
-            location.reload()
-        })
+            // hide button & show progress bar
+            btn.style.display = "none";
+            progress.style.display = "";
 
-        xhr.open("POST", "/upload");
+            // disable selector
+            selectExpire.setAttribute("disabled", "disabled");
+            selectFormat.setAttribute("disabled", "disabled");
 
-        const formData = new FormData();
-        formData.set("file", new Blob([arrayBuffer]));
-        formData.set("expire", selectExpire.value);
-        formData.set("format", selectFormat.value);
-        formData.set("csrf_token", csrf_token);
-        if (recaptcha) formData.set("g-recaptcha-response", grecaptcha.getResponse());
+            const xhr = new XMLHttpRequest();
 
-        xhr.send(formData);
-    });
+            xhr.upload.addEventListener("progress", (e) => {
+                // progress
+                progressbar.style.width = (e.loaded / e.total * 100) + "%";
+            });
 
+            xhr.addEventListener("load", () => {
+                if (xhr.status !== 200) {
+                    if (xhr.responseText === "captcha verification failed") {
+                        alert("ERROR: CAPTCHA verification failed");
+                    } else if (xhr.responseText === "csrf check failed") {
+                        alert("ERROR: CSRF check failed");
+                    } else {
+                        const resp = JSON.parse(xhr.responseText);
+                        const errorText = {
+                            "GUEST_UPLOAD_NOT_ALLOWED": '{{tr "error_login_required"}}',
+                            "USER_BANNED": '{{tr "error_account_disabled"}}',
+                            "EMAIL_NOT_VERIFIED": '{{tr "error_email_unverified"}}',
+                            "EXPIRE_TOO_LARGE": '{{tr "error_expire_too_large"}}',
+                            "FILE_TOO_LARGE": '{{tr "error_file_too_large"}}',
+                            "IMAGE_PROCESSING_ERROR": '{{tr "error_image_processing"}}',
+                            "INTERNAL_STORAGE_ERROR": '{{tr "error_storage"}}',
+                            "UNSUPPORTED_ENCODING": '{{tr "error_unsupported_format"}}'
+                        }
+                        alert("ERROR: " + errorText[resp.error] || resp.error);
+                    }
+                    
+                    location.reload();
+                    return;
+                }
+
+                const resp = JSON.parse(xhr.responseText);
+                location.href = "/preview/" + resp.file_name;
+            })
+
+            xhr.addEventListener("error", (e) => {
+                console.log(e)
+                alert("XMLHttpRequest error");
+                location.reload()
+            })
+
+            xhr.open("POST", "/upload");
+
+            const formData = new FormData();
+            formData.set("file", new Blob([arrayBuffer]));
+            formData.set("expire", selectExpire.value);
+            formData.set("format", selectFormat.value);
+            formData.set("csrf_token", csrf_token);
+            if (recaptcha) formData.set("g-recaptcha-response", grecaptcha.getResponse());
+            if (hCaptcha) formData.set("h-captcha-response", hcaptcha.getResponse());
+
+            xhr.send(formData);
+        });
+    })();
+    
 </script>
 
 {{template "footer" .}}

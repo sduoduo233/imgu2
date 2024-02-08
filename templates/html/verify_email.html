@@ -6,7 +6,7 @@
 
     {{template "csrf" .csrf_token}}
 
-    {{template "recaptcha" .}}
+    {{template "hcaptcha" .}}
     
     <button class="btn btn-outline-primary">{{tr "send_verification_email_to"}} {{.user.Email}}</button>
     <p><a href="/dashboard/account">{{tr "click_to_change_email"}}</a></p>

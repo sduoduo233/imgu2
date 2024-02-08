@@ -53,6 +53,8 @@ CREATE TABLE IF NOT EXISTS sessions (
 INSERT OR IGNORE INTO settings(key, value) VALUES('CAPTCHA', 'none');
 INSERT OR IGNORE INTO settings(key, value) VALUES('RECAPTCHA_CLIENT', '');
 INSERT OR IGNORE INTO settings(key, value) VALUES('RECAPTCHA_SERVER', '');
+INSERT OR IGNORE INTO settings(key, value) VALUES('HCAPTCHA_CLIENT', '');
+INSERT OR IGNORE INTO settings(key, value) VALUES('HCAPTCHA_SERVER', '');
 
 INSERT OR IGNORE INTO settings(key, value) VALUES('SITE_URL', 'http://127.0.0.1:3000');
 INSERT OR IGNORE INTO settings(key, value) VALUES('SITE_NAME', 'imgu2 dev');

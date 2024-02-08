@@ -14,7 +14,7 @@ func Route(r chi.Router) {
 
 	// login
 	r.Get("/login", login)
-	r.With(middleware.ReCAPTCHA).Post("/login", doLogin)
+	r.With(middleware.CAPTCHA).Post("/login", doLogin)
 	r.Get("/login/google", googleLogin)
 	r.Get("/login/google/callback", googleLoginCallback)
 	r.Get("/login/github", githubLogin)
@@ -22,17 +22,17 @@ func Route(r chi.Router) {
 
 	// reset password
 	r.Get("/reset-password", resetPassword)
-	r.With(middleware.ReCAPTCHA).Post("/reset-password", doResetPassword)
+	r.With(middleware.CAPTCHA).Post("/reset-password", doResetPassword)
 
 	// register
 	r.Get("/register", register)
-	r.With(middleware.ReCAPTCHA).Post("/register", doRegister)
+	r.With(middleware.CAPTCHA).Post("/register", doRegister)
 
 	// email callback
 	r.Get("/callback/verify-email", verifyEmailCallback)
 	r.Get("/callback/verify-email-change", changeEmailCallback)
 	r.Get("/callback/reset-password", resetPasswordCallback)
-	r.With(middleware.ReCAPTCHA).Post("/callback/reset-password", doResetPasswordCallback)
+	r.With(middleware.CAPTCHA).Post("/callback/reset-password", doResetPasswordCallback)
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireAuth)
@@ -48,12 +48,12 @@ func Route(r chi.Router) {
 		r.Use(middleware.RequireAuth)
 		r.Get("/dashboard", dashboardIndex)
 		r.Get("/dashboard/account", accountSetting)
-		r.With(middleware.ReCAPTCHA).Post("/dashboard/change-password", changePassword)
-		r.With(middleware.ReCAPTCHA).Post("/dashboard/change-email", changeEmail)
+		r.With(middleware.CAPTCHA).Post("/dashboard/change-password", changePassword)
+		r.With(middleware.CAPTCHA).Post("/dashboard/change-email", changeEmail)
 		r.Post("/dashboard/change-username", changeUsername)
 		r.Post("/dashboard/unlink", socialLoginUnlink)
 		r.Get("/dashboard/verify-email", verifyEmail)
-		r.With(middleware.ReCAPTCHA).Post("/dashboard/verify-email", doVerifyEmail)
+		r.With(middleware.CAPTCHA).Post("/dashboard/verify-email", doVerifyEmail)
 		r.Get("/dashboard/images", myImages)
 		r.Post("/dashboard/images/delete", deleteImage)
 	})
@@ -76,5 +76,5 @@ func Route(r chi.Router) {
 	})
 
 	r.Get("/", upload)
-	r.With(middleware.ReCAPTCHA).Post("/upload", doUpload)
+	r.With(middleware.CAPTCHA).Post("/upload", doUpload)
 }

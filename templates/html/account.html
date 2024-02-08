@@ -32,7 +32,7 @@
                 <input type="password" class="form-control" name="password2">
             </div>
 
-            {{template "recaptcha" .}}
+            {{template "captcha" .}}
 
             <button type="submit" class="btn btn-primary">{{tr "submit"}}</button>
         </form>
@@ -72,7 +72,7 @@
                 <input type="email" class="form-control" name="email" value="{{.user.Email}}">
             </div>
 
-            {{template "recaptcha" .}}
+            {{template "captcha" .}}
 
             <button type="submit" class="btn btn-primary">{{tr "submit"}}</button>
         </form>

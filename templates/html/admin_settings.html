@@ -13,6 +13,7 @@
         <label class="form-label">{{tr "captcha"}}</label>
         <select id="select-captcha" class="form-select" name="CAPTCHA">
             <option value="recaptcha">reCAPTCHA</option>
+            <option value="hcaptcha">hCaptcha</option>
             <option value="none">{{tr "disabled"}}</option>
         </select>
     </div>
@@ -27,6 +28,18 @@
         <label class="form-label">{{tr "recaptcha_secret_key"}}</label>
         <input type="text" class="form-control" name="RECAPTCHA_SERVER" value="{{.setting.RECAPTCHA_SERVER}}">
         <div class="form-text">{{tr "recaptcha_secret_key_desc"}}</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">{{tr "hcaptcha_site_key"}}</label>
+        <input type="text" class="form-control" name="HCAPTCHA_CLIENT" value="{{.setting.HCAPTCHA_CLIENT}}">
+        <div class="form-text">{{tr "hcaptcha_site_key_desc"}}</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">{{tr "hcaptcha_secret_key"}}</label>
+        <input type="text" class="form-control" name="HCAPTCHA_SERVER" value="{{.setting.HCAPTCHA_SERVER}}">
+        <div class="form-text">{{tr "hcaptcha_secret_key_desc"}}</div>
     </div>
 
     <!-- site settings -->

@@ -39,6 +39,17 @@ func render(w io.Writer, name string, data H) {
 		data["recaptcha_client"] = recaptcha
 	}
 
+	if captcha == services.CAPTCHA_HCAPTCHA {
+		// hcaptcha site key
+		hcaptcha, err := services.Setting.GetHCaptchaClient()
+		if err != nil {
+			slog.Error("render template: captcha client", "err", err)
+			return
+		}
+
+		data["hcaptcha_client"] = hcaptcha
+	}
+
 	err = templates.Render(w, name, data)
 	if err != nil {
 		slog.Error("render template", "err", err, "name", name, "data", data)

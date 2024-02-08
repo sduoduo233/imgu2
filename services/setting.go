@@ -13,6 +13,7 @@ var Setting = setting{}
 const (
 	CAPTCHA_NONE      = "none"
 	CAPTCHA_RECAPTCHA = "recaptcha"
+	CAPTCHA_HCAPTCHA  = "hcaptcha"
 )
 
 func (s *setting) GetSiteName() (string, error) {
@@ -33,6 +34,14 @@ func (s *setting) GetReCaptchaClient() (string, error) {
 
 func (s *setting) GetReCaptchaServer() (string, error) {
 	return db.SettingFind("RECAPTCHA_SERVER")
+}
+
+func (s *setting) GetHCaptchaClient() (string, error) {
+	return db.SettingFind("HCAPTCHA_CLIENT")
+}
+
+func (s *setting) GetHCaptchaServer() (string, error) {
+	return db.SettingFind("HCAPTCHA_SERVER")
 }
 
 func (s *setting) GetGoogleClientID() (string, error) {
