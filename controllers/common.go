@@ -5,7 +5,6 @@ import (
 	"imgu2/i18n"
 	"imgu2/services"
 	"imgu2/templates"
-	"imgu2/utils"
 	"io"
 	"log/slog"
 	"net/http"
@@ -93,7 +92,7 @@ func setCookie(w http.ResponseWriter, name string, value string) {
 
 // generate a new csrf token and add it to cookies
 func csrfToken(w http.ResponseWriter) string {
-	t := utils.RandomHexString(8)
+	t := services.RandomHexString(8)
 	setCookie(w, "CSRF_TOKEN", t)
 	return t
 }

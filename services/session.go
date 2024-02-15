@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"imgu2/db"
-	"imgu2/utils"
 	"time"
 )
 
@@ -13,7 +12,7 @@ type session struct{}
 var Session = session{}
 
 func (session) Create(userId int) (string, error) {
-	token := utils.RandomHexString(8)
+	token := RandomHexString(8)
 	expireAt := time.Now().Add(time.Hour * 24 * 30).Unix()
 
 	err := db.SessionCreate(token, userId, expireAt)

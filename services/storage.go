@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"imgu2/db"
 	"imgu2/services/storages"
-	"imgu2/utils"
 	"log/slog"
 )
 
@@ -118,7 +117,7 @@ func (s *storage) Put(fileName string, content []byte, expire sql.NullTime) (int
 		return 0, fmt.Errorf("no storage driver available")
 	}
 
-	n := utils.RandomNumber(0, len(s.uploadDrivers))
+	n := RandomNumber(0, len(s.uploadDrivers))
 	d := s.uploadDrivers[n]
 
 	err := d.Put(fileName, content, expire)

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"imgu2/db"
 	"imgu2/libvips"
-	"imgu2/utils"
 	"net/http"
 )
 
@@ -69,7 +68,7 @@ func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTim
 		return "", fmt.Errorf("upload: image too large")
 	}
 
-	fileName := utils.RandomString(8) + fileExtension
+	fileName := RandomString(8) + fileExtension
 
 	// upload file
 	id, err := Storage.Put(fileName, encodedImage, expire)

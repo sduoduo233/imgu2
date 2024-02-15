@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"imgu2/db"
 	"imgu2/services/oauth"
-	"imgu2/utils"
 	"log/slog"
 	"os"
 
@@ -109,7 +108,7 @@ func (*auth) SigninOrRegisterWithSocial(loginType string, profile *oauth.OAuthPr
 		}
 
 		// sign up
-		randomName := fmt.Sprintf("%s #%d", profile.Name, utils.RandomNumber(100000, 999999))
+		randomName := fmt.Sprintf("%s #%d", profile.Name, RandomNumber(100000, 999999))
 		userId, err := db.UserCreate(randomName, profile.Email, "", true, RoleUser)
 		if err != nil {
 			return "", fmt.Errorf("create user: %w", err)
