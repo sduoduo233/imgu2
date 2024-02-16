@@ -21,9 +21,10 @@ var Storage = storage{}
 type StorageType string
 
 const (
-	StorageLocal StorageType = "local"
-	StorageS3    StorageType = "s3"
-	StorageFTP   StorageType = "ftp"
+	StorageLocal  StorageType = "local"
+	StorageS3     StorageType = "s3"
+	StorageFTP    StorageType = "ftp"
+	StorageWebDAV StorageType = "webdav"
 )
 
 // initialize storage drivers
@@ -49,6 +50,9 @@ func (s *storage) Init() error {
 
 		case string(StorageFTP):
 			driver, err = storages.NewFTPStorage(v.Name, v.Id, v.Config)
+
+		case string(StorageWebDAV):
+			driver, err = storages.NewWebDAVStorage(v.Name, v.Id, v.Config)
 
 		default:
 			slog.Error("unknown storage type", "type", v.Type)
@@ -90,7 +94,7 @@ func (*storage) Update(id int, enabled bool, allowUpload bool, config string) er
 }
 
 func (*storage) Create(name string, t string) (int, error) {
-	if t != string(StorageS3) && t != string(StorageLocal) && t != string(StorageFTP) {
+	if t != string(StorageS3) && t != string(StorageLocal) && t != string(StorageFTP) && t != string(StorageWebDAV) {
 		return 0, fmt.Errorf("unknown storage type: %s", t)
 	}
 	return db.StorageCreate(name, t, "{}", false, false)

@@ -14,6 +14,7 @@ require (
 )
 
 require (
+	github.com/emersion/go-webdav v0.5.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
