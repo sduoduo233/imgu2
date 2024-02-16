@@ -18,6 +18,7 @@
             <option value="s3">S3</option>
             <option value="local">Local</option>
             <option value="ftp">FTP</option>
+            <option value="webdav">WebDAV</option>
         </select>
     </div>
 
@@ -79,6 +80,22 @@
     <div class="mb-3">
         <label class="form-label">{{tr "address"}}</label>
         <input type="text" class="form-control" value="{{.config.address}}" name="config_address">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">{{tr "user"}}</label>
+        <input type="text" class="form-control" value="{{.config.user}}" name="config_user">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">{{tr "password"}}</label>
+        <input type="text" class="form-control" value="{{.config.password}}" name="config_password">
+    </div>
+    {{ end }}
+
+    <!-- Configuration for WebDAV -->
+    {{ if eq .storage.Type "webdav"}}
+    <div class="mb-3">
+        <label class="form-label">Endpoint</label>
+        <input type="text" class="form-control" value="{{.config.endpoint}}" name="config_endpoint">
     </div>
     <div class="mb-3">
         <label class="form-label">{{tr "user"}}</label>
