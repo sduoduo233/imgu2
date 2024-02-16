@@ -23,14 +23,16 @@
 </div>
 
 <script>
-    const uploadedAt = +"{{.uploaded_at}}";
-    const expireAt = +"{{.expire}}";
-    document.getElementById("uploaded-at").innerText += " " + new Date(uploadedAt * 1000).toLocaleString();
-    if (expireAt > 0) {
-        document.getElementById("expire-at").innerText += " " + new Date(expireAt * 1000).toLocaleString();
-    } else {
-        document.getElementById("expire-at").innerText += " Never";
-    }
+    (function() {
+        const uploadedAt = +"{{.uploaded_at}}";
+        const expireAt = +"{{.expire}}";
+        document.getElementById("uploaded-at").innerText += " " + new Date(uploadedAt * 1000).toLocaleString();
+        if (expireAt > 0) {
+            document.getElementById("expire-at").innerText += " " + new Date(expireAt * 1000).toLocaleString();
+        } else {
+            document.getElementById("expire-at").innerText += " Never";
+        }
+    })()
 </script>
 
 {{end}}
