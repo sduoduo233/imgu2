@@ -165,7 +165,7 @@
         btn.addEventListener("click", () => {
             if (!arrayBuffer) return;
 
-            if ((recaptcha && !grecaptcha.getResponse()) || hcaptcha && !hcaptcha.getResponse()) {
+            if ((recaptcha && !grecaptcha.getResponse()) || hCaptcha && !hcaptcha.getResponse()) {
                 alert("CAPTCHA is not completed");
                 return;
             }
