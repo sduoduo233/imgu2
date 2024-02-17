@@ -200,16 +200,19 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		slog.Error("do upload: parse encoding param 'lossless'", "err", err)
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	Q, err = strconv.Atoi(r.FormValue("Q"))
 	if err != nil {
 		slog.Error("do upload: parse encoding param 'Q'", "err", err)
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	effort, err = strconv.Atoi(r.FormValue("effort"))
 	if err != nil {
 		slog.Error("do upload: parse encoding param 'effort'", "err", err)
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	// upload
