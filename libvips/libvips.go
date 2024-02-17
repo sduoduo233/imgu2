@@ -121,50 +121,6 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 	return 0;
 }
 
-#define DEFINE_LIBVIPS_ENCODE(SUFFIX, PARAMS, ENCODE)                                                    \
-int libvips_encode_##SUFFIX PARAMS{                                                                      \
-	VipsImage* img;                                                																				 \
-	if (animated) {                                         																               \
-		img = vips_image_new_from_buffer(buf, len, "", "n", -1, "access", VIPS_ACCESS_SEQUENTIAL, NULL);     \
-	} else {                                         																                       \
-		img = vips_image_new_from_buffer(buf, len, "", "access", VIPS_ACCESS_SEQUENTIAL, NULL);              \
-	}                                        																                               \
-	if (!img) {                                          																                   \
-		libvips_error();                                         																             \
-		return -1;                                         																                   \
-	}                                         																                             \
-	if (ENCODE) {                                                                                          \
-		g_object_unref(img);                                         																         \
-		libipvs_malloc_trim();                                         																       \
-		libvips_error();                                                                                     \
-		return -2;                                                                                           \
-	}                                                                                                      \
-	g_object_unref(img);                                                                                   \
-	libipvs_malloc_trim();                                                                                 \
-	return 0;                                                                                              \
-}
-
-DEFINE_LIBVIPS_ENCODE(webp,
-(char* buf, int len, void** out_buf, size_t* out_size, int animated, int Q, int lossless, int effort),
-vips_webpsave_buffer(img, out_buf, out_size, "Q", Q, "lossless", lossless, "effort", effort, NULL))
-
-DEFINE_LIBVIPS_ENCODE(png,
-(char* buf, int len, void** out_buf, size_t* out_size, int animated, int compression),
-vips_pngsave_buffer(img, out_buf, out_size, "compression", compression, NULL))
-
-DEFINE_LIBVIPS_ENCODE(jpeg,
-(char* buf, int len, void** out_buf, size_t* out_size, int animated, int Q, int effort),
-vips_jpegsave_buffer(img, out_buf, out_size, "Q", Q, "effort", effort, NULL))
-
-DEFINE_LIBVIPS_ENCODE(gif,
-(char* buf, int len, void** out_buf, size_t* out_size, int animated, int effort),
-vips_gifsave_buffer(img, out_buf, out_size, "effort", effort, NULL))
-
-DEFINE_LIBVIPS_ENCODE(avif,
-(char* buf, int len, void** out_buf, size_t* out_size, int animated, int Q, int),
-vips_heifsave_buffer(img, out_buf, out_size, "lossless", TRUE, NULL))
-
-
 void libvips_g_free(void* p) {
 	g_free(p);
 	libipvs_malloc_trim();
