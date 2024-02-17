@@ -189,13 +189,36 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// encoding parameters
+	var (
+		lossless bool
+		Q        int
+		effort   int
+	)
+
+	lossless, err = strconv.ParseBool(r.FormValue("lossless"))
+	if err != nil {
+		slog.Error("do upload: parse encoding param 'lossless'", "err", err)
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	Q, err = strconv.Atoi(r.FormValue("Q"))
+	if err != nil {
+		slog.Error("do upload: parse encoding param 'Q'", "err", err)
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	effort, err = strconv.Atoi(r.FormValue("effort"))
+	if err != nil {
+		slog.Error("do upload: parse encoding param 'effort'", "err", err)
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
 	// upload
 	var fileName string
 	if expire == 0 {
-		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{}, ipAddr, targetFormat, int(maxSize))
+		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{}, ipAddr, targetFormat, int(maxSize), lossless, Q, effort)
 	} else {
 		t := time.Now().Add(time.Second * time.Duration(expire))
-		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{Valid: true, Time: t}, ipAddr, targetFormat, int(maxSize))
+		fileName, err = services.Upload.UploadImage(userId, fileContent, sql.NullTime{Valid: true, Time: t}, ipAddr, targetFormat, int(maxSize), lossless, Q, effort)
 	}
 
 	if err != nil {
