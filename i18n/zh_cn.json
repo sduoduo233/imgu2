@@ -152,5 +152,9 @@
   "edit": "编辑",
   "no_storage_driver_found": "没有可用的存储后端。使用下面的表单创建一个新的。",
   "add_new_storage_driver": "添加新的存储后端",
-  "admin_settings": "管理员设置"
+  "admin_settings": "管理员设置",
+  "upload_lossless": "Lossless (This takes no effect for image format without lossless mode)",
+  "upload_quality": "Quality (bitdepth for GIF)",
+  "upload_effort": "Effort",
+  "upload_advanced_settings": "Advanced Encoding Settings"
 }
