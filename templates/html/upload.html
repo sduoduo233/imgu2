@@ -62,12 +62,38 @@
 <div class="mb-2">
     <label class="form-label">{{tr "image_format_conversion"}}</label>
     <select class="form-select" id="selectFormat">
-        <option value="webp" selected>WebP Loseless (animated)</option>
+        <option value="webp" selected>WebP (animated)</option>
         <option value="png">PNG</option>
         <option value="jpeg">JPEG</option>
         <option value="gif">GIF (animated)</option>
         {{ if .avif_enabled }}<option value="avif">AVIF</option>{{ end }}
     </select>
+</div>
+
+<button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdvancedSettings" aria-expanded="false" aria-controls="advanced settings">
+    {{tr "upload_advanced_settings"}}
+</button>
+
+<div class="collapse" id="collapseAdvancedSettings">
+
+    <div class="mb-2">
+        <label class="form-label">{{tr "upload_lossless"}}</label>
+        <select class="form-select" id="encoding_lossless">
+            <option value="false" selected>{{tr "enabled"}}</option>
+            <option value="true">{{tr "disabled"}}</option>
+        </select>
+    </div>
+    
+    <div class="mb-2">
+        <label class="form-label">{{tr "upload_quality"}}</label>
+        <input class="form-control" type="number" value="-1" id="encoding_quality"></input>
+    </div>
+    
+    <div class="mb-2">
+        <label class="form-label">{{tr "upload_effort"}}</label>
+        <input class="form-control" type="number" value="-1" id="encoding_effort"></input>
+    </div>
+
 </div>
 
 {{template "captcha" .}}
@@ -93,12 +119,16 @@
         const promptElement = document.getElementById("prompt");
         const btn = document.getElementById("btn-upload");
         const selectExpire = document.getElementById("selectExpire");
-        const selectFormat = document.getElementById("selectFormat");
         const progress = document.getElementById("progress");
         const progressbar = document.getElementById("progressbar");
         const btnEdit = document.getElementById("btn-edit");
         const editor = document.getElementById("editor");
         const btnEditorSave = document.getElementById("btn-editor-save");
+
+        const selectFormat = document.getElementById("selectFormat");
+        const lossless = document.getElementById("encoding_lossless");
+        const Q = document.getElementById("encoding_quality");
+        const effort = document.getElementById("encoding_effort")
 
         // remove unavailable auto delete options in the drop down
         if (max_duration !== 0) {
@@ -228,6 +258,9 @@
             formData.set("file", new Blob([arrayBuffer]));
             formData.set("expire", selectExpire.value);
             formData.set("format", selectFormat.value);
+            formData.set("lossless", lossless.value);
+            formData.set("Q", Q.value);
+            formData.set("effort", effort.value);
             formData.set("csrf_token", csrf_token);
             if (recaptcha) formData.set("g-recaptcha-response", grecaptcha.getResponse());
             if (hCaptcha) formData.set("h-captcha-response", hcaptcha.getResponse());

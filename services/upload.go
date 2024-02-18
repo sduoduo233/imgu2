@@ -21,7 +21,7 @@ var Upload = upload{}
 // fileSizeLimit is the maximium file size in bytes after encoding
 //
 // return a random generated file name
-func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTime, ipAddr string, targetFormat string, fileSizeLimit int) (string, error) {
+func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTime, ipAddr string, targetFormat string, fileSizeLimit int, lossless bool, Q int, effort int) (string, error) {
 	// re-encode image
 	var fileExtension string
 
@@ -59,7 +59,7 @@ func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTim
 		return "", fmt.Errorf("upload: unknown format: %s", targetFormat)
 	}
 
-	encodedImage := libvips.LibvipsEncode(file, animated, vipsForamt)
+	encodedImage := libvips.LibvipsEncode(file, vipsForamt, animated, lossless, Q, effort)
 	if encodedImage == nil {
 		return "", fmt.Errorf("upload: malformatted image")
 	}

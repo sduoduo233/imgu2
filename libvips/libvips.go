@@ -37,7 +37,7 @@ void libvips_shutdown() {
 	vips_shutdown();
 }
 
-int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int outType, int animated) {
+int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int outType, int animated, int lossless, int Q, int effort) {
 	VipsImage* img;
 	if (animated) {
 		img = vips_image_new_from_buffer(buf, len, "", "n", -1, "access", VIPS_ACCESS_SEQUENTIAL, NULL);
@@ -51,35 +51,59 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 	}
 
 	if (outType == 1) { // webp
-		if (vips_webpsave_buffer(img, out_buf, out_size, "lossless", TRUE, NULL)) {
+		if (Q < 0) {
+			Q = 75;
+		}
+		if (effort < 0) {
+			effort = 4;
+		}
+		if (vips_webpsave_buffer(img, out_buf, out_size, "lossless", lossless, "Q", Q, "effort", effort, NULL)) {
 			g_object_unref(img);
 			libipvs_malloc_trim();
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 2) { // png
-		if (vips_pngsave_buffer(img, out_buf, out_size, NULL)) {
+		if (effort < 0) {
+			effort = 6;
+		}
+		if (vips_pngsave_buffer(img, out_buf, out_size, "compression", effort, NULL)) {
 			g_object_unref(img);
 			libipvs_malloc_trim();
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 3) { // jpeg
-		if (vips_jpegsave_buffer(img, out_buf, out_size, NULL)) {
+		if (Q < 0) {
+			Q = 75;
+		}
+		if (vips_jpegsave_buffer(img, out_buf, out_size,  "Q", Q, NULL)) {
 			g_object_unref(img);
 			libipvs_malloc_trim();
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 4) { // gif
-		if (vips_gifsave_buffer(img, out_buf, out_size, NULL)) {
+		if (effort < 0) {
+			effort = 7;
+		}
+		if (Q < 0) {
+			Q = 8;
+		}
+		if ( vips_gifsave_buffer(img, out_buf, out_size, "bitdepth", Q, "effort", effort, NULL)) {
 			g_object_unref(img);
 			libipvs_malloc_trim();
 			libvips_error();
 			return -2;
 		}
 	} else if (outType == 5) { // avif
-		if (vips_heifsave_buffer(img, out_buf, out_size, "compression", VIPS_FOREIGN_HEIF_COMPRESSION_AV1, "encoder", VIPS_FOREIGN_HEIF_ENCODER_AOM, "lossless", TRUE, NULL)) {
+		if (effort < 0) {
+			effort = 4;
+		}
+		if (Q < 0) {
+			Q = 50;
+		}
+		if (vips_heifsave_buffer(img, out_buf, out_size, "lossless", lossless, "Q", Q, "effort", effort, "compression", VIPS_FOREIGN_HEIF_COMPRESSION_AV1, "encoder", VIPS_FOREIGN_HEIF_ENCODER_AOM, NULL)) {
 			g_object_unref(img);
 			libipvs_malloc_trim();
 			libvips_error();
@@ -113,6 +137,7 @@ int libvips_heif_load_plugins(char* directory) {
 }
 */
 import "C"
+
 import (
 	"log/slog"
 	"os"
@@ -165,7 +190,7 @@ func LibvipsVersion() string {
 // encode in to target format
 //
 // return nil if any error occurred
-func LibvipsEncode(in []byte, animated bool, target Format) []byte {
+func LibvipsEncode(in []byte, target Format, animated bool, lossless bool, Q int, effort int) []byte {
 	cbytes := C.CBytes(in)
 
 	var outBuf unsafe.Pointer
@@ -176,7 +201,12 @@ func LibvipsEncode(in []byte, animated bool, target Format) []byte {
 		a = 1
 	}
 
-	result := C.libvips_encode((*C.char)(cbytes), C.int(len(in)), &outBuf, &outSize, C.int(int(target)), C.int(a))
+	lossless_i := 0
+	if lossless {
+		lossless_i = 1
+	}
+
+	result := C.libvips_encode((*C.char)(cbytes), C.int(len(in)), &outBuf, &outSize, C.int(int(target)), C.int(a), C.int(lossless_i), C.int(Q), C.int(effort))
 	defer C.free(cbytes)
 	if outBuf != nil {
 		defer C.libvips_g_free(outBuf)
