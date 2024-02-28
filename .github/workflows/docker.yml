@@ -13,6 +13,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set Commit
+        run: echo "$(git rev-parse --short HEAD)" > constants/git_commit.txt
+
+      - name: Set Version
+        run: echo "$GITHUB_REF_NAME" > constants/version.txt
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
