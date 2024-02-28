@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"imgu2/constants"
 	"imgu2/i18n"
 	"imgu2/services"
 	"imgu2/templates"
@@ -48,6 +49,9 @@ func render(w io.Writer, name string, data H) {
 
 		data["hcaptcha_client"] = hcaptcha
 	}
+
+	data["git_commit"] = constants.GIT_COMMIT
+	data["version"] = constants.VERSION
 
 	err = templates.Render(w, name, data)
 	if err != nil {

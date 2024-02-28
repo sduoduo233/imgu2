@@ -1,6 +1,17 @@
 {{define "footer"}}
 
+</div> {{/* closing container*/}}
+
+{{/* footer */}}
+<div class="container mt-5">
+    <span class="text-secondary">
+        Powered by
+        <a class="text-secondary link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="https://github.com/sduoduo233/imgu2">IMGU2</a>
+        <br>
+        Version: {{ .version }} ({{ .git_commit }})
+    </span>
 </div>
+
 </body>
 </html>
 {{end}}
