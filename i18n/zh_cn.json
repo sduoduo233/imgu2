@@ -156,5 +156,8 @@
   "upload_lossless": "无损模式 (这对不支持的有损压缩的格式不会产生任何影响)",
   "upload_quality": "质量 (GIF 的 Bitdepth)",
   "upload_effort": "努力度（Effort）",
-  "upload_advanced_settings": "高级编码设置"
+  "upload_advanced_settings": "高级编码设置",
+  "telegraph_public_url_desc": "You may set up a reverse proxy of https://telegra.ph/ by your self, or leave this field empty to let imgu2 manage reverse proxying.",
+  "allow_webp_encoding": "Allow WEBP Encoding",
+  "allow_webp_encoding_desc": "Some storage driver (e.g. telegra.ph) does not support webp images."
 }
