@@ -25,6 +25,7 @@ func downloadImage(w http.ResponseWriter, r *http.Request) {
 		slog.Error("download image", "err", err)
 
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Add("Cache-Control", "no-cache")
 		w.Header().Add("Content-Type", "image/png")
 		w.Write(placeholder.ERROR)
 		return
@@ -32,14 +33,16 @@ func downloadImage(w http.ResponseWriter, r *http.Request) {
 
 	switch v := c.(type) {
 	case string:
-		http.Redirect(w, r, v, http.StatusFound)
+		http.Redirect(w, r, v, http.StatusMovedPermanently)
 
 	case []byte:
 		w.Header().Add("Content-Type", http.DetectContentType(v))
+		w.Header().Add("Cache-Control", "max-age=31536000")
 		w.Write(v)
 
-	case nil:
+	case nil: // not found
 		w.Header().Add("Content-Type", "image/png")
+		w.Header().Add("Cache-Control", "no-cache")
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(placeholder.NOT_FOUND)
 
@@ -48,6 +51,7 @@ func downloadImage(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Add("Content-Type", "image/png")
+		w.Header().Add("Cache-Control", "no-cache")
 		w.Write(placeholder.ERROR)
 	}
 }
