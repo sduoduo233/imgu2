@@ -63,7 +63,7 @@ func (s *s3Storage) Delete(key string) error {
 	return nil
 }
 
-func (s *s3Storage) Put(key string, content []byte, expire sql.NullTime) error {
+func (s *s3Storage) Put(key string, content []byte, expire sql.NullTime) (string, error) {
 	_, err := s.s3Client.PutObject(&s3.PutObjectInput{
 		Body:        bytes.NewReader(content),
 		Bucket:      &s.bucket,
@@ -71,9 +71,9 @@ func (s *s3Storage) Put(key string, content []byte, expire sql.NullTime) error {
 		Key:         &key,
 	})
 	if err != nil {
-		return fmt.Errorf("s3 storage: %w", err)
+		return "", fmt.Errorf("s3 storage: %w", err)
 	}
-	return nil
+	return "", nil
 }
 
 func (s *s3Storage) Get(key string) (any, error) {

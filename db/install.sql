@@ -76,5 +76,6 @@ INSERT OR IGNORE INTO settings(key, value) VALUES('GUEST_MAX_TIME', '604800'); -
 INSERT OR IGNORE INTO settings(key, value) VALUES('USER_MAX_TIME', '0'); -- user uploads are kept forever
 
 INSERT OR IGNORE INTO settings(key, value) VALUES('AVIF_ENCODING', 'true');
+INSERT OR IGNORE INTO settings(key, value) VALUES('WEBP_ENCODING', 'true');
 
 INSERT OR IGNORE INTO settings(key, value) VALUES('LANGUAGE', 'en_us');

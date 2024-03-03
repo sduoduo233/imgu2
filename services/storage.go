@@ -21,10 +21,11 @@ var Storage = storage{}
 type StorageType string
 
 const (
-	StorageLocal  StorageType = "local"
-	StorageS3     StorageType = "s3"
-	StorageFTP    StorageType = "ftp"
-	StorageWebDAV StorageType = "webdav"
+	StorageLocal     StorageType = "local"
+	StorageS3        StorageType = "s3"
+	StorageFTP       StorageType = "ftp"
+	StorageWebDAV    StorageType = "webdav"
+	StorageTelegraph StorageType = "telegraph"
 )
 
 // initialize storage drivers
@@ -53,6 +54,9 @@ func (s *storage) Init() error {
 
 		case string(StorageWebDAV):
 			driver, err = storages.NewWebDAVStorage(v.Name, v.Id, v.Config)
+
+		case string(StorageTelegraph):
+			driver, err = storages.NewTelegraphStorage(v.Name, v.Id, v.Config)
 
 		default:
 			slog.Error("unknown storage type", "type", v.Type)
@@ -94,7 +98,7 @@ func (*storage) Update(id int, enabled bool, allowUpload bool, config string) er
 }
 
 func (*storage) Create(name string, t string) (int, error) {
-	if t != string(StorageS3) && t != string(StorageLocal) && t != string(StorageFTP) && t != string(StorageWebDAV) {
+	if t != string(StorageS3) && t != string(StorageLocal) && t != string(StorageFTP) && t != string(StorageWebDAV) && t != string(StorageTelegraph) {
 		return 0, fmt.Errorf("unknown storage type: %s", t)
 	}
 	return db.StorageCreate(name, t, "{}", false, false)
@@ -115,23 +119,27 @@ func (*storage) Delete(id int) error {
 
 // save the file in a randomly choosen storage driver
 //
-// return the id of the storage driver
-func (s *storage) Put(fileName string, content []byte, expire sql.NullTime) (int, error) {
+// return the file name and id of the storage driver
+func (s *storage) Put(fileName string, content []byte, expire sql.NullTime) (string, int, error) {
 	if len(s.uploadDrivers) == 0 {
-		return 0, fmt.Errorf("no storage driver available")
+		return "", 0, fmt.Errorf("no storage driver available")
 	}
 
 	n := RandomNumber(0, len(s.uploadDrivers))
 	d := s.uploadDrivers[n]
 
-	err := d.Put(fileName, content, expire)
+	newFileName, err := d.Put(fileName, content, expire)
 	if err != nil {
-		return 0, fmt.Errorf("storage put: %w", err)
+		return "", 0, fmt.Errorf("storage put: %w", err)
+	}
+
+	if newFileName != "" {
+		fileName = newFileName
 	}
 
 	slog.Debug("put file", "file name", fileName, "size", len(content), "expire", expire)
 
-	return d.ID(), nil
+	return fileName, d.ID(), nil
 }
 
 func (s *storage) DeleteFileFromDriver(id int, fileName string) error {

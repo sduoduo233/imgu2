@@ -62,7 +62,7 @@
 <div class="mb-2">
     <label class="form-label">{{tr "image_format_conversion"}}</label>
     <select class="form-select" id="selectFormat">
-        <option value="webp" selected>WebP (animated)</option>
+        {{ if .webp_enabled }}<option value="webp" selected>WebP (animated)</option>{{ end }}
         <option value="png">PNG</option>
         <option value="jpeg">JPEG</option>
         <option value="gif">GIF (animated)</option>

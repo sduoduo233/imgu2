@@ -40,19 +40,19 @@ func (w *webdavStorage) ID() int {
 	return w.id
 }
 
-func (w *webdavStorage) Put(key string, content []byte, expire sql.NullTime) error {
+func (w *webdavStorage) Put(key string, content []byte, expire sql.NullTime) (string, error) {
 	writer, err := w.client.Create(context.Background(), key)
 	if err != nil {
-		return fmt.Errorf("WebDAV storage: %w", err)
+		return "", fmt.Errorf("WebDAV storage: %w", err)
 	}
 	defer writer.Close()
 
 	_, err = writer.Write(content)
 	if err != nil {
-		return fmt.Errorf("WebDAV storage: %w", err)
+		return "", fmt.Errorf("WebDAV storage: %w", err)
 	}
 
-	return nil
+	return "", nil
 }
 
 func (w *webdavStorage) Delete(key string) error {

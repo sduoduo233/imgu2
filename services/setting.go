@@ -128,6 +128,15 @@ func (*setting) IsAVIFEncodingEnabled() (bool, error) {
 	return s == "true", nil
 }
 
+func (*setting) IsWEBPEncodingEnabled() (bool, error) {
+	s, err := db.SettingFind("WEBP_ENCODING")
+	if err != nil {
+		return false, err
+	}
+
+	return s == "true", nil
+}
+
 // maximum time a guest upload is kept for (in seconds)
 func (*setting) GetGuestUploadTime() (uint, error) {
 	s, err := db.SettingFind("GUEST_MAX_TIME")

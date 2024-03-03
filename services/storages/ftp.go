@@ -49,12 +49,12 @@ func (f *ftpStorage) ID() int {
 	return f.id
 }
 
-func (f *ftpStorage) Put(key string, content []byte, expire sql.NullTime) error {
+func (f *ftpStorage) Put(key string, content []byte, expire sql.NullTime) (string, error) {
 	err := f.c.Stor(key, bytes.NewBuffer(content))
 	if err != nil {
-		return fmt.Errorf("ftp storage: put: %w", err)
+		return "", fmt.Errorf("ftp storage: put: %w", err)
 	}
-	return nil
+	return "", nil
 }
 
 func (f *ftpStorage) Delete(key string) error {

@@ -107,6 +107,15 @@
     </div>
     {{ end }}
 
+    <!-- Configuration for telegra.ph -->
+    {{ if eq .storage.Type "telegraph"}}
+    <div class="mb-3">
+        <label class="form-label">{{tr "s3_public_url"}}</label>
+        <input type="text" class="form-control" value="{{.config.public_url}}" name="config_public_url" placeholder="https://example.com">
+        <div class="form-text">{{tr "telegraph_public_url_desc"}}</div>
+    </div>
+    {{ end }}
+
     <button class="btn btn-primary">{{tr "save"}}</button>
 </form>
 

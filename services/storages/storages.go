@@ -8,7 +8,10 @@ type StorageDriver interface {
 	// upload to a storage driver
 	//
 	// expire may be nil
-	Put(key string, content []byte, expire sql.NullTime) error
+	//
+	// For storage drivers (e.g. telegra.ph) which do not support
+	// setting custom file name, fileName may be returned.
+	Put(key string, content []byte, expire sql.NullTime) (fileName string, err error)
 
 	// delete a file from a storage driver
 	Delete(key string) error

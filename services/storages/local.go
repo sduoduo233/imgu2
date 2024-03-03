@@ -19,15 +19,15 @@ type localStorageConfig struct {
 	Path string `json:"path"`
 }
 
-func (s *localStorage) Put(key string, content []byte, expire sql.NullTime) error {
+func (s *localStorage) Put(key string, content []byte, expire sql.NullTime) (string, error) {
 	path := filepath.Join(s.path, key)
 
 	err := os.WriteFile(path, content, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("local storage: %w", err)
+		return "", fmt.Errorf("local storage: %w", err)
 	}
 
-	return nil
+	return "", nil
 }
 
 func (s *localStorage) Delete(key string) error {

@@ -150,6 +150,15 @@
         </select>
         <div class="form-text">{{tr "allow_avif_encoding_desc"}}</div>
     </div>
+    
+    <div class="mb-3">
+        <label class="form-label">{{tr "allow_webp_encoding"}}</label>
+        <select id="select-webp-encoding" class="form-select" name="WEBP_ENCODING">
+            <option value="true">{{tr "enabled"}}</option>
+            <option value="false">{{tr "disabled"}}</option>
+        </select>
+        <div class="form-text">{{tr "allow_webp_encoding_desc"}}</div>
+    </div>
 
     <script>
         document.getElementById("select-register").value = "{{.setting.ALLOW_REGISTER}}";
@@ -159,13 +168,13 @@
         document.getElementById("select-github-signin").value = "{{.setting.GITHUB_SIGNIN}}";
         document.getElementById("select-avif-encoding").value = "{{.setting.AVIF_ENCODING}}";
         document.getElementById("select-language").value = "{{.setting.LANGUAGE}}";
+        document.getElementById("select-webp-encoding").value = "{{.setting.WEBP_ENCODING}}";
     </script>
 
     <div class="mb-3">
         <button type="submit" class="btn btn-primary">{{tr "submit"}}</button>
     </div>
     
-
 </form>
 
 

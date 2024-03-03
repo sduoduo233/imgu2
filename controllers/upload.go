@@ -37,12 +37,20 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	webpEnabled, err := services.Setting.IsWEBPEncodingEnabled()
+	if err != nil {
+		slog.Error("upload", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	render(w, "upload", H{
 		"user":         user,
 		"csrf_token":   csrfToken(w),
 		"max_time":     maxTime,
 		"guest_upload": guestUpload,
 		"avif_enabled": avifEnabled,
+		"webp_enabled": webpEnabled,
 	})
 }
 
@@ -130,6 +138,21 @@ func doUpload(w http.ResponseWriter, r *http.Request) {
 	switch r.FormValue("format") {
 	case "webp":
 		targetFormat = "image/webp"
+
+		webpEnabled, err := services.Setting.IsWEBPEncodingEnabled()
+		if err != nil {
+			slog.Error("upload", "err", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if !webpEnabled {
+			w.WriteHeader(http.StatusBadRequest)
+			writeJSON(w, H{
+				"error": "UNSUPPORTED_ENCODING",
+			})
+			return
+		}
+
 	case "jpeg":
 		targetFormat = "image/jpeg"
 	case "gif":
