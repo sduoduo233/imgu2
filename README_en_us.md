@@ -54,7 +54,7 @@ sudo pacman -S libvips libheif pkg-config gcc openslide imagemagick poppler-glib
 2. Start container
 
 ```bash
-docker run --detach -p 3000:3000 -e IMGU2_SMTP_USERNAME="mailer@example.com"  -e IMGU2_SMTP_PASSWORD="example_password" -e IMGU2_SMTP_HOST="example.com" -e IMGU2_SMTP_PORT=25 -e IMGU2_SMTP_SENDER="mailer@example.com" -e IMGU2_JWT_SECRET="example_secret_string" -v ./db:/app/sqlite -v ./uploads:/app/uploads sduoduo233/imgu2:latest
+docker run --detach -p 3000:3000 -e IMGU2_SMTP_USERNAME="mailer@example.com"  -e IMGU2_SMTP_PASSWORD="example_password" -e IMGU2_SMTP_HOST="example.com" -e IMGU2_SMTP_PORT=25 -e IMGU2_SMTP_SENDER="mailer@example.com" -e IMGU2_SMTP_AUTH_TLS="false" -e IMGU2_JWT_SECRET="example_secret_string" -v ./db:/app/sqlite -v ./uploads:/app/uploads sduoduo233/imgu2:latest
 ```
 
 `IMGU2_JWT_SECRET` should be a hard-to-guess string, which can be generated using `openssl rand -hex 8` on Linux.
@@ -76,6 +76,7 @@ services:
       IMGU2_SMTP_PASSWORD: "example_password"
       IMGU2_SMTP_AUTH_TLS: "true"  # use TLS
       IMGU2_SMTP_HOST: "example.com"
+      IMGU2_SMTP_AUTH_TLS: "false"
       IMGU2_SMTP_PORT: "25"
       IMGU2_SMTP_SENDER: "mailer@example.com"
       IMGU2_JWT_SECRET: "example_secret_string"
