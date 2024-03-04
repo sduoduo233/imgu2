@@ -79,7 +79,8 @@ services:
       IMGU2_SMTP_USERNAME: "mailer@example.com"
       IMGU2_SMTP_PASSWORD: "example_password"
       IMGU2_SMTP_HOST: "example.com"
-      IMGU2_SMTP_PORT: "25"
+      IMGU2_SMTP_AUTH_TLS: "true"  # 使用 TLS
+      IMGU2_SMTP_PORT: "587"
       IMGU2_SMTP_SENDER: "mailer@example.com"
       IMGU2_JWT_SECRET: "example_secret_string"
     volumes:
