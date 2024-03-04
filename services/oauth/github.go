@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // githubOAuth implements oAuth interface
@@ -136,7 +137,7 @@ func (g *githubOAuth) GetProfile(code string) (*OAuthProfile, error) {
 
 	for _, email := range data3 {
 		if email.Primary && email.Verified {
-			profile.Email = email.Email
+			profile.Email = strings.ToLower(email.Email)
 			return &profile, nil
 		}
 	}

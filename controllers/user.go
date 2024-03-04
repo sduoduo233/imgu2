@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -125,7 +126,7 @@ func changeUsername(w http.ResponseWriter, r *http.Request) {
 func changeEmail(w http.ResponseWriter, r *http.Request) {
 	user := middleware.MustGetUser(r.Context())
 
-	email := r.FormValue("email")
+	email := strings.ToLower(r.FormValue("email"))
 
 	match, err := regexp.Match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", []byte(email))
 	if err != nil || !match {
@@ -249,7 +250,7 @@ func doRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	username := r.FormValue("username")
-	email := r.FormValue("email")
+	email := strings.ToLower(r.FormValue("email"))
 	password := r.FormValue("password")
 	password2 := r.FormValue("password2")
 
@@ -345,7 +346,7 @@ func resetPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func doResetPassword(w http.ResponseWriter, r *http.Request) {
-	email := r.FormValue("email")
+	email := strings.ToLower(r.FormValue("email"))
 	if email == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return

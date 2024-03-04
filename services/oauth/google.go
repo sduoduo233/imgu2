@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // googleOAuth implements oAuth interface
@@ -95,7 +96,7 @@ func (g *googleOAuth) GetProfile(code string) (*OAuthProfile, error) {
 	}
 
 	return &OAuthProfile{
-		Email:     profile.Email,
+		Email:     strings.ToLower(profile.Email),
 		AccountId: profile.Id,
 		Name:      profile.Name,
 	}, nil
