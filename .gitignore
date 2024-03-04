@@ -5,3 +5,4 @@ imgu2
 .env
 uploads
 build
+.DS_Store
