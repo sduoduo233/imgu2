@@ -87,6 +87,11 @@ func (s *telegraphStorage) Delete(key string) error {
 }
 
 func (s *telegraphStorage) Get(key string) (any, error) {
+
+	if s.publicURL != "" {
+		return s.publicURL + "/" + key, nil
+	}
+
 	resp, err := http.Get("https://telegra.ph/file/" + key)
 	if err != nil {
 		return nil, fmt.Errorf("telegraph storage: get: %w", err)
