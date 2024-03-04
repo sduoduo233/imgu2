@@ -46,7 +46,7 @@ func (mailer) SendMail(to string, subject string, content string) error {
 
 	err = client.DialAndSend(msg)
 	if err != nil {
-		return fmt.Errorf("snedmail: %w", err)
+		return fmt.Errorf("sendmail: %w", err)
 	}
 
 	return nil
