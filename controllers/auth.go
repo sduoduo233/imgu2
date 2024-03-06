@@ -8,6 +8,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -50,7 +51,7 @@ func doLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := r.FormValue("email")
+	email := strings.ToLower(r.FormValue("email"))
 	password := r.FormValue("password")
 
 	token, err := services.Auth.Login(email, password)

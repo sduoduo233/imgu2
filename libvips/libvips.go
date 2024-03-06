@@ -5,8 +5,12 @@ package libvips
 #include <libheif/heif.h>
 #include "vips/vips.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
+
+#ifdef __APPLE__
+	#include <stdlib.h>
+#else
+	#include <malloc.h>
+#endif
 
 void libvips_error() {
 	printf("libvips: error: %s\n", vips_error_buffer());

@@ -13,8 +13,12 @@ var fileEnglish string
 //go:embed zh_cn.json
 var fileChineseSimplified string
 
+//go:embed zh_tw.json
+var fileChineseTraditional string
+
 var langEnglish = make(map[string]string)
 var langChineseSimplified = make(map[string]string)
+var langChineseTraditional = make(map[string]string)
 
 func init() {
 	err := json.Unmarshal([]byte(fileEnglish), &langEnglish)
@@ -23,6 +27,11 @@ func init() {
 	}
 
 	err = json.Unmarshal([]byte(fileChineseSimplified), &langChineseSimplified)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal([]byte(fileChineseTraditional), &langChineseTraditional)
 	if err != nil {
 		panic(err)
 	}
@@ -41,6 +50,8 @@ func T(key string) string {
 		value, ok = langEnglish[key]
 	case "zh_cn":
 		value, ok = langChineseSimplified[key]
+	case "zh_tw":
+		value, ok = langChineseTraditional[key]
 	default:
 		panic("invalid language setting: " + lang)
 	}
