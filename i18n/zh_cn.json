@@ -157,7 +157,7 @@
   "upload_quality": "质量 (GIF 的 Bitdepth)",
   "upload_effort": "努力度（Effort）",
   "upload_advanced_settings": "高级编码设置",
-  "telegraph_public_url_desc": "You may set up a reverse proxy of https://telegra.ph/file by your self, or leave this field empty to let imgu2 manage reverse proxying.",
-  "allow_webp_encoding": "Allow WEBP Encoding",
-  "allow_webp_encoding_desc": "Some storage driver (e.g. telegra.ph) does not support webp images."
+  "telegraph_public_url_desc": "您可以自己设置一个 https://telegra.ph/file 的反向代理，或者留空此字段让imgu2 管理反向代理。",
+  "allow_webp_encoding": "允许 WEBP 编码",
+  "allow_webp_encoding_desc": "某些存储后端 (比如 telegra.ph) 不支持 WEBP 格式的文件。"
 }
