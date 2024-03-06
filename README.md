@@ -3,6 +3,10 @@
 
 [English](https://github.com/sduoduo233/imgu2/blob/master/README_en_us.md)
 
+帮助我们翻译:
+
+[![Crowdin](https://badges.crowdin.net/imgu2/localized.svg)](https://crowdin.com/project/imgu2)
+
 
 # 截图
 

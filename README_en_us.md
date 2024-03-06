@@ -2,6 +2,10 @@
 
 An image sharing platform powered by Golang
 
+Help us translating:
+
+[![Crowdin](https://badges.crowdin.net/imgu2/localized.svg)](https://crowdin.com/project/imgu2)
+
 # Screenshots
 
 <details>
