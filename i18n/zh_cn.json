@@ -156,5 +156,8 @@
   "upload_lossless": "无损模式 (这对不支持的有损压缩的格式不会产生任何影响)",
   "upload_quality": "质量 (GIF 的 Bitdepth)",
   "upload_effort": "努力度（Effort）",
-  "upload_advanced_settings": "高级编码设置"
+  "upload_advanced_settings": "高级编码设置",
+  "telegraph_public_url_desc": "您可以自己设置一个 https://telegra.ph/file 的反向代理，或者留空此字段让imgu2 管理反向代理。",
+  "allow_webp_encoding": "允许 WEBP 编码",
+  "allow_webp_encoding_desc": "某些存储后端 (比如 telegra.ph) 不支持 WEBP 格式的文件。"
 }

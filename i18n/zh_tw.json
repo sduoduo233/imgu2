@@ -58,7 +58,7 @@
   "unknown_error": "未知錯誤",
   "registration_disabled": "註冊目前被禁用",
   "oauth_dup_email": "使用這個電子郵件 (%s) 的帳戶已經存在，請登入到您的原始帳戶。",
-  "oauth_account_unlinked": "帳戶已取消關聯",
+  "oauth_account_unlinked": " 帳戶已取消關聯",
   "image_not_found": "圖片未找到",
   "no_permission_to_delete": "您無權刪除此圖片",
   "image_deleted": "圖片已刪除",
@@ -156,5 +156,8 @@
   "upload_lossless": "無損模式 (對不支援的有損壓縮的格式不會產生任何影響)",
   "upload_quality": "品質（GIF 的 Bitdepth)",
   "upload_effort": "努力度（Effort）",
-  "upload_advanced_settings": "進階編碼設定"
+  "upload_advanced_settings": "進階編碼設定",
+  "telegraph_public_url_desc": "您可以自行設定 https://telegra.ph/file 的反向代理，或將此欄位留空以讓 imgu2 管理反向代理。",
+  "allow_webp_encoding": "允許 WEBP 編碼",
+  "allow_webp_encoding_desc": "某些儲存驅動程式（例如 telegra.ph）不支援 webp 影像。"
 }
