@@ -29,7 +29,8 @@ Help us translating:
 - OAuth login with Google & GitHub
 - Image re-encoding, with support for WebP, PNG, JPEG, GIF and AVIF.
 - SQLite database integration
-- Multiple storage options supported, including S3-compatible, FTP, and local file systems
+- Multiple storage options supported, including S3-compatible, FTP, local file systems and telegra.ph
+- Builtin image editor
 
 # Setup development environment
 

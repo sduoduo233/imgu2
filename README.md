@@ -31,7 +31,8 @@
 - Google & GitHub OAuth 登陆
 - 图片重新编码，支持 WebP, PNG, JPEG, GIF 和 AVIF
 - SQLite 数据库
-- 多种存储后端, 包括 S3-compatible, FTP, 和本地存储
+- 多种存储后端, 包括 S3-compatible, FTP, 本地存储 和 telegra.ph
+- 内置图片编辑器
 
 # 配置开发环境
 
