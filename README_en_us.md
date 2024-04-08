@@ -46,6 +46,9 @@ sudo apt install build-essential libglib2.0-dev libvips-dev libheif-dev libheif-
 
 # Arch Linux
 sudo pacman -S libvips libheif pkg-config gcc openslide imagemagick poppler-glib
+
+# Fedora
+sudo dnf install gcc libheif-devel vips-devel
 ```
 
 3. `go build`
