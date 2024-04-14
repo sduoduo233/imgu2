@@ -64,5 +64,8 @@ func main() {
 	controllers.Route(r)
 
 	slog.Info("server started", "listening", *listen)
-	http.ListenAndServe(*listen, r)
+	err = http.ListenAndServe(*listen, r)
+	if err != nil {
+		slog.Error("failed to listen and server", "err", err)
+	}
 }

@@ -16,7 +16,7 @@ func TaskStart() {
 
 		for _, v := range images {
 			// delete from storage
-			err = Storage.DeleteFileFromDriver(v.StorageId, v.FileName)
+			err = Storage.DeleteFileFromDriver(v.StorageId, v.InternalName)
 			if err != nil {
 				slog.Error("delete expired image", "storage", v.StorageId, "file name", v.FileName, "err", err)
 				continue

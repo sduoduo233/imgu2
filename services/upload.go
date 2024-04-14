@@ -14,7 +14,7 @@ var Upload = upload{}
 
 // UploadImage re-encodes the image and save it to a random choosen storage driver
 //
-// userId may be nil to represent a guest user
+// userId may be set to nil to represent a guest user
 //
 // expire may be nil
 //
@@ -73,13 +73,15 @@ func (*upload) UploadImage(userId sql.NullInt32, file []byte, expire sql.NullTim
 	// upload file
 	var err error
 	var id int
-	fileName, id, err = Storage.Put(fileName, encodedImage, expire)
+
+	// internal name is the file name used in storage drivers
+	internalName, id, err := Storage.Put(fileName, encodedImage, expire)
 	if err != nil {
 		return "", fmt.Errorf("upload: %w", err)
 	}
 
 	// insert to database
-	_, err = db.ImageCreate(id, userId, fileName, ipAddr, expire)
+	_, err = db.ImageCreate(id, userId, fileName, internalName, ipAddr, expire)
 	if err != nil {
 		return "", err
 	}

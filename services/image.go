@@ -9,7 +9,7 @@ type image struct{}
 
 var Image = image{}
 
-// get the content of an image from storage drivers
+// Get the content of the file using the public file name.
 //
 // return a byte array or a URL
 //
@@ -24,7 +24,7 @@ func (*image) Get(fileName string) (any, error) {
 		return nil, nil
 	}
 
-	return Storage.GetFile(img.StorageId, fileName)
+	return Storage.GetFile(img.StorageId, img.InternalName)
 }
 
 // return nil if not found
@@ -63,7 +63,7 @@ func (*image) CountByUser(userId int) (int, error) {
 
 // permanently delete an image (delete from database and storage driver)
 func (*image) Delete(i *db.Image) error {
-	err := Storage.DeleteFileFromDriver(i.StorageId, i.FileName)
+	err := Storage.DeleteFileFromDriver(i.StorageId, i.InternalName)
 	if err != nil {
 		return fmt.Errorf("delete image: %w", err)
 	}

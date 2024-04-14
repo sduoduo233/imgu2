@@ -117,10 +117,11 @@ func (*storage) Delete(id int) error {
 	return db.StorageDelete(id)
 }
 
-// save the file in a randomly choosen storage driver
+// Put uploads the file to a random choosen storage driver.
+// Put may use the internalName supplied if the storage driver allows custom names.
 //
-// return the file name and id of the storage driver
-func (s *storage) Put(fileName string, content []byte, expire sql.NullTime) (string, int, error) {
+// return the file name and the storage driver id
+func (s *storage) Put(internalName string, content []byte, expire sql.NullTime) (string, int, error) {
 	if len(s.uploadDrivers) == 0 {
 		return "", 0, fmt.Errorf("no storage driver available")
 	}
@@ -128,36 +129,38 @@ func (s *storage) Put(fileName string, content []byte, expire sql.NullTime) (str
 	n := RandomNumber(0, len(s.uploadDrivers))
 	d := s.uploadDrivers[n]
 
-	newFileName, err := d.Put(fileName, content, expire)
+	newFileName, err := d.Put(internalName, content, expire)
 	if err != nil {
 		return "", 0, fmt.Errorf("storage put: %w", err)
 	}
 
+	// Some storage driver does not allow setting file name, so a
+	// new file name may be returned.
 	if newFileName != "" {
-		fileName = newFileName
+		internalName = newFileName
 	}
 
-	slog.Debug("put file", "file name", fileName, "size", len(content), "expire", expire)
+	slog.Debug("put file", "internal name", internalName, "size", len(content), "expire", expire)
 
-	return fileName, d.ID(), nil
+	return internalName, d.ID(), nil
 }
 
-func (s *storage) DeleteFileFromDriver(id int, fileName string) error {
-	slog.Debug("delete from driver", "id", id, "file name", fileName)
+func (s *storage) DeleteFileFromDriver(id int, internalName string) error {
+	slog.Debug("delete from driver", "id", id, "file name", internalName)
 
 	for _, v := range s.dirvers {
 		if v.ID() == id {
-			return v.Delete(fileName)
+			return v.Delete(internalName)
 		}
 	}
 
 	return fmt.Errorf("storage driver %d does not exist", id)
 }
 
-func (s *storage) GetFile(id int, fileName string) (any, error) {
+func (s *storage) GetFile(id int, internalName string) (any, error) {
 	for _, v := range s.dirvers {
 		if v.ID() == id {
-			return v.Get(fileName)
+			return v.Get(internalName)
 		}
 	}
 

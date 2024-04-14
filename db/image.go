@@ -8,19 +8,20 @@ import (
 )
 
 type Image struct {
-	Id         int
-	StorageId  int
-	Uploader   sql.NullInt32
-	FileName   string
-	UploaderIP string
-	Time       time.Time
-	ExpireTime sql.NullTime
+	Id           int
+	StorageId    int
+	Uploader     sql.NullInt32
+	FileName     string // the file name which users see
+	InternalName string // the file name used in storage drivers
+	UploaderIP   string
+	Time         time.Time
+	ExpireTime   sql.NullTime
 }
 
 // expire may be nil
 //
-// uploader may be nil to represent guest user
-func ImageCreate(storage int, uploader sql.NullInt32, fileName string, uploaderIP string, expire sql.NullTime) (int, error) {
+// uploader may be set to nil to represent guest user
+func ImageCreate(storage int, uploader sql.NullInt32, fileName string, internalName string, uploaderIP string, expire sql.NullTime) (int, error) {
 
 	// convert expire to unix time stamp
 	expireUnix := sql.NullInt64{}
@@ -30,7 +31,7 @@ func ImageCreate(storage int, uploader sql.NullInt32, fileName string, uploaderI
 		expireUnix.Int64 = expire.Time.Unix()
 	}
 
-	r, err := DB.Exec("INSERT INTO images(storage, uploader, file_name, uploader_ip, time, expire_time) VALUES (?, ?, ?, ?, ?, ?)", storage, uploader, fileName, uploaderIP, time.Now().Unix(), expireUnix)
+	r, err := DB.Exec("INSERT INTO images(storage, uploader, file_name, uploader_ip, time, expire_time, internal_name) VALUES (?, ?, ?, ?, ?, ?, ?)", storage, uploader, fileName, uploaderIP, time.Now().Unix(), expireUnix, internalName)
 	if err != nil {
 		return 0, fmt.Errorf("db: %w", err)
 	}
@@ -51,8 +52,8 @@ func ImageFindByFileName(fileName string) (*Image, error) {
 	var timeUnix int64
 	var timeExpireUnix sql.NullInt64
 
-	row := DB.QueryRow("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time FROM images WHERE file_name = ? AND (expire_time IS NULL OR expire_time > unixepoch()) LIMIT 1", fileName)
-	err := row.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix)
+	row := DB.QueryRow("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time, internal_name FROM images WHERE file_name = ? AND (expire_time IS NULL OR expire_time > unixepoch()) LIMIT 1", fileName)
+	err := row.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix, &i.InternalName)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -73,7 +74,7 @@ func ImageFindByFileName(fileName string) (*Image, error) {
 func ImageFindExpired() ([]Image, error) {
 	images := make([]Image, 0)
 
-	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time FROM images WHERE expire_time IS NOT NULL AND expire_time < unixepoch()")
+	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time, internal_name FROM images WHERE expire_time IS NOT NULL AND expire_time < unixepoch()")
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
@@ -83,7 +84,7 @@ func ImageFindExpired() ([]Image, error) {
 		var i Image
 		var timeUnix int64
 		var timeExpireUnix sql.NullInt64
-		err := rows.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix)
+		err := rows.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix, &i.InternalName)
 		if err != nil {
 			return nil, fmt.Errorf("db: %w", err)
 		}
@@ -112,7 +113,7 @@ func ImageDelete(id int) error {
 func ImageFindByUser(userId int, skip int, limit int) ([]Image, error) {
 	images := make([]Image, 0)
 
-	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time FROM images WHERE uploader = ? AND (expire_time IS NULL OR expire_time > unixepoch()) LIMIT ? OFFSET ?", userId, limit, skip)
+	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time, internal_name FROM images WHERE uploader = ? AND (expire_time IS NULL OR expire_time > unixepoch()) LIMIT ? OFFSET ?", userId, limit, skip)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
@@ -122,7 +123,7 @@ func ImageFindByUser(userId int, skip int, limit int) ([]Image, error) {
 		var i Image
 		var timeUnix int64
 		var timeExpireUnix sql.NullInt64
-		err := rows.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix)
+		err := rows.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix, &i.InternalName)
 		if err != nil {
 			return nil, fmt.Errorf("db: %w", err)
 		}
@@ -182,7 +183,7 @@ func ImageCountByStorage(id int) (int, error) {
 func ImageFindAll(skip int, limit int) ([]Image, error) {
 	images := make([]Image, 0)
 
-	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time FROM images WHERE (expire_time IS NULL OR expire_time > unixepoch()) LIMIT ? OFFSET ?", limit, skip)
+	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time, internal_name FROM images WHERE (expire_time IS NULL OR expire_time > unixepoch()) LIMIT ? OFFSET ?", limit, skip)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
@@ -192,7 +193,7 @@ func ImageFindAll(skip int, limit int) ([]Image, error) {
 		var i Image
 		var timeUnix int64
 		var timeExpireUnix sql.NullInt64
-		err := rows.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix)
+		err := rows.Scan(&i.Id, &i.StorageId, &i.Uploader, &i.FileName, &i.UploaderIP, &timeUnix, &timeExpireUnix, &i.InternalName)
 		if err != nil {
 			return nil, fmt.Errorf("db: %w", err)
 		}

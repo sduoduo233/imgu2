@@ -1,5 +1,5 @@
 .vscode
-db.sqlite
+*.sqlite
 _debug
 imgu2
 .env

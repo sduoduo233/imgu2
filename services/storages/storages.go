@@ -5,7 +5,7 @@ import (
 )
 
 type StorageDriver interface {
-	// upload to a storage driver
+	// Upload a file to a storage driver
 	//
 	// expire may be nil
 	//
