@@ -159,5 +159,9 @@
   "upload_advanced_settings": "高级编码设置",
   "telegraph_public_url_desc": "您可以自己设置一个 https://telegra.ph/file 的反向代理，或者留空此字段让imgu2 管理反向代理。",
   "allow_webp_encoding": "允许 WEBP 编码",
-  "allow_webp_encoding_desc": "某些存储后端 (比如 telegra.ph) 不支持 WEBP 格式的文件。"
+  "allow_webp_encoding_desc": "某些存储后端 (比如 telegra.ph) 不支持 WEBP 格式的文件。",
+  "high_quality": "高质量",
+  "low_quality": "低质量",
+  "high_compression_rate": "高压缩率",
+  "low_compression_rate": "低压缩率"
 }
