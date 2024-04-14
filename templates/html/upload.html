@@ -79,19 +79,27 @@
     <div class="mb-2">
         <label class="form-label">{{tr "upload_lossless"}}</label>
         <select class="form-select" id="encoding_lossless">
-            <option value="false" selected>{{tr "disabled"}}</option>
-            <option value="true">{{tr "enabled"}}</option>
+            <option value="false">{{tr "disabled"}}</option>
+            <option value="true" selected>{{tr "enabled"}}</option>
         </select>
     </div>
     
     <div class="mb-2">
         <label class="form-label">{{tr "upload_quality"}}</label>
-        <input class="form-control" type="number" value="-1" id="encoding_quality"></input>
+        <div>
+            <span class="float-start text-secondary">{{tr "low_quality"}}</span>
+            <span class="float-end text-secondary">{{tr "high_quality"}}</span>
+        </div>
+        <input type="range" class="form-range" id="encoding_quality" min="0" max="100" step="10" value="80">
     </div>
     
     <div class="mb-2">
         <label class="form-label">{{tr "upload_effort"}}</label>
-        <input class="form-control" type="number" value="-1" id="encoding_effort"></input>
+        <div>
+            <span class="float-start text-secondary">{{tr "low_compression_rate"}}</span>
+            <span class="float-end text-secondary">{{tr "high_compression_rate"}}</span>
+        </div>
+        <input type="range" class="form-range" id="encoding_effort" min="0" max="100" step="10" value="80">
     </div>
 
 </div>
