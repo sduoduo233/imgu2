@@ -41,7 +41,27 @@ void libvips_shutdown() {
 	vips_shutdown();
 }
 
-int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int outType, int animated, int lossless, int Q, int effort) {
+int linear_interp(int min, int max, int n){
+	int res = (int)((n * 0.01) * (max + 1 - min)) + min;
+
+	if (res > max){
+		res = max;
+	}
+
+	return res;
+}
+
+int libvips_encode(
+	char* buf,
+	int len,
+	void** out_buf,
+	size_t* out_size,
+	int outType,
+	int animated,
+	int lossless,
+	int Q,            // [0,100]
+	int effort        // [0,100]
+){
 	VipsImage* img;
 	if (animated) {
 		img = vips_image_new_from_buffer(buf, len, "", "n", -1, "access", VIPS_ACCESS_SEQUENTIAL, NULL);
@@ -60,6 +80,8 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 		}
 		if (effort < 0) {
 			effort = 4;
+		} else {
+			effort = linear_interp(0, 6, effort);
 		}
 		if (vips_webpsave_buffer(img, out_buf, out_size, "lossless", lossless, "Q", Q, "effort", effort, NULL)) {
 			g_object_unref(img);
@@ -70,6 +92,8 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 	} else if (outType == 2) { // png
 		if (effort < 0) {
 			effort = 6;
+		} else {
+			effort = linear_interp(0, 9, effort);
 		}
 		if (vips_pngsave_buffer(img, out_buf, out_size, "compression", effort, NULL)) {
 			g_object_unref(img);
@@ -88,11 +112,15 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 			return -2;
 		}
 	} else if (outType == 4) { // gif
-		if (effort < 0) {
-			effort = 7;
-		}
 		if (Q < 0) {
 			Q = 8;
+		} else {
+			Q = linear_interp(1, 8, Q);
+		}
+		if (effort < 0) {
+			effort = 7;
+		} else {
+			effort = linear_interp(1, 10, effort);
 		}
 		if ( vips_gifsave_buffer(img, out_buf, out_size, "bitdepth", Q, "effort", effort, NULL)) {
 			g_object_unref(img);
@@ -101,11 +129,13 @@ int libvips_encode(char* buf, int len, void** out_buf, size_t* out_size, int out
 			return -2;
 		}
 	} else if (outType == 5) { // avif
-		if (effort < 0) {
-			effort = 4;
-		}
 		if (Q < 0) {
 			Q = 50;
+		}
+		if (effort < 0) {
+			effort = 4;
+		} else {
+			effort = linear_interp(0, 9, effort);
 		}
 		if (vips_heifsave_buffer(img, out_buf, out_size, "lossless", lossless, "Q", Q, "effort", effort, "compression", VIPS_FOREIGN_HEIF_COMPRESSION_AV1, "encoder", VIPS_FOREIGN_HEIF_ENCODER_AOM, NULL)) {
 			g_object_unref(img);
