@@ -160,8 +160,8 @@
   "telegraph_public_url_desc": "您可以自行設定 https://telegra.ph/file 的反向代理，或將此欄位留空以讓 imgu2 管理反向代理。",
   "allow_webp_encoding": "允許 WEBP 編碼",
   "allow_webp_encoding_desc": "某些儲存驅動程式（例如 telegra.ph）不支援 webp 影像。",
-  "high_quality": "High quality",
-  "low_quality": "Low quality",
-  "high_compression_rate": "High compression rate",
-  "low_compression_rate": "Low compression rate"
+  "high_quality": "高品質",
+  "low_quality": "低品質",
+  "high_compression_rate": "高壓縮率",
+  "low_compression_rate": "壓縮率低"
 }
