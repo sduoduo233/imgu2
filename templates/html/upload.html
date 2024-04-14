@@ -159,8 +159,28 @@
             }
         }
 
+        // click to select file
         fileArea.addEventListener("click", (e) => {
             fileInput.click();
+        });
+
+        // drop file
+        fileArea.addEventListener("drop", (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files.item(0);
+
+                const reader = new FileReader();
+                reader.addEventListener("load", (e) => {
+                    arrayBuffer = e.target.result;
+                    loadPreview(file.type);
+                });
+                reader.readAsArrayBuffer(file);
+            }
+        });
+
+        fileArea.addEventListener("dragover", (e) => {
+            e.preventDefault();
         });
 
         fileInput.addEventListener("change", (e) => {
