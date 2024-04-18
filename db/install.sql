@@ -69,13 +69,10 @@ INSERT OR IGNORE INTO settings(key, value) VALUES('GITHUB_SIGNIN', 'false');
 INSERT OR IGNORE INTO settings(key, value) VALUES('GITHUB_CLIENT_ID', '');
 INSERT OR IGNORE INTO settings(key, value) VALUES('GITHUB_SECRET', '');
 
-INSERT OR IGNORE INTO settings(key, value) VALUES('MAX_IMAGE_SIZE', '10485760'); -- 10 MiB
-
-INSERT OR IGNORE INTO settings(key, value) VALUES('GUEST_UPLOAD', 'false');
-INSERT OR IGNORE INTO settings(key, value) VALUES('GUEST_MAX_TIME', '604800'); -- guest uploads are kept for 7 days
-INSERT OR IGNORE INTO settings(key, value) VALUES('USER_MAX_TIME', '0'); -- user uploads are kept forever
-
 INSERT OR IGNORE INTO settings(key, value) VALUES('AVIF_ENCODING', 'true');
 INSERT OR IGNORE INTO settings(key, value) VALUES('WEBP_ENCODING', 'true');
 
 INSERT OR IGNORE INTO settings(key, value) VALUES('LANGUAGE', 'en_us');
+
+INSERT OR IGNORE INTO settings(key, value) VALUES('DEFAULT_GROUP_REGISTERED', '0');
+INSERT OR IGNORE INTO settings(key, value) VALUES('DEFAULT_GROUP_GUEST', '0');

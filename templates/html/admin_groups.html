@@ -1,0 +1,73 @@
+{{template "header" .}}
+
+<h1>{{tr "groups"}}</h1>
+
+{{ $csrf_token := .csrf_token}}
+
+<div class="overflow-x-scroll text-nowrap">
+    <table class="table" id="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">{{tr "group_name"}}</th>
+                <th scope="col">{{tr "allow_upload"}}</th>
+                <th scope="col">{{tr "max_file_size"}}</th>
+                <!-- Hide these settings as they are not implemented
+                <th scope="col">{{tr "upload_per_minute"}}</th>
+                <th scope="col">{{tr "upload_per_hour"}}</th>
+                <th scope="col">{{tr "upload_per_day"}}</th>
+                <th scope="col">{{tr "upload_per_month"}}</th>
+                <th scope="col">{{tr "total_uploads"}}</th>-->
+                <th scope="col">{{tr "max_retention_seconds"}}</th>
+                <th scope="col">{{tr "actions"}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .groups}}
+            <tr>
+                <th scope="row">{{ .Id }}</th>
+                <td><span>{{ .Name }}</span></td>
+
+                {{ if .AllowUpload }}
+                <td><span class="badge text-bg-success">TRUE</span></td>
+                {{ else }}
+                <td><span class="badge text-bg-danger">FALSE</span></td>
+                {{ end }}
+
+                <td><span>{{ formatFileSize .MaxFileSize }}</span></td>
+                <!-- Hide these settings as they are not implemented
+                <td><span>{{ .UploadPerMinute }}</span></td>
+                <td><span>{{ .UploadPerHour }}</span></td>
+                <td><span>{{ .UploadPerDay }}</span></td>
+                <td><span>{{ .UploadPerMonth }}</span></td>
+                <td><span>{{ .TotalUpload }}</span></td>-->
+                <td><span>{{ .MaxRetentionSeconds }}</span></td>
+
+                <td>
+                    <a href="/admin/groups/{{.Id}}" class="btn btn-outline-primary btn-sm">
+                        {{tr "edit"}}
+                    </a>
+                    <form action="/admin/groups/delete/{{.Id}}" method="post">
+                        {{template "csrf" $csrf_token}}
+                        <button type="submit" class="btn btn-outline-danger btn-sm">{{tr "delete"}}</button>
+                    </form>
+                </td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+
+
+<div class="mt-3">
+    <form action="/admin/groups" method="post">
+
+        {{template "csrf" .csrf_token}}
+
+        <button class="btn btn-primary">{{tr "add_user_group"}}</button>
+
+    </form>
+</div>
+
+
+{{template "footer" .}}

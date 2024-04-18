@@ -291,7 +291,12 @@ func (*user) Register(username, email, password string) (string, error) {
 		return "", fmt.Errorf("bcrypt: %w", err)
 	}
 
-	id, err := db.UserCreate(username, email, string(hashed), false, RoleUser)
+	groupId, err := Setting.DefaultGroupRegistered()
+	if err != nil {
+		return "", err
+	}
+
+	id, err := db.UserCreate(username, email, string(hashed), false, RoleUser, groupId)
 	if err != nil {
 		return "", fmt.Errorf("create user: %w", err)
 	}
@@ -426,4 +431,13 @@ func (*user) ChangeRole(id int, role int) error {
 		return fmt.Errorf("unknown role: %d", role)
 	}
 	return db.UserChangeRole(id, role)
+}
+
+func (*user) ChangeGroup(id int, group int) error {
+	return db.UserChangeGroup(id, group)
+}
+
+// Set the time when the user group expires.
+func (*user) ChangeGroupExpire(id int, expire int) error {
+	return db.UserChangeGroupExpire(id, expire)
 }

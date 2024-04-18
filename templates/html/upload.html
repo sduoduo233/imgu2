@@ -1,9 +1,13 @@
 {{template "header" .}}
 
-{{if and (not .user) (not .guest_upload)}}
+{{if (not .group.AllowUpload)}}
 <div class="alert alert-warning my-3" role="alert">
-    {{tr "login_requried_before_uploading"}}
+    {{tr "group_upload_not_allowed"}}
+    {{tr "currnet_group"}} "{{.group.Name}}"
+
+    {{if not .user}}
     <a href="/login">{{tr "login"}}</a>
+    {{end}}
 </div>
 {{end}}
 
@@ -261,7 +265,8 @@
                             "FILE_TOO_LARGE": '{{tr "error_file_too_large"}}',
                             "IMAGE_PROCESSING_ERROR": '{{tr "error_image_processing"}}',
                             "INTERNAL_STORAGE_ERROR": '{{tr "error_storage"}}',
-                            "UNSUPPORTED_ENCODING": '{{tr "error_unsupported_format"}}'
+                            "UNSUPPORTED_ENCODING": '{{tr "error_unsupported_format"}}',
+                            "PERMISSION_DENIED": '{{tr "permission_denied"}}'
                         }
                         alert("ERROR: " + errorText[resp.error] || resp.error);
                     }

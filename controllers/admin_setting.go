@@ -17,10 +17,18 @@ func adminSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	groups, err := services.Group.FindAll()
+	if err != nil {
+		slog.Error("admin settings", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	render(w, "admin_settings", H{
-		"user":       user,
-		"setting":    m,
-		"csrf_token": csrfToken(w),
+		"user":        user,
+		"setting":     m,
+		"csrf_token":  csrfToken(w),
+		"user_groups": groups,
 	})
 }
 

@@ -3,6 +3,7 @@
 <h1>{{tr "users"}}</h1>
 
 {{ $csrf_token := .csrf_token }}
+{{ $groups := .groups }}
 
 <div class="overflow-x-scroll text-nowrap">
     <table class="table" id="table">
@@ -12,34 +13,123 @@
                 <th scope="col">{{tr "username"}}</th>
                 <th scope="col">{{tr "email"}}</th>
                 <th scope="col">{{tr "role"}}</th>
+                <th scope="col">{{tr "group"}}</th>
                 <th scope="col">{{tr "images"}}</th>
+                <th scope="col">{{tr "actions"}}</th>
             </tr>
         </thead>
         <tbody>
             {{range .users}}
+
             <tr>
                 <th scope="row">{{ .Id }}</th>
                 <td><span>{{ .Username }}</span></td>
                 <td><span>{{ .Email }}</span></td>
                 <td>
-                    <form method="post" action="/admin/users/change-role">
-                        {{template "csrf" $csrf_token}}
-                        <input type="hidden" name="id" value="{{.Id}}">
-                        <select class="form-select form-select-sm" name="role" autocomplete="off" onchange="this.parentElement.submit()" style="min-width: 150px;">
-                            <option {{if eq .Role 0}}selected{{end}} value="0">Admin</option>
-                            <option {{if eq .Role 1}}selected{{end}} value="1">User</option>
-                            <option {{if eq .Role 2}}selected{{end}} value="2">Banned</option>
-                        </select>
-                    </form>
+                    <span>
+                        {{ if eq .Role 0 }}Admin{{end}}
+                        {{ if eq .Role 1 }}User{{end}}
+                        {{ if eq .Role 2 }}Banned{{end}}
+                    </span>
                 </td>
                 <td>
-                    <a href="/admin/images?uploader={{.Id}}">{{tr "images"}}</a>
+                    <span>
+                        {{$current_group := .GroupId}}
+                        {{range $groups}}
+                        {{if eq $current_group .Id}}#{{.Id}} {{.Name}}{{end}}
+                        {{end}}
+                    </span>
+                </td>
+                <td><a href="/admin/images?uploader={{.Id}}">{{tr "images"}}</a></td>
+                <td>
+                    <a data-bs-toggle="modal" data-bs-target="#edit-user-{{.Id}}" href="">Edit</a>
+                    <!-- popup form for editing user details -->
+                    <div class="modal fade" id="edit-user-{{.Id}}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5">{{.Username }}</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <span>{{tr "role"}}</span>
+                                    <form method="post" action="/admin/users/change-role" class="form-change-role">
+                                        {{template "csrf" $csrf_token}}
+                                        <input type="hidden" name="id" value="{{.Id}}">
+                                        <select class="form-select" name="role" autocomplete="off" style="min-width: 150px;">
+                                            <option {{if eq .Role 0}}selected{{end}} value="0">Admin</option>
+                                            <option {{if eq .Role 1}}selected{{end}} value="1">User</option>
+                                            <option {{if eq .Role 2}}selected{{end}} value="2">Banned</option>
+                                        </select>
+                                    </form>
+                                    <br>
+
+                                    <span>{{tr "group"}}</span>
+                                    <form method="post" action="/admin/users/change-group" class="form-change-group">
+                                        {{template "csrf" $csrf_token}}
+                                        <input type="hidden" name="id" value="{{.Id}}">
+                                        <select class="form-select" name="group" autocomplete="off" style="min-width: 150px;">
+                                            {{$current_group := .GroupId}}
+                                            {{range $groups}}
+                                            <option {{if eq $current_group .Id}}selected{{end}} value="{{.Id}}">{{.Name}}</option>
+                                            {{end}}
+                                        </select>
+                                    </form>
+                                    <br>
+
+                                    <span>{{tr "group_expire"}}</span>
+                                    <div>
+                                        <form method="post" action="/admin/users/change-group-expire" class="form-group-expire">
+                                            {{template "csrf" $csrf_token}}
+                                            <input type="hidden" name="id" value="{{.Id}}">
+                                            <div class="input-group">
+                                                <div class="input-group-text">
+                                                    <input class="form-check-input mt-0" type="checkbox" autocomplete="off" name="never_expire" {{if not .GroupExpireTime.Valid}}checked{{end}}>
+                                                    <label class="form-check-label">{{tr "never_expire"}}</label>
+                                                </div>
+                                                <input class="form-control" type="date" autocomplete="off" value="{{formatDate .GroupExpireTime.Time}}" name="date">
+                                                <input class="form-control" type="time" autocomplete="off" value="{{formatTime .GroupExpireTime.Time}}" name="time">
+                                                <button class="btn btn-secondary" type="submit">Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{tr "close"}}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
             {{end}}
         </tbody>
     </table>
 </div>
+
+<script>
+    // submit the form when the select element changes
+    $(".form-change-role").add(".form-change-group").find("select").on("change", function() {
+        $(this).parents("form").submit();
+    })
+
+    // hide datetime selector if "never expire" is checked
+    $(".form-group-expire").find("input:checkbox").on("change", function() {
+        if ($(this).is(":checked")) {
+            $(this).parents("form").find("input[type!=\"checkbox\"]").hide();
+        } else {
+            $(this).parents("form").find("input[type!=\"checkbox\"]").show();
+        }
+    })
+    $(".form-group-expire").find("input:checkbox").each(function() {
+        if ($(this).is(":checked")) {
+            $(this).parents("form").find("input[type!=\"checkbox\"]").hide();
+        } else {
+            $(this).parents("form").find("input[type!=\"checkbox\"]").show();
+        }
+    })
+</script>
 
 {{template "pagination" dict "page" .page "total_page" .total_page "prefix" "/admin/users"}}
 

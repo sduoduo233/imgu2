@@ -127,9 +127,37 @@ func migrate() {
 		}
 	}
 
+	// add internal file name
 	doMigration(1, 2, `
 		ALTER TABLE images ADD internal_name TEXT NOT NULL DEFAULT '';
 		UPDATE images SET internal_name = file_name WHERE internal_name = '';
+	`)
+
+	// add user groups
+	doMigration(2, 3, `
+		CREATE TABLE IF NOT EXISTS groups (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			name TEXT NOT NULL UNIQUE,
+			allow_upload BOOLEAN NOT NULL,
+			max_file_size INTEGER NOT NULL,
+			upload_per_minute INTEGER NOT NULL,
+			upload_per_hour INTEGER NOT NULL,
+			upload_per_day INTEGER NOT NULL,
+			upload_per_month INTEGER NOT NULL,
+			total_uploads INTEGER NOT NULL,
+			max_retention_seconds INTEGER NOT NULL
+		);
+
+		INSERT OR IGNORE INTO groups(id, name, max_file_size, upload_per_minute, upload_per_hour, upload_per_day, upload_per_month, total_uploads, allow_upload, max_retention_seconds) VALUES(0, 'Default user group', 16000000, 30, 100, 1000, 1000, 10000, TRUE, 0);
+
+		ALTER TABLE users DROP space;
+		ALTER TABLE users ADD user_group INTEGER NOT NULL DEFAULT 0 REFERENCES groups(id);
+		ALTER TABLE users ADD user_group_expire INTEGER NOT NULL DEFAULT 0;
+
+		DELETE FROM settings WHERE key = 'MAX_IMAGE_SIZE';
+		DELETE FROM settings WHERE key = 'GUEST_UPLOAD';
+		DELETE FROM settings WHERE key = 'GUEST_MAX_TIME';
+		DELETE FROM settings WHERE key = 'USER_MAX_TIME';
 	`)
 
 	slog.Debug("database migration done")

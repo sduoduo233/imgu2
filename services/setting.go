@@ -82,36 +82,8 @@ func (s *setting) GetLanguage() (string, error) {
 	return db.SettingFind("LANGUAGE")
 }
 
-func (*setting) GetMaxImageSize() (uint, error) {
-	s, err := db.SettingFind("MAX_IMAGE_SIZE")
-	if err != nil {
-		return 0, err
-	}
-
-	n, err := strconv.Atoi(s)
-	if err != nil {
-		return 0, fmt.Errorf("strconv: %w", err)
-	}
-
-	if n < 0 {
-		return 0, fmt.Errorf("negative MAX_IMAGE_SIZE")
-	}
-
-	return uint(n), nil
-}
-
 func (*setting) GetAllowRegister() (bool, error) {
-	// TODO: implement this
 	s, err := db.SettingFind("ALLOW_REGISTER")
-	if err != nil {
-		return false, err
-	}
-
-	return s == "true", nil
-}
-
-func (*setting) GetGuestUpload() (bool, error) {
-	s, err := db.SettingFind("GUEST_UPLOAD")
 	if err != nil {
 		return false, err
 	}
@@ -137,40 +109,30 @@ func (*setting) IsWEBPEncodingEnabled() (bool, error) {
 	return s == "true", nil
 }
 
-// maximum time a guest upload is kept for (in seconds)
-func (*setting) GetGuestUploadTime() (uint, error) {
-	s, err := db.SettingFind("GUEST_MAX_TIME")
+func (*setting) DefaultGroupGuest() (int, error) {
+	s, err := db.SettingFind("DEFAULT_GROUP_GUEST")
 	if err != nil {
 		return 0, err
 	}
 
-	n, err := strconv.Atoi(s)
+	i, err := strconv.Atoi(s)
 	if err != nil {
-		return 0, fmt.Errorf("strconv: %w", err)
+		return 0, fmt.Errorf("settings: group id is not an integer: %s", s)
 	}
 
-	if n < 0 {
-		return 0, fmt.Errorf("negative MAX_IMAGE_SIZE")
-	}
-
-	return uint(n), nil
+	return i, nil
 }
 
-// maximum time an user upload is kept for (in seconds)
-func (*setting) GetUserUploadTime() (uint, error) {
-	s, err := db.SettingFind("USER_MAX_TIME")
+func (*setting) DefaultGroupRegistered() (int, error) {
+	s, err := db.SettingFind("DEFAULT_GROUP_REGISTERED")
 	if err != nil {
 		return 0, err
 	}
 
-	n, err := strconv.Atoi(s)
+	i, err := strconv.Atoi(s)
 	if err != nil {
-		return 0, fmt.Errorf("strconv: %w", err)
+		return 0, fmt.Errorf("settings: group id is not an integer: %s", s)
 	}
 
-	if n < 0 {
-		return 0, fmt.Errorf("negative MAX_IMAGE_SIZE")
-	}
-
-	return uint(n), nil
+	return i, nil
 }

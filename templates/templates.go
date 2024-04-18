@@ -7,6 +7,7 @@ import (
 	"imgu2/i18n"
 	"io"
 	"log/slog"
+	"math"
 	"net/url"
 	"time"
 )
@@ -64,6 +65,36 @@ func init() {
 		},
 		"tr": func(key string) string {
 			return i18n.T(key)
+		},
+		"formatFileSize": func(n int) string {
+			// add human readable units to number of bytes
+
+			symbols := []string{"kB", "MB", "GB"}
+
+			if n < 1000 {
+				return fmt.Sprintf("%d B", n)
+			}
+
+			for i, symbol := range symbols {
+				if n >= int(math.Pow10((i+1)*3)) && n < int(math.Pow10((i+2)*3)) {
+
+					return fmt.Sprintf("%.1f %s", float64(n)/math.Pow10((i+1)*3), symbol)
+				}
+			}
+
+			return fmt.Sprintf("%.1f %s", float64(n)/math.Pow10(6), symbols[2])
+		},
+		"formatDate": func(t time.Time) string {
+			// return a date string accepted by HTML input tag
+			// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date
+
+			return t.UTC().Format("2006-01-02")
+		},
+		"formatTime": func(t time.Time) string {
+			// return a time string accepted by HTML input tag
+			// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/time
+
+			return t.UTC().Format("15:04")
 		},
 	}
 

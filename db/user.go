@@ -1,6 +1,10 @@
 package db
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+	"time"
+)
 
 type User struct {
 	Id            int
@@ -9,12 +13,18 @@ type User struct {
 	Password      string
 	EmailVerified bool
 	Role          int
-	Space         int
+	GroupId       int
+
+	// GroupExpireTime represents the time when the user
+	// will no longer be in the user group. Users are
+	// automatically changed to the default group
+	// by a cron task.
+	GroupExpireTime sql.NullTime
 }
 
 func UserFindByEmail(email string) (*User, error) {
 	var u User
-	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, space FROM users WHERE email = ? LIMIT 1", email)
+	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, user_group, user_group_expire FROM users WHERE email = ? LIMIT 1", email)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
@@ -24,9 +34,16 @@ func UserFindByEmail(email string) (*User, error) {
 		return nil, nil
 	}
 
-	err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role, &u.Space)
+	var groupExpire int
+
+	err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role, &u.GroupId, &groupExpire)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
+	}
+
+	if groupExpire > 0 {
+		u.GroupExpireTime.Valid = true
+		u.GroupExpireTime.Time = time.Unix(int64(groupExpire), 0)
 	}
 
 	return &u, nil
@@ -34,7 +51,7 @@ func UserFindByEmail(email string) (*User, error) {
 
 func UserFindById(id int) (*User, error) {
 	var u User
-	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, space FROM users WHERE id = ? LIMIT 1", id)
+	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, user_group, user_group_expire FROM users WHERE id = ? LIMIT 1", id)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
@@ -44,9 +61,16 @@ func UserFindById(id int) (*User, error) {
 		return nil, nil
 	}
 
-	err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role, &u.Space)
+	var groupExpire int
+
+	err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role, &u.GroupId, &groupExpire)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
+	}
+
+	if groupExpire > 0 {
+		u.GroupExpireTime.Valid = true
+		u.GroupExpireTime.Time = time.Unix(int64(groupExpire), 0)
 	}
 
 	return &u, nil
@@ -61,8 +85,8 @@ func UserChangePassword(id int, password string) error {
 }
 
 // create a new user and return user id
-func UserCreate(username, email, password string, email_verified bool, role int) (int, error) {
-	r, err := DB.Exec("INSERT INTO users(username, email, password, email_verified, role) VALUES (?, ?, ?, ?, ?)", username, email, password, email_verified, role)
+func UserCreate(username, email, password string, email_verified bool, role int, group int) (int, error) {
+	r, err := DB.Exec("INSERT INTO users(username, email, password, email_verified, role, user_group) VALUES (?, ?, ?, ?, ?, ?)", username, email, password, email_verified, role, group)
 	if err != nil {
 		return 0, fmt.Errorf("db: %w", err)
 	}
@@ -100,7 +124,7 @@ func UserVerifyEmail(email string) error {
 }
 
 func UserFindAll(skip int, limit int) ([]User, error) {
-	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, space FROM users LIMIT ? OFFSET ?", limit, skip)
+	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, user_group, user_group_expire FROM users LIMIT ? OFFSET ?", limit, skip)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
@@ -110,9 +134,16 @@ func UserFindAll(skip int, limit int) ([]User, error) {
 
 	for rows.Next() {
 		var u User
-		err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role, &u.Space)
+		var groupExpire int
+
+		err = rows.Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.EmailVerified, &u.Role, &u.GroupId, &groupExpire)
 		if err != nil {
 			return nil, fmt.Errorf("db: %w", err)
+		}
+
+		if groupExpire > 0 {
+			u.GroupExpireTime.Valid = true
+			u.GroupExpireTime.Time = time.Unix(int64(groupExpire), 0)
 		}
 
 		users = append(users, u)
@@ -133,6 +164,31 @@ func UserCount() (int, error) {
 
 func UserChangeRole(id int, role int) error {
 	_, err := DB.Exec("UPDATE users SET role = ? WHERE id = ?", role, id)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+	return nil
+}
+
+func UserChangeGroup(id int, g int) error {
+	_, err := DB.Exec("UPDATE users SET user_group = ? WHERE id = ?", g, id)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+	return nil
+}
+
+func UserChangeGroupExpire(id int, t int) error {
+	_, err := DB.Exec("UPDATE users SET user_group_expire = ? WHERE id = ?", t, id)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+	return nil
+}
+
+// reset to default group for users with expired group membership
+func UserResetExpiredGroup(id int) error {
+	_, err := DB.Exec("UPDATE users SET user_group = ?, user_group_expire = 0 WHERE user_group_expire > 0 AND user_group_expire < unixepoch()", id)
 	if err != nil {
 		return fmt.Errorf("db: %w", err)
 	}

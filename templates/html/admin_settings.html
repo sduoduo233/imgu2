@@ -116,32 +116,7 @@
         <div class="form-text">{{tr "restart_take_effect"}}</div>
     </div>
 
-    <!-- upload settings -->
-    <div class="mb-3">
-        <label class="form-label">{{tr "max_image_size"}}</label>
-        <input type="text" class="form-control" name="MAX_IMAGE_SIZE" value="{{.setting.MAX_IMAGE_SIZE}}">
-        <div class="form-text">{{tr "max_image_size_desc"}}</div>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">{{tr "max_guest_duration"}}</label>
-        <input type="text" class="form-control" name="GUEST_MAX_TIME" value="{{.setting.GUEST_MAX_TIME}}">
-        <div class="form-text">{{tr "max_guest_duration_desc"}}</div>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">{{tr "max_user_duration"}}</label>
-        <input type="text" class="form-control" name="USER_MAX_TIME" value="{{.setting.USER_MAX_TIME}}">
-        <div class="form-text">{{tr "max_user_duration_desc"}}</div>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">{{tr "guest_upload"}}</label>
-        <select id="select-guest-upload" class="form-select" name="GUEST_UPLOAD">
-            <option value="true">{{tr "enabled"}}</option>
-            <option value="false">{{tr "disabled"}}</option>
-        </select>
-    </div>
+    <!-- encoding settings -->
 
     <div class="mb-3">
         <label class="form-label">{{tr "allow_avif_encoding"}}</label>
@@ -161,15 +136,37 @@
         <div class="form-text">{{tr "allow_webp_encoding_desc"}}</div>
     </div>
 
+    <!-- user groups -->
+    <div class="mb-3">
+        <label class="form-label">{{tr "default_group_guest"}}</label>
+        <select id="select-group-guest" class="form-select" name="DEFAULT_GROUP_GUEST">
+            {{range .user_groups}}
+            <option value="{{.Id}}">{{.Name}}</option>
+            {{end}}
+        </select>
+        <div class="form-text">{{tr "default_group_guest_desc"}}</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">{{tr "default_group_registered"}}</label>
+        <select id="select-group-registered" class="form-select" name="DEFAULT_GROUP_REGISTERED">
+            {{range .user_groups}}
+            <option value="{{.Id}}">{{.Name}}</option>
+            {{end}}
+        </select>
+        <div class="form-text">{{tr "default_group_registered_desc"}}</div>
+    </div>
+
     <script>
         document.getElementById("select-register").value = "{{.setting.ALLOW_REGISTER}}";
-        document.getElementById("select-guest-upload").value = "{{.setting.GUEST_UPLOAD}}";
         document.getElementById("select-captcha").value = "{{.setting.CAPTCHA}}";
         document.getElementById("select-google-signin").value = "{{.setting.GOOGLE_SIGNIN}}";
         document.getElementById("select-github-signin").value = "{{.setting.GITHUB_SIGNIN}}";
         document.getElementById("select-avif-encoding").value = "{{.setting.AVIF_ENCODING}}";
         document.getElementById("select-language").value = "{{.setting.LANGUAGE}}";
         document.getElementById("select-webp-encoding").value = "{{.setting.WEBP_ENCODING}}";
+        document.getElementById("select-group-registered").value = "{{.setting.DEFAULT_GROUP_REGISTERED}}";
+        document.getElementById("select-group-guest").value = "{{.setting.DEFAULT_GROUP_GUEST}}";
     </script>
 
     <div class="mb-3">

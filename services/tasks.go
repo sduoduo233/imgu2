@@ -36,6 +36,23 @@ func TaskStart() {
 		return db.SessionCleanExpired()
 	})
 
+	// set expired user group to default
+	taskRegister("reset user group", time.Hour*6, func() error {
+		id, err := Setting.DefaultGroupRegistered()
+		if err != nil {
+			return err
+		}
+
+		slog.Info("reset user group", "id", id)
+
+		err = db.UserResetExpiredGroup(id)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
 }
 
 func taskRegister(name string, d time.Duration, f func() error) {
