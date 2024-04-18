@@ -17,8 +17,6 @@ var DB *wrapped
 //go:embed install.sql
 var installSql string
 
-var currentVersion = 2
-
 func Init(path string) {
 	db, err := sql.Open("sqlite3", path)
 	if err != nil {
