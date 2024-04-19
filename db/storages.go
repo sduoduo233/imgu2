@@ -71,9 +71,37 @@ func StorageUpdate(id int, enabled bool, allowUpload bool, config string) error 
 }
 
 func StorageDelete(id int) error {
-	_, err := DB.Exec("DELETE FROM storages WHERE id = ?", id, false)
+	tx, err := DB.Begin()
 	if err != nil {
 		return fmt.Errorf("db: %w", err)
 	}
+
+	defer tx.Rollback()
+
+	// check whether the storage driver is empty
+	r := tx.QueryRow("SELECT COUNT(*) FROM images WHERE storage = ?", id)
+
+	var cnt int
+	err = r.Scan(&cnt)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+
+	if cnt > 0 {
+		return fmt.Errorf("db: storage delete: driver %d is not empty", id)
+	}
+
+	// delete the storage driver
+	_, err = tx.Exec("DELETE FROM storages WHERE id = ?", id, false)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+
+	// commit
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+
 	return nil
 }

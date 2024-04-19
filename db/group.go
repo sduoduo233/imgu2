@@ -119,8 +119,34 @@ func GroupCountUsers(id int) (int, error) {
 }
 
 func GroupDelete(id int) error {
-	_, err := DB.Exec("DELETE FROM groups WHERE id = ?", id)
+	tx, err := DB.Begin()
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
 
+	defer tx.Rollback()
+
+	// check whether the group is empty
+	var n int
+
+	row := tx.QueryRow("SELECT count(*) FROM users WHERE user_group = ?", id)
+	err = row.Scan(&n)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+
+	if n > 0 {
+		return fmt.Errorf("db: group delete: group %d is not empty", id)
+	}
+
+	// delete the group
+	_, err = tx.Exec("DELETE FROM groups WHERE id = ?", id)
+	if err != nil {
+		return fmt.Errorf("db: %w", err)
+	}
+
+	// commit the transaction
+	err = tx.Commit()
 	if err != nil {
 		return fmt.Errorf("db: %w", err)
 	}
