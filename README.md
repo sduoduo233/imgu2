@@ -7,6 +7,9 @@
 
 [![Crowdin](https://badges.crowdin.net/imgu2/localized.svg)](https://crowdin.com/project/imgu2)
 
+# 文档
+
+[Wiki](https://github.com/sduoduo233/imgu2/wiki)
 
 # 截图
 
