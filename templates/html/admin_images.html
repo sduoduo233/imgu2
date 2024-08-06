@@ -75,7 +75,8 @@
                     <form method="post" action="/admin/images/delete">
                         {{template "csrf" $csrf_token}}
                         <input type="hidden" name="file_name" value="{{.FileName}}">
-                        <button class="btn btn-outline-danger">{{tr "delete"}}</button>
+                        <button class="btn btn-outline-danger" name="force" value="false">{{tr "delete"}}</button>
+                        <button class="btn btn-outline-danger" name="force" value="true">{{tr "force_delete"}}</button>
                     </form>
                 </td>
             </tr>

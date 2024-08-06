@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"imgu2/db"
+	"log/slog"
 )
 
 type image struct{}
@@ -62,10 +63,16 @@ func (*image) CountByUser(userId int) (int, error) {
 }
 
 // permanently delete an image (delete from database and storage driver)
-func (*image) Delete(i *db.Image) error {
+//
+// error occurred when delete the file from storage is ignored if force == true
+func (*image) Delete(i *db.Image, force bool) error {
 	err := Storage.DeleteFileFromDriver(i.StorageId, i.InternalName)
 	if err != nil {
-		return fmt.Errorf("delete image: %w", err)
+		if force {
+			slog.Error("delete image from storage", "file name", i.FileName, "internal name", i.InternalName, "storage", i.StorageId, "err", err)
+		} else {
+			return fmt.Errorf("delete image: %w", err)
+		}
 	}
 
 	err = db.ImageDelete(i.Id)

@@ -192,5 +192,6 @@
   "user_group_changed": "User group is updated.",
   "never_expire": "Never expire",
   "group_expire": "Membership expire",
-  "max_retention_seconds_desc": "The duration in seconds that images uploaded will be retained before automatic deletion. Enter '0' to disable this limit."
+  "max_retention_seconds_desc": "The duration in seconds that images uploaded will be retained before automatic deletion. Enter '0' to disable this limit.",
+  "force_delete": "Force Delete"
 }

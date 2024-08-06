@@ -160,7 +160,7 @@ func deleteImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = services.Image.Delete(img)
+	err = services.Image.Delete(img, false)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		renderDialog(w, tr("error"), tr("unknown_error"), "/dashboard/images", tr("go_back"))

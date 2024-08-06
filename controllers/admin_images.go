@@ -87,10 +87,11 @@ func adminImageDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = services.Image.Delete(img)
+	err = services.Image.Delete(img, r.FormValue("force") == "true")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error("admin image delete", "err", err)
+		renderDialog(w, tr("error"), "Image could not be deleted", "/admin/images", tr("go_back"))
 		return
 	}
 
