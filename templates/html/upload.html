@@ -9,7 +9,7 @@
     <a href="/login">{{tr "login"}}</a>
     {{end}}
 </div>
-{{end}}
+{{else}}
 
 {{template "unverified_email" .}}
 
@@ -303,5 +303,7 @@
     })();
     
 </script>
+
+{{end}}
 
 {{template "footer" .}}

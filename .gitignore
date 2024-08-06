@@ -6,3 +6,4 @@ imgu2
 uploads
 build
 .DS_Store
+__debug_bin*
