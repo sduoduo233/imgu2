@@ -1,14 +1,11 @@
 package storages
 
 import (
-	"bytes"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"net/http"
-	"path/filepath"
 )
 
 type telegraphStorage struct {
@@ -22,63 +19,7 @@ type telegraphStorageConfig struct {
 }
 
 func (s *telegraphStorage) Put(key string, content []byte, expire sql.NullTime) (string, error) {
-
-	// create form data
-	buf := new(bytes.Buffer)
-	writer := multipart.NewWriter(buf)
-
-	part, err := writer.CreateFormFile("file", "blob")
-	if err != nil {
-		return "", fmt.Errorf("telegraph storage: put: %w", err)
-	}
-
-	_, err = part.Write(content)
-	if err != nil {
-		return "", fmt.Errorf("telegraph storage: put: %w", err)
-	}
-
-	writer.Close()
-
-	// create request
-	req, err := http.NewRequest(http.MethodPost, "https://telegra.ph/upload", buf)
-	if err != nil {
-		return "", fmt.Errorf("telegraph storage: put: %w", err)
-	}
-
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-
-	// send request
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("telegraph storage: put: %w", err)
-	}
-
-	defer resp.Body.Close()
-
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", fmt.Errorf("telegraph storage: read body: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("telegraph storage: bad status code: %d %s", resp.StatusCode, respBody)
-	}
-
-	// parse request
-	type respStruct struct {
-		Src string `json:"src"`
-	}
-	var respJson []respStruct
-	err = json.Unmarshal(respBody, &respJson)
-	if err != nil {
-		return "", fmt.Errorf("telegraph storage: malformatted json: %w, %s", err, respBody)
-	}
-
-	if len(respJson) == 0 {
-		return "", fmt.Errorf("telegraph storage: empty list")
-	}
-
-	return filepath.Base(respJson[0].Src), nil
+	return "", fmt.Errorf("telegraph upload is not available")
 }
 
 func (s *telegraphStorage) Delete(key string) error {
