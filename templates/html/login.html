@@ -1,50 +1,59 @@
 {{template "header" .}}
 
-<h1>{{tr "login"}}</h1>
+<div class="d-flex justify-content-center">
 
-{{ if .error }}
-<div class="alert alert-danger" role="alert">
-    {{ .error }}
+    <div class="card mt-5">
+        <div class="card-body">
+            <h5 class="card-title">Login</h5>
+
+
+            {{ if .error }}
+            <div class="alert alert-danger" role="alert">
+                {{ .error }}
+            </div>
+            {{ end }}
+
+            {{if or .google_login .github_login}}
+            <div class="d-grid gap-3">
+                {{if .google_login}}
+                <a href="/login/google" class="btn btn-outline-primary">{{tr "continue_with_google"}}</a>
+                {{end}}
+                {{if .github_login}}
+                <a href="/login/github" class="btn btn-outline-primary">{{tr "continue_with_github"}}</a>
+                {{end}}
+            </div>
+
+            <hr>
+            {{end}}
+
+
+            <form method="post" action="/login">
+
+                {{template "csrf" .csrf_token}}
+
+                <div class="mb-3">
+                    <label class="form-label">{{tr "email"}}</label>
+                    <input type="text" class="form-control" name="email">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">{{tr "password"}}</label>
+                    <input type="password" class="form-control" name="password">
+                </div>
+
+                {{template "captcha" .}}
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">{{tr "login"}}</button>
+                </div>
+
+            </form>
+
+            <p><a href="/register">{{tr "register_new_account"}}</a></p>
+            <p><a href="/reset-password">{{tr "reset_password"}}</a></p>
+
+        </div>
+    </div>
 </div>
-{{ end }}
-
-{{if or .google_login .github_login}}
-<div class="d-grid gap-3">
-    {{if .google_login}}
-        <a href="/login/google" class="btn btn-outline-primary">{{tr "continue_with_google"}}</a>
-    {{end}}
-    {{if .github_login}}
-        <a href="/login/github" class="btn btn-outline-primary">{{tr "continue_with_github"}}</a>
-    {{end}}
-</div>
-
-<hr>
-{{end}}
-
-
-<form method="post" action="/login">
-
-    {{template "csrf" .csrf_token}}
-
-    <div class="mb-3">
-        <label class="form-label">{{tr "email"}}</label>
-        <input type="text" class="form-control" name="email">
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">{{tr "password"}}</label>
-        <input type="password" class="form-control" name="password">
-    </div>
-
-    {{template "captcha" .}}
-
-    <div class="mb-3">
-        <button type="submit" class="btn btn-primary">{{tr "login"}}</button>
-    </div>
-
-</form>
-
-<p><a href="/register">{{tr "register_new_account"}}</a></p>
-<p><a href="/reset-password">{{tr "reset_password"}}</a></p>
 
 {{template "footer" .}}
