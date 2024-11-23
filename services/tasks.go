@@ -6,6 +6,12 @@ import (
 	"time"
 )
 
+var taskStopChan = make(chan int)
+
+func TaskStop() {
+	close(taskStopChan)
+}
+
 func TaskStart() {
 	// clean expired images
 	taskRegister("clean images", time.Hour, func() error {
@@ -58,14 +64,23 @@ func TaskStart() {
 func taskRegister(name string, d time.Duration, f func() error) {
 	go func() {
 		timer := time.NewTicker(d)
+
+	Exit:
 		for {
-			slog.Info("executing task", "name", name)
-			err := f()
-			if err != nil {
-				slog.Error("scheduled task", "name", name, "err", err)
+			select {
+			case <-timer.C:
+				slog.Info("executing task", "name", name)
+				err := f()
+				if err != nil {
+					slog.Error("scheduled task", "name", name, "err", err)
+				}
+			case <-taskStopChan:
+				slog.Debug("task stop", "name", name)
+				timer.Stop()
+				break Exit
 			}
 
-			<-timer.C
 		}
+
 	}()
 }

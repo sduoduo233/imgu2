@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"flag"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
@@ -64,8 +68,30 @@ func main() {
 	controllers.Route(r)
 
 	slog.Info("server started", "listening", *listen)
-	err = http.ListenAndServe(*listen, r)
+
+	// http server
+	server := &http.Server{Addr: *listen, Handler: r}
+	go func() {
+		err := server.ListenAndServe()
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			slog.Error("listen and serve", "err", err, "listen", *listen)
+		}
+	}()
+
+	// graceful shutdown
+
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
+
+	sig := <-signalChan
+
+	slog.Warn("shutdown", "sig", sig)
+
+	services.TaskStop()
+
+	err = server.Shutdown(context.Background())
 	if err != nil {
-		slog.Error("failed to listen and server", "err", err)
+		slog.Error("shutdown server", "err", err)
 	}
+
 }
