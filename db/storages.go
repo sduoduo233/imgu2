@@ -26,7 +26,7 @@ func StorageCreate(name string, storageType string, config string, enabled bool,
 func StorageFindAll() ([]Storage, error) {
 	result := make([]Storage, 0)
 
-	rows, err := DB.Query("SELECT id, name, type, config, enabled, allow_upload FROM storages")
+	rows, err := DB.Query("SELECT id, name, type, config, enabled, allow_upload FROM storages ORDER BY id ASC")
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}

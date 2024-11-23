@@ -124,7 +124,7 @@ func UserVerifyEmail(email string) error {
 }
 
 func UserFindAll(skip int, limit int) ([]User, error) {
-	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, user_group, user_group_expire FROM users LIMIT ? OFFSET ?", limit, skip)
+	rows, err := DB.Query("SELECT id, username, email, password, email_verified, role, user_group, user_group_expire FROM users ORDER BY id ASC LIMIT ? OFFSET ?", limit, skip)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}

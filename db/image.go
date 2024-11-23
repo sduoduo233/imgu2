@@ -113,7 +113,7 @@ func ImageDelete(id int) error {
 func ImageFindByUser(userId int, skip int, limit int) ([]Image, error) {
 	images := make([]Image, 0)
 
-	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time, internal_name FROM images WHERE uploader = ? AND (expire_time IS NULL OR expire_time > unixepoch()) LIMIT ? OFFSET ?", userId, limit, skip)
+	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time, internal_name FROM images WHERE uploader = ? AND (expire_time IS NULL OR expire_time > unixepoch()) ORDER BY id DESC LIMIT ? OFFSET ?", userId, limit, skip)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
@@ -183,7 +183,7 @@ func ImageCountByStorage(id int) (int, error) {
 func ImageFindAll(skip int, limit int) ([]Image, error) {
 	images := make([]Image, 0)
 
-	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time, internal_name FROM images WHERE (expire_time IS NULL OR expire_time > unixepoch()) LIMIT ? OFFSET ?", limit, skip)
+	rows, err := DB.Query("SELECT id, storage, uploader, file_name, uploader_ip, time, expire_time, internal_name FROM images WHERE (expire_time IS NULL OR expire_time > unixepoch()) ORDER BY id DESC LIMIT ? OFFSET ?", limit, skip)
 	if err != nil {
 		return nil, fmt.Errorf("db: %w", err)
 	}
