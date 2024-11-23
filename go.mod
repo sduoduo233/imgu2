@@ -9,13 +9,14 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/joho/godotenv v1.5.1
-	github.com/mattn/go-sqlite3 v1.14.22
-	github.com/wneessen/go-mail v0.4.2
-	golang.org/x/crypto v0.25.0
+	github.com/mattn/go-sqlite3 v1.14.24
+	github.com/wneessen/go-mail v0.5.2
+	golang.org/x/crypto v0.29.0
 )
 
 require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	golang.org/x/text v0.20.0 // indirect
 )
